@@ -18,7 +18,7 @@ class CreateBooksTable extends Migration
             $table->foreignId('category_id');
             $table->foreignId('language_id');
             $table->float('popularity');
-            $table->int('class_code');
+            $table->integer('class_code');
             $table->string('title', 400);
             $table->string('authors');
             $table->year('release_year');
@@ -30,7 +30,7 @@ class CreateBooksTable extends Migration
             $table->timestamps();
 
             $table->foreign('category_id')->references('id')->on('categories');
-            $table->foreign('language_id')->references('id')->on('languages');
+            $table->foreign('language_id')->references('id')->on('book_languages');
 
         });
     }

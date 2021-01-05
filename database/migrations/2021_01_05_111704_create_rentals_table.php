@@ -24,7 +24,7 @@ class CreateRentalsTable extends Migration
 
             $table->foreign('customer_id')->references('id')->on('customers');
             $table->foreign('book_id')->references('id')->on('books');
-            $table->foreign('bookcopy_id')->references('id')->on('bookcopies');
+            $table->foreign('bookcopy_id')->references('id')->on('book_copies');
 
         });
     }

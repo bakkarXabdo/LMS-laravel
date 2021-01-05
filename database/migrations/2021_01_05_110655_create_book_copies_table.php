@@ -15,14 +15,13 @@ class CreateBookCopiesTable extends Migration
     {
         Schema::create('book_copies', function (Blueprint $table) {
             $table->id();
-            $table->foreign('book_id');
-            $table->foreign('inventory_id');
+            $table->foreignId('book_id');
+            $table->foreignId('inventory_id');
             $table->boolean('rented');
             $table->timestamps();
 
-            $table->foreignId('book_id')->references('id')->on('books');
-            $table->foreignId('inventory_id')->references('id')->on('inventories');
-
+            $table->foreign('book_id')->references('id')->on('books');
+            $table->foreign('inventory_id')->references('id')->on('inventories');
         });
     }
 
