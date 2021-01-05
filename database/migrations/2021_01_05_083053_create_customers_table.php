@@ -15,11 +15,7 @@ class CreateCustomersTable extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-<<<<<<< Updated upstream
             $table->bigInteger('card_id', false, true)->unique();
-=======
-            $table->bigInteger('card_id', false, true);
->>>>>>> Stashed changes
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
