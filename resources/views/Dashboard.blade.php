@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('PageTitle') Dashboard @endsection
+
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
@@ -13,7 +15,6 @@
                             {{ session('status') }}
                         </div>
                     @endif
-
                     {{ __('You are logged in!') }}
                 </div>
             </div>

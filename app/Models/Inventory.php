@@ -12,6 +12,8 @@ class Inventory extends Model
 
     /**-- DB RELATIONS --*/
 
+    protected $table = "inventories";
+
     function copies(){
         return $this->hasMany(BookCopy::class);
     }

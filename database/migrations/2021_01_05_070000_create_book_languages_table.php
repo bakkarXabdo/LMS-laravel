@@ -13,10 +13,10 @@ class CreateBookLanguagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('book_languages', function (Blueprint $table) {
+        Schema::create('BookLanguages', function (Blueprint $table) {
             $table->id();
-            $table->string('code', 3);
-            $table->string('name');
+            $table->string('Code', 3);
+            $table->string('Name');
         });
     }
 

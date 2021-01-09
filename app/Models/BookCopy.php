@@ -12,6 +12,8 @@ class BookCopy extends Model
 
     /**-- DB RELATIONS --*/
 
+    protected $table = "bookcopies";
+
     function book(){
         return $this->belongsTo(Book::class);
     }

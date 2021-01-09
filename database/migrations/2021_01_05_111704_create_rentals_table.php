@@ -14,17 +14,17 @@ class CreateRentalsTable extends Migration
     public function up()
     {
         Schema::create('rentals', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('customer_id');
-            $table->foreignId('book_id');
-            $table->foreignId('bookcopy_id');
-            $table->timestamp('expires_at', 6);
-            $table->timestamp('returned_at', 6);
+            $table->id('Id');
+            $table->foreignId('CustomerId');
+            $table->foreignId('BookId');
+            $table->foreignId('BookCopyId');
+            $table->timestamp('ExpiresAt', 6);
+            $table->timestamp('ReturnedAt', 6);
             $table->timestamps();
 
-            $table->foreign('customer_id')->references('id')->on('customers');
-            $table->foreign('book_id')->references('id')->on('books');
-            $table->foreign('bookcopy_id')->references('id')->on('book_copies');
+            $table->foreign('CustomerId')->references('Id')->on('Customers');
+            $table->foreign('BookId')->references('Id')->on('Books');
+            $table->foreign('BookCopyId')->references('Id')->on('BookCopies');
 
         });
     }

@@ -13,12 +13,12 @@ class CreateInventoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('inventories', function (Blueprint $table) {
+        Schema::create('Inventories', function (Blueprint $table) {
             $table->id();
-            $table->integer('shelf', false, true);
-            $table->integer('column', false, true);
-            $table->integer('row', false, true);
-            $table->integer('size', false, true);
+            $table->integer('Shelf', false, true);
+            $table->integer('Column', false, true);
+            $table->integer('Row', false, true);
+            $table->integer('Size', false, true);
             $table->timestamps();
         });
     }

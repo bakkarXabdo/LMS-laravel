@@ -12,6 +12,8 @@ class Rental extends Model
 
     /**-- DB RELATIONS --*/
 
+    protected $table = "rentals";
+
     function customer(){
         return $this->belongsTo(Customer::class);
     }

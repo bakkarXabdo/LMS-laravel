@@ -12,6 +12,8 @@ class BookLanguage extends Model
 
     /**-- DB RELATIONS --*/
 
+    protected $table = "booklanguages";
+
     function books(){
         return $this->belongsToMany(Book::class);
     }

@@ -13,15 +13,15 @@ class CreateBookCopiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('book_copies', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('book_id');
-            $table->foreignId('inventory_id');
-            $table->boolean('rented');
+        Schema::create('BookCopies', function (Blueprint $table) {
+            $table->id('Id');
+            $table->foreignId('BookId');
+            $table->foreignId('InventoryId');
+            $table->boolean('Rented');
             $table->timestamps();
 
-            $table->foreign('book_id')->references('id')->on('books');
-            $table->foreign('inventory_id')->references('id')->on('inventories');
+            $table->foreign('BookId')->references('Id')->on('Books');
+            $table->foreign('InventoryId')->references('Id')->on('Inventories');
         });
     }
 

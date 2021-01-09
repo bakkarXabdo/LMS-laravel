@@ -13,24 +13,24 @@ class CreateBooksTable extends Migration
      */
     public function up()
     {
-        Schema::create('books', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('category_id');
-            $table->foreignId('language_id');
-            $table->float('popularity');
-            $table->integer('class_code');
-            $table->string('title', 400);
-            $table->string('authors');
-            $table->year('release_year');
+        Schema::create('Books', function (Blueprint $table) {
+            $table->id('Id');
+            $table->foreignId('CategoryId');
+            $table->foreignId('LanguageId');
+            $table->float('Popularity');
+            $table->integer('ClassCode');
+            $table->string('Title', 400);
+            $table->string('Authors');
+            $table->year('ReleaseYear');
 
-            $table->string('publisher');
-            $table->string('isbn');
-            $table->integer('price');
-            $table->string('source');
+            $table->string('Publisher');
+            $table->string('Isbn');
+            $table->integer('Price');
+            $table->string('Source');
             $table->timestamps();
 
-            $table->foreign('category_id')->references('id')->on('categories');
-            $table->foreign('language_id')->references('id')->on('book_languages');
+            $table->foreign('CategoryId')->references('Id')->on('Categories');
+            $table->foreign('LanguageId')->references('Id')->on('BookLanguages');
 
         });
     }
