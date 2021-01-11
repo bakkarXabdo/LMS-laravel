@@ -123,59 +123,11 @@
                 </li>
             </ul>
         </li>
+        <li>
+            <a href="#" data-toggle="collapse" aria-expanded="false" id="sidebarCollapse">
+                <i class="glyphicon glyphicon-education"></i>
+                Collapse
+            </a>
+        </li>
     </ul>
 </nav>
-
-<!-- Page Content Holder -->
-<div class="" id="nav-controller">
-    <nav class="navbar navbar-default">
-        <div class="container-fluid">
-            <div class="navbar-header px-4 mx-auto flex flex-col md:flex-row items-center justify-between">
-                <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
-                    <i class="glyphicon glyphicon-align-left"></i>
-                    <span>Toggle Sidebar</span>
-                </button>
-                <ul class="nav navbar-nav navbar-right">
-                    <li class="nav-item"><a class="nav-link" href="/">Go Front</a></li>
-                </ul>
-            </div>
-
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav navbar-right">
-                    <!-- Authentication Links -->
-                    @guest
-                        @if (Route::has('login'))
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                            </li>
-                        @endif
-
-                        @if (Route::has('register'))
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                            </li>
-                        @endif
-                    @else
-                        <li class="nav-item dropdown">
-                            <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                {{ Auth::user()->name }}
-                            </a>
-
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{{ route('logout') }}"
-                                   onclick="event.preventDefault();
-                                                            document.getElementById('logout-form').submit();">
-                                    {{ __('Logout') }}
-                                </a>
-
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                    @csrf
-                                </form>
-                            </div>
-                        </li>
-                    @endguest
-                </ul>
-            </div>
-        </div>
-    </nav>
-</div>

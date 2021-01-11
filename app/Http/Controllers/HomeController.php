@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Book;
+use App\Models\BookCopy;
+use App\Models\Customer;
+use App\Models\Rental;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -23,6 +27,13 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('dashboard');
+        return view('welcome',[
+                'bookCount' => Book::count(),
+                'BookCopiesCount' => BookCopy::count(),
+                'CustomersCount' => Customer::count(),
+                'ActiveRentalsCount' => Rental::where('returned', null)->count(),
+                'ExpiredRentalsCount' => Rental::whereDate('expires', '>', 'now')->count(),
+                'MaxRentedCustomer' => 0
+            ]);
     }
 }
