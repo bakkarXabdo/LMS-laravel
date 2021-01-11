@@ -38,7 +38,7 @@
             @yield('content')
             <hr />
             <footer>
-                <p>&copy; {{ date('yyyy') }} - {{config('app.name')}}</p>
+                <p>&copy; {{ date('Y') }} - {{config('app.name')}}</p>
             </footer>
         </div>
 
