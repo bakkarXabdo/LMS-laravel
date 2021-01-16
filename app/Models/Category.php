@@ -18,6 +18,6 @@ class Category extends Model
     protected $table = "categories";
 
     function books(){
-        return $this->belongsToMany(Book::class);
+        return $this->belongsToMany(Book::class, 'books', 'Id');
     }
 }

@@ -18,11 +18,11 @@ class Rental extends Model
     protected $table = "rentals";
 
     function customer(){
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(Customer::class, 'CustomerId', 'Id', 'customers');
     }
 
     function book(){
-        return $this->belongsTo(Book::class);
+        return $this->belongsTo(Book::class, 'BookId', 'Id', 'books');
     }
 
     function bookCopy(){

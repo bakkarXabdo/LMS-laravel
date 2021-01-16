@@ -23,10 +23,10 @@
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="#">Books</a></li>
+                        <li><a href="{{ route('books.index') }}">Books</a></li>
                         <li><a href="#">Customers</a></li>
                         <li><a href="#">Rentals</a></li>
-                        <li><a href="#">Inventories</a></li>
+                        <li><a href="#">Inventory</a></li>
                     </ul>
                     @include('layouts._login')
                 </div>
@@ -43,6 +43,13 @@
         </div>
 
         <script src="{{ asset('js/app.js') }}"></script>
+        <script>
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+        </script>
         @stack('scripts')
     </body>
 </html>

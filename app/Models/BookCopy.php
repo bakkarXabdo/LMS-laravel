@@ -19,14 +19,14 @@ class BookCopy extends Model
     protected $table = "bookcopies";
 
     function book(){
-        return $this->belongsTo(Book::class);
+        return $this->belongsTo(Book::class, 'BookId', 'Id', 'books');
     }
 
     function rental(){
-        return $this->hasOne(Rental::class);
+        return $this->hasOne(Rental::class, 'BookCopyId', 'Id');
     }
 
     function inventory(){
-        return $this->belongsTo(Inventory::class);
+        return $this->belongsTo(Inventory::class, 'InventoryId', 'Id', 'inventory');
     }
 }

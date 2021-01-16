@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 class Book extends Model
 {
     use HasFactory;
-
+    protected $table ="books";
 
     /**-- Attributes --*/
 
@@ -33,15 +33,15 @@ class Book extends Model
     /**-- DB RELATIONS --*/
 
     function language(){
-        return $this->hasOne(BookLanguage::class);
+        return $this->hasOne(BookLanguage::class, 'Id', 'LanguageId');
     }
     function category(){
-        return $this->hasOne(Category::class);
+        return $this->hasOne(Category::class, 'Id', 'CategoryId');
     }
     function copies(){
-        return $this->hasMany(BookCopy::class);
+        return $this->hasMany(BookCopy::class, 'BookId', 'Id');
     }
     function rentals(){
-        return $this->hasMany(Rental::class);
+        return $this->hasMany(Rental::class, 'BookId', 'Id');
     }
 }

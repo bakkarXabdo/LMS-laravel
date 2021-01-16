@@ -18,6 +18,6 @@ class Customer extends Model
     protected $table = "customers";
 
     function rentals(){
-        return $this->hasMany(Rental::class);
+        return $this->hasMany(Rental::class, 'CustomerId', 'Id');
     }
 }
