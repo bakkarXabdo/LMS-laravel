@@ -7,25 +7,24 @@
             <th>#ID</th>
             <th>Title</th>
             <th>Author</th>
+            <th>Category</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        
-        @forelse ($search_book as $book)
-        <tr>
+            @forelse ($filter_book_cat as $book)
+            <tr>
             <td>{{$book->Id}}</td>
             <td>{{$book->Title}}</td>
             <td>{{$book->Authors}}</td>
+            <td><a href="/filter_category/{{optional($book->category)->Id}}">{{ $book->category->Name}}</a></td>
             <td class=" text-center">
-                <a class="btn btn-primary" href="/books/{{$book->id}}">Rent</a>
+                <a class="btn btn-primary" href="#">Show</a>
             </td>
-        </tr>
-        @empty
-        no books Found
-        @endforelse
-        
+            </tr>
+            @empty
+                no books Found
+            @endforelse
     </tbody>
-</table>
+  </table>
 @endsection
-{{-- @include('pages.search')
-@include('pages.filter') --}}

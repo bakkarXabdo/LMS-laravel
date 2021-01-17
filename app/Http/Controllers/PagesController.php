@@ -44,26 +44,47 @@ class PagesController extends Controller
     public function search()
     {
 
+        $categories = Category::all();
+        $langs = BookLanguage::all();
         $langs = BookLanguage::all();
         $search_text = $_GET['search_query'];
-        $books = Book::orderBy('id', 'asc')->where('Title', 'LIKE', '%' . $search_text . '%')
+        $search_book = Book::orderBy('id', 'asc')->where('Title', 'LIKE', '%' . $search_text . '%')
             ->orWhere('Authors', 'LIKE', '%' . $search_text . '%')->get();
         $data = array(
-            'books' => $books,
+            'search_book' => $search_book,
+            'categories' => $categories,
             'langs' => $langs
         );
-        return view('pages.index')->with($data);
+        return view('pages.search')->with($data);
     }
 
     public function filter($id)
     {
+        
+        $categories = Category::all();
         $langs = BookLanguage::all();
         $lang_id = BookLanguage::find($id);
-        $books = Book::where('LanguageId', '=', $lang_id->Id)->get();
+        $filter_book = Book::where('LanguageId', '=', $lang_id->Id)->get();
         $data = array(
-            'books' => $books,
+            'filter_book' => $filter_book,
+            'categories' => $categories,
             'langs' => $langs
         );
-        return view('pages.index')->with($data);
+        return view('pages.filter')->with($data);
+    }
+
+    public function filterCategory($id)
+    {
+        $langs = BookLanguage::all();
+        $categories = Category::all();
+        $category_id = Category::find($id);
+        $filter_book_cat = Book::where('ClassId', '=', $category_id->Id)->get();
+        $data = array(
+            'filter_book_cat' => $filter_book_cat,
+            'categories' => $categories,
+            'langs' => $langs
+        );
+        // return $filter_book_cat[0]->category->Name;
+        return view('pages.filter_category')->with($data);
     }
 }
