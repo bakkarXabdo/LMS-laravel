@@ -22,9 +22,10 @@ use Illuminate\Support\Facades\Route;
 //test();
 
 Auth::routes();
-Route::get('/manage', function(){return "NOT IMPLEMENTED!";})->name('user.manage');
-if(Auth::guest())
-{
+Route::get('/manage', function () {
+    return "NOT IMPLEMENTED!";
+})->name('user.manage');
+if (Auth::guest()) {
     Auth::loginUsingId(1);
 }
 Route::get('/test', [BooksController::class, 'test']);
@@ -44,9 +45,14 @@ Route::get('/rentals/forcustomer/{Customer}', [BookCopiesController::class, 'for
 Route::get('/rentals/forcopy/BookCopy', [BookCopiesController::class, 'forCopy'])->name('rentals.forcopy');
 Route::get('/rentals/return/{Rental}', [BookCopiesController::class, '_return'])->name('rentals.return');
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
-
-function test(){
+function test()
+{
     BookCopy::find(27216)->rental;
     dd('END');
 }
+Auth::routes();
+Route::get('/', [App\Http\Controllers\PagesController::class, 'index']);
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/about', [App\Http\Controllers\PagesController::class, 'about']);
+Route::get('/search', [App\Http\Controllers\PagesController::class, 'search']);
+Route::get('/filter/{id}', [App\Http\Controllers\PagesController::class, 'filter']);
