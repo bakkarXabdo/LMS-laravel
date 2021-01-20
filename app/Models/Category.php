@@ -16,6 +16,7 @@ class Category extends Model
     /**-- DB RELATIONS --*/
 
     protected $table = "categories";
+    protected $primaryKey = "Id";
 
     function books(){
         return $this->belongsToMany(Book::class, 'books', 'Id');

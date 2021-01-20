@@ -16,6 +16,7 @@ class Customer extends Model
     /**-- DB RELATIONS --*/
 
     protected $table = "customers";
+    protected $primaryKey = "Id";
 
     function rentals(){
         return $this->hasMany(Rental::class, 'CustomerId', 'Id');

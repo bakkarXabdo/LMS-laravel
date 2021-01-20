@@ -14,6 +14,7 @@ class Book extends Model
 {
     use HasFactory;
     protected $table ="books";
+    protected $primaryKey = "Id";
 
     /**-- Attributes --*/
 

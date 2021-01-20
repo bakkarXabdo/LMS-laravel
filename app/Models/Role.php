@@ -16,6 +16,7 @@ class Role extends Model
     /**-- DB RELATIONS --*/
 
     protected $table = "roles";
+    protected $primaryKey = "Id";
 
     function users(){
         return $this->belongsToMany(User::class);

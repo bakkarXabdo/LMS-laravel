@@ -17,6 +17,7 @@ class BookCopy extends Model
     /**-- DB RELATIONS --*/
 
     protected $table = "bookcopies";
+    protected $primaryKey = "Id";
 
     function book(){
         return $this->belongsTo(Book::class, 'BookId', 'Id', 'books');

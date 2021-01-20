@@ -52,7 +52,7 @@ function test()
 }
 Route::get('/', [App\Http\Controllers\PagesController::class, 'index']);
 Route::get('/home', [HomeController::class, 'index'])->name('home');
-Route::get('/about', [App\Http\Controllers\PagesController::class, 'about']);
+Route::get('/about', [App\Http\Controllers\PagesController::class, 'about'])->name('pages.about');
 Route::get('/search', [App\Http\Controllers\PagesController::class, 'search']);
 Route::get('/filter_category/{id}', [App\Http\Controllers\PagesController::class, 'filterCategory']);
 Route::get('/filter/{id}', [App\Http\Controllers\PagesController::class, 'filter']);

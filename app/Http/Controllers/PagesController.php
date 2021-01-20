@@ -78,13 +78,12 @@ class PagesController extends Controller
         $langs = BookLanguage::all();
         $categories = Category::all();
         $category_id = Category::find($id);
-        $filter_book_cat = Book::where('ClassId', '=', $category_id->Id)->get();
+        $filter_book_cat = Book::where('CategoryId', '=', $category_id->Id)->get();
         $data = array(
             'filter_book_cat' => $filter_book_cat,
             'categories' => $categories,
             'langs' => $langs
         );
-        // return $filter_book_cat[0]->category->Name;
         return view('pages.filter_category')->with($data);
     }
 }
