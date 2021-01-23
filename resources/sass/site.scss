@@ -61,3 +61,15 @@ textarea {
   padding-left:0;
 }
 
+
+.p-only{
+  display: none;
+}
+@media print {
+  .v-only{
+    display:none;
+  }
+  .p-only{
+    display: block;
+  }
+}

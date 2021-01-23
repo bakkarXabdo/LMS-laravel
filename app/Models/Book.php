@@ -14,11 +14,15 @@ class Book extends Model
 {
     use HasFactory;
     protected $table ="books";
+    protected $primaryKey = "Id";
+    protected $guarded = [];
+    const CREATED_AT = "DateAdded";
+    const UPDATED_AT = "DateUpdated";
 
     /**-- Attributes --*/
 
     function getPathAttribute(){
-        return route('book.view', $this->attributes['id']);
+        return route('books.show', $this->attributes['Id']);
     }
     function getRentalsCountAttribute(){
         return $this->rentals()->count();

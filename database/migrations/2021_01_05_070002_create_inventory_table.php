@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateInventoriesTable extends Migration
+class CreateInventoryTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class CreateInventoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('Inventories', function (Blueprint $table) {
-            $table->id();
+        Schema::create('inventory', function (Blueprint $table) {
+            $table->id('Id')->unsigned();
             $table->integer('Shelf', false, true);
             $table->integer('Column', false, true);
             $table->integer('Row', false, true);

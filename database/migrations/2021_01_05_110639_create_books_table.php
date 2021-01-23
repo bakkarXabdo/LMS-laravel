@@ -13,7 +13,7 @@ class CreateBooksTable extends Migration
      */
     public function up()
     {
-        Schema::create('Books', function (Blueprint $table) {
+        Schema::create('books', function (Blueprint $table) {
             $table->id('Id');
             $table->foreignId('CategoryId');
             $table->foreignId('LanguageId');
@@ -29,8 +29,8 @@ class CreateBooksTable extends Migration
             $table->string('Source');
             $table->timestamps();
 
-            $table->foreign('CategoryId')->references('Id')->on('Categories');
-            $table->foreign('LanguageId')->references('Id')->on('BookLanguages');
+            $table->foreign('CategoryId')->references('Id')->on('categories');
+            $table->foreign('LanguageId')->references('Id')->on('languages');
 
         });
     }

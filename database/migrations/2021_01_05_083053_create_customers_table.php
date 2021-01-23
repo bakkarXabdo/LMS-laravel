@@ -13,14 +13,11 @@ class CreateCustomersTable extends Migration
      */
     public function up()
     {
-        Schema::create('Customers', function (Blueprint $table) {
+        Schema::create('customers', function (Blueprint $table) {
             $table->id('Id');
-            $table->bigInteger('CardId', false, true)->unique();
+            $table->string('CardId')->unique();
             $table->string('Name');
-            $table->string('Email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('Password');
-            $table->rememberToken();
+            $table->dateTime('BirthDate', 6);
             $table->timestamps();
         });
     }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,16 +17,26 @@ class Rental extends Model
     /**-- DB RELATIONS --*/
 
     protected $table = "rentals";
-
+    protected $primaryKey = "Id";
+    const CREATED_AT = "DateAdded";
+    const UPDATED_AT = "DateUpdated";
     function customer(){
-        return $this->belongsTo(Customer::class, 'CustomerId', 'Id', 'customers');
+        return $this->belongsTo(Customer::class, 'CustomerId', 'Id');
     }
 
     function book(){
-        return $this->belongsTo(Book::class, 'BookId', 'Id', 'books');
+        return $this->belongsTo(Book::class, 'BookId', 'Id');
     }
 
-    function bookCopy(){
-        return $this->belongsTo(BookCopy::class);
+    function copy(){
+        return $this->belongsTo(BookCopy::class, "BookCopyId", "Id");
+    }
+    function getReturnDateAttribute()
+    {
+        $diff =  Carbon::parse($this->attributes['Expires'])->diffInDays(Carbon::now());
+        if(Carbon::parse($this->attributes['Expires'])->lessThan(Carbon::now())){
+            $diff = -1 * $diff;
+        }
+        return intval($diff);
     }
 }

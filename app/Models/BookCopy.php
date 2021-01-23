@@ -17,6 +17,9 @@ class BookCopy extends Model
     /**-- DB RELATIONS --*/
 
     protected $table = "bookcopies";
+    protected $primaryKey = "Id";
+    const CREATED_AT = "DateAdded";
+    const UPDATED_AT = "DateUpdated";
 
     function book(){
         return $this->belongsTo(Book::class, 'BookId', 'Id', 'books');

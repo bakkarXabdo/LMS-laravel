@@ -16,8 +16,14 @@ class Inventory extends Model
     /**-- DB RELATIONS --*/
 
     protected $table = "inventory";
+    protected $primaryKey = "Id";
 
     function copies(){
-        return $this->hasMany(BookCopy::class, 'BookCopyId', 'Id');
+        return $this->hasMany(BookCopy::class, 'InventoryId', 'Id');
+    }
+
+    function getPathAttribute()
+    {
+        return route('inventory.show', $this->getKey());
     }
 }

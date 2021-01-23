@@ -6,8 +6,8 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title> @yield('PageTitle') - {{ config('app.brandName') }} </title>
-
-        <link rel="stylesheet" href="{{asset('css/app.css')}}">
+        <link rel="icon"  href="{{ asset('favicon.ico') }}?v=2" type="image/x-icon">
+        <link rel="stylesheet" href="{{asset('css/app.css')}}" >
     </head>
     <body>
         <div class="navbar navbar-inverse navbar-fixed-top">
@@ -24,8 +24,8 @@
                     <ul class="nav navbar-nav">
                         <li><a href="{{ route('books.index') }}">Books</a></li>
                         <li><a href="#">Customers</a></li>
-                        <li><a href="#">Rentals</a></li>
-                        <li><a href="#">Inventory</a></li>
+                        <li><a href="{{ route('rentals.index') }}">Rentals</a></li>
+                        <li><a href="{{ route('inventory.index') }}">Inventory</a></li>
                     </ul>
                     @include('layouts._login')
                 </div>
@@ -48,6 +48,10 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
+            toastr.options = {
+                "timeOut": "4000",
+                "extendedTimeOut": "2000"
+            };
         </script>
         @stack('scripts')
     </body>

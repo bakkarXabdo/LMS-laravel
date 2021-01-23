@@ -22,9 +22,9 @@ class CreateRentalsTable extends Migration
             $table->timestamp('ReturnedAt', 6);
             $table->timestamps();
 
-            $table->foreign('CustomerId')->references('Id')->on('Customers');
-            $table->foreign('BookId')->references('Id')->on('Books');
-            $table->foreign('BookCopyId')->references('Id')->on('BookCopies');
+            $table->foreign('CustomerId')->references('Id')->on('customers');
+            $table->foreign('BookId')->references('Id')->on('books');
+            $table->foreign('BookCopyId')->references('Id')->on('bookcopies');
 
         });
     }

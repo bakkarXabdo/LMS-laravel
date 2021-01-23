@@ -12,7 +12,7 @@
     "devDependencies": {
         "axios": "^0.21.1",
         "cross-env": "^7.0",
-        "jquery": "^3.2",
+        "jquery": "^3.5.1",
         "laravel-mix": "^5.0.1",
         "lodash": "^4.17.19",
         "popper.js": "^1.12",
@@ -30,6 +30,8 @@
         "datatables.net": "^1.10.23",
         "font-awesome": "^4.7.0",
         "glyphicons-halflings": "^1.9.1",
-        "laravel-mix-purgecss": "^6.0.0"
+        "jquery-validation": "^1.19.3",
+        "laravel-mix-purgecss": "^6.0.0",
+        "toastr": "^2.1.4"
     }
 }

@@ -1,1 +1,0 @@
-<a href='{{ route('books.show', $Id) }}' title='#{{ $Id }}'> {{ $Title }}</a>
