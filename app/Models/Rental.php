@@ -20,6 +20,7 @@ class Rental extends Model
     protected $primaryKey = "Id";
     const CREATED_AT = "DateAdded";
     const UPDATED_AT = "DateUpdated";
+
     function customer(){
         return $this->belongsTo(Customer::class, 'CustomerId', 'Id');
     }

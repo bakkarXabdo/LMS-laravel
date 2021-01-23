@@ -18,7 +18,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a href="{{ route('home') }}" class="navbar-brand">{{config('app.brandName')}}</a>
+                    <a href="/" class="navbar-brand">{{config('app.brandName')}}</a>
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
@@ -36,8 +36,15 @@
         <div class="container body-content" id="wrapper">
             @yield('content')
             <hr />
-            <footer>
-                <p>&copy; {{ date('Y') }} - {{config('app.name')}}</p>
+            <footer class="text-center">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <p class="d-inline">&copy; {{ date('Y') }} - {{config('app.name')}}</p>
+                    </div>
+                    <div class="col-lg-1">
+                        <a class="nav-link" href="{{ route('pages.about') }}">About</a>
+                    </div>
+                  </div>
             </footer>
         </div>
 

@@ -17,7 +17,7 @@
             <td>{{$book->Title}}</td>
             <td>{{$book->Authors}}</td>
             <td class=" text-center">
-                <a class="btn btn-primary" href="/books/{{$book->id}}">Rent</a>
+                <a class="btn btn-primary" href="#">Rent</a>
             </td>
         </tr>
         @empty

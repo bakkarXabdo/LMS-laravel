@@ -81,7 +81,6 @@ class PagesController extends Controller
             'categories' => $categories,
             'langs' => $langs
         );
-        // return $filter_book_cat[0]->category->Name;
         return view('pages.filter_category')->with($data);
     }
 }

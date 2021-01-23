@@ -18,7 +18,6 @@ class Book extends Model
     protected $guarded = [];
     const CREATED_AT = "DateAdded";
     const UPDATED_AT = "DateUpdated";
-
     /**-- Attributes --*/
 
     function getPathAttribute(){

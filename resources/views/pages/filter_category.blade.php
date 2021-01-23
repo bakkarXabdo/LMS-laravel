@@ -19,7 +19,7 @@
             <td>{{$book->Authors}}</td>
             <td><a href="/filter_category/{{optional($book->category)->Id}}">{{ $book->category->Name}}</a></td>
             <td class=" text-center">
-                <a class="btn btn-primary" href="#">Show</a>
+                <a class="btn btn-primary" href="#">Rent</a>
             </td>
             </tr>
             @empty
