@@ -1,4 +1,7 @@
 @extends('layouts.master')
+
+@section('PageTitle') Search @endsection
+
 @section('content')
 @include('pages.inc')
 <table class="table table-bordered table-hover">
@@ -7,6 +10,8 @@
             <th>#ID</th>
             <th>Title</th>
             <th>Author</th>
+            <th>Category</th>
+            <th>Language</th>
         </tr>
     </thead>
     <tbody>
@@ -16,16 +21,20 @@
             <td>{{$book->Id}}</td>
             <td>{{$book->Title}}</td>
             <td>{{$book->Authors}}</td>
-            <td class=" text-center">
+            <td>{{ $book->category->Name}}</td>
+            <td>{{ $book->language->Name}}</td>
+            {{-- <td class=" text-center">
                 <a class="btn btn-primary" href="#">Rent</a>
-            </td>
+            </td> --}}
         </tr>
         @empty
         no books Found
         @endforelse
-        
     </tbody>
 </table>
+<div class="row">
+    <div style="padding: 10px;"  class="text-center">
+        {{$search_book->links()}}
+    </div>
+</div>
 @endsection
-{{-- @include('pages.search')
-@include('pages.filter') --}}

@@ -1,5 +1,7 @@
 @extends('layouts.master')
 
+@section('PageTitle') About @endsection
+
 @section('content')
 <section class="py-10 text-center container align-items-center">
   <div class="jumbotron" id="content" tabindex="-1">
@@ -41,15 +43,15 @@
       <div class="list-group bs-team">
         
         <div class="list-group-item">
-          <a class="team-member" href="">
-            <img src="" alt="" width="32" height="32">
+          <a class="team-member" href="https://web.facebook.com/aboubakkar.bekkouche/">
+            {{-- <img src="" alt="" width="32" height="32"> --}}
             <strong>Bekkouche Eboubaker</strong>
           </a>
         </div>
 
         <div class="list-group-item">
-          <a class="team-member" href="">
-            <img src="" alt="" width="32" height="32">
+          <a class="team-member" href="https://web.facebook.com/ABDELHAK.DARBEIDA/">
+            {{-- <img src="" alt="" width="32" height="32"> --}}
             <strong>Darbeida Abdelhak</strong>
           </a>
         </div>
