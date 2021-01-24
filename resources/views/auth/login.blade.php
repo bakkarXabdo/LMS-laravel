@@ -1,13 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<h1 class="text-center">{{ config('app.name', 'Laravel') }}</h1>
+<div style="height: 500px; padding: 100px 0px 0px 300px;" class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Login') }}</div>
+            <div style="border: 1px solid gainsboro; border-radius: 4px;" class="card">
+                <div style="padding: 15px; border-bottom: 1px solid gainsboro; background-color: whitesmoke" class="card-header">{{ __('Login') }}</div>
 
-                <div class="card-body">
+                <div style="padding:30px 20px ; " class="card-body">
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
 

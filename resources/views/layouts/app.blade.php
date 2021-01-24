@@ -10,7 +10,7 @@
 </head>
 <body>
 <div id="app">
-    @include('layouts._navbar')
+    {{-- @include('layouts._navbar') --}}
     <main class="py-4">
         @yield('content')
     </main>
