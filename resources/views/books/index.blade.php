@@ -35,7 +35,12 @@
             ajax: {
                 url: "{{ route('books.table') }}",
                 method: "POST",
-                dataSrc: "data"
+                dataSrc: "data",
+                @if($customerId)
+                data:function(d){
+                    d.customerId = '{{ $customerId }}';
+                }
+                @endif
             },
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
             columns: [
@@ -86,6 +91,7 @@
                     data: "NumberAvailable",
                     orderSequence: [ "desc", "asc" ],
                     searchable: false,
+                    orderable:{{ $customerId ? 'false' : 'true' }},
                     render: function (_, _, book) {
                         if (book.NumberAvailable > 0) {
                             let url = '{{ route('bookcopies.forbook', ':Id') }}'.replace(':Id', book.Id);

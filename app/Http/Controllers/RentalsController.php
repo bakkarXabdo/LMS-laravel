@@ -38,8 +38,9 @@ class RentalsController extends Controller
             "customer" => null
         ]);
     }
-    public function forCustomer(Customer $customer)
+    public function forCustomer($customerId)
     {
+        $customer = Customer::find($customerId);
         if(!$customer || !$customer->getKey())
         {
             abort(404, 'customer not found');
@@ -54,11 +55,11 @@ class RentalsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(BookCopy $copy, Customer $customer)
+    public function create()
     {
         return view('rentals.create',[
-            "copy" => $copy,
-            "customer" => $customer
+            "copy" => BookCopy::find(\request('copyId')),
+            "customer" => Customer::find(\request('customerId'))
         ]);
     }
 
@@ -89,11 +90,11 @@ class RentalsController extends Controller
             "BookId" => $copy->book->getKey(),
             "Expires" => Carbon::now()->addDays($validated['duration'])->toDateTimeString()
         ]);
-        if($rental->save())
+        if($rental && $rental->getKey())
         {
-            return redirect(route('rentals.show'));
+            return redirect(route('rentals.show', $rental->getKey()));
         }else{
-            abort(500);
+            abort(500, 'cant create rental Internal server error');
         }
     }
 
@@ -110,12 +111,20 @@ class RentalsController extends Controller
         ]);
     }
 
-    public function returnRental(Rental $rental)
+    public function returnRental($rentalId)
     {
-        $rental->delete();
-        $r = Rental::where('Id', $rental->Id);
-        $r->delete();
-        return ":(";
+        $rental = Rental::find($rentalId);
+        if(!$rental || !$rental->getKey())
+        {
+            abort(404, "Rental $rentalId not found");
+        }
+        if(Db::transaction(function() use ($rental) {
+            return $rental->delete();
+        })){
+            return redirect(route('rentals.index'));
+        }else{
+            abort(500, "Internal Server Error");
+        }
     }
 
     public function table()

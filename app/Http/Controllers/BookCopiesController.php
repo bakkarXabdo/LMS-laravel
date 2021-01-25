@@ -19,12 +19,17 @@ class BookCopiesController extends Controller
         return abort(404);
     }
 
-    public function show(BookCopy $bookCopy)
+    public function show($copyId)
     {
-        $bookCopy->Rented = $bookCopy->rental() ? true : false;
-        return view('books.show',[
-            "copy"=>$bookCopy
-        ])->with($bookCopy->attributesToArray());
+        $copy= BookCopy::find($copyId);
+        if(!$copy)
+        {
+            abort(404, "book copy $copyId not found");
+        }
+        $copy->Rented = $copy->rental ? true : false;
+        return view('bookcopies.show',[
+            "copy"=>$copy
+        ])->with($copy->attributesToArray());
     }
 
     public function create()

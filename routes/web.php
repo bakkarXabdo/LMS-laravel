@@ -39,7 +39,7 @@ Route::get('/manage', function () {
     return "NOT IMPLEMENTED!";
 })->name('user.manage');
 
-Route::get('/books/choose?customerId={Customer?}', [BooksController::class, 'choose'])->name('books.choose');
+Route::get('/books/choose', [BooksController::class, 'choose'])->name('books.choose');
 Route::post('/books/table', [BooksController::class, 'table'])->name('books.table');
 Route::resource('books', BooksController::class);
 
@@ -54,14 +54,14 @@ Route::post('/rentals/table', [RentalsController::class, 'table'])->name('rental
 Route::get('/rentals/forbook/{Book}', [RentalsController::class, 'forBook'])->name('rentals.forbook');
 Route::get('/rentals/forcustomer/{Customer}', [RentalsController::class, 'forCustomer'])->name('rentals.forcustomer');
 Route::get('/rentals/forcopy/{BookCopy}', [RentalsController::class, 'forCopy'])->name('rentals.forcopy');
-Route::get('/rentals/return/{Rental}', [RentalsController::class, 'returnRental'])->name('rentals.return');
-Route::get('/rentals/create', [RentalsController::class, 'create'])->name('rentals.create');
+Route::post('/rentals/return/{Rental}', [RentalsController::class, 'returnRental'])->name('rentals.return');
 Route::resource('rentals', RentalsController::class);
 
 Route::post('/inventory/table', [InventoryController::class, 'table'])->name('inventory.table');
 Route::resource('inventory', InventoryController::class);
 
-Route::get('/customer/choose?copyId={BookCopy?}', [CustomerController::class, 'choose'])->name('customer.choose');
+Route::post('/customer/table', [CustomerController::class, 'table'])->name('customer.table');
+Route::get('/customer/choose', [CustomerController::class, 'choose'])->name('customer.choose');
 Route::resource('/customer', CustomerController::class);
 
 Route::get('/test', function(){return view('tests.test');});

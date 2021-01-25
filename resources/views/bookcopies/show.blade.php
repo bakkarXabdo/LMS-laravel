@@ -1,14 +1,14 @@
 @extends('layouts.master')
 
-@section('PageTitle') Copies of {{ $book->Title }} @endsection
+@section('PageTitle') Copies of {{ $copy->book->Title }} @endsection
 
 @section('content')
     <h2>Copy Details</h2>
     <table class="table table-responsive table-bordered">
         <tbody><tr class="d-flex">
-            <th class="col-sm-2">Title</th>
+            <th class="col-sm-2">Book</th>
             <td class="col-sm-10">
-                <a href="{{ route('books.show', $copy->book->getKey()) }}"></a>
+                <a href="{{ route('books.show', $copy->book->getKey()) }}">{{ $copy->book->Title }}</a>
             </td>
         </tr>
         <tr>
@@ -27,7 +27,7 @@
             <th>Rented</th>
             <td>
                 @if($copy->rental)
-                    <a title="Customer#{{ $copy->rental->customer->CardId }} ({{ $copy->rental->customer->Name }})" href="{{ route('rentals.show', $copy->rental->getKey()) }}">Rented</a>
+                    <a title="view rental" href="{{ route('rentals.show', $copy->rental->getKey()) }}">Rented</a> To Customer <a title="view customer" href="{{ route('customer.show', $copy->rental->customer->getKey()) }}">{{ $copy->rental->customer->CardId }} ({{ $copy->rental->customer->Name }})</a>
                 @else
                     No
                 @endif
@@ -39,12 +39,12 @@
     <div class="row" style="margin-left:0">
     <a class="btn btn-primary" href="{{ route('bookcopies.edit', $Id) }}">Edit</a>
     <a class="btn btn-primary" href="{{ route('rentals.create', ["copyId" => $Id]) }}">Rent</a>
-    <a class="btn btn-danger" href="{{ route('bookcopies.destroy') }}">Delete</a></div>
+    <a class="btn btn-danger" if="copy-delete" href="#">Delete</a></div>
 @endsection
 
 @push('scripts')
     <script>
-        $("#delete-book").on("click",  function () {
+        $("#copy-delete").on("click",  function () {
             bootbox.dialog({
                 title: "Confirm Your Action",
                 message: 'Delete Book Copy #{{ $Id }}?',

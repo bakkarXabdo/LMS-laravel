@@ -89,7 +89,7 @@
                         @if($renting)
                             if (!copy.Rented)
                             {
-                                url = '{{ route('rentals.create',["customer" => $customerId, "copyId" => ":id"]) }}'.replace(encodeURIComponent(':id'), copy.Id);
+                                url = '{{ route('rentals.create',["customerId" => $customerId, "copyId" => ":id"]) }}'.replace(encodeURIComponent(':id'), copy.Id);
                                 choose = `<a href="${url}" class='mx-1 btn btn-success'><i class="fa fa-check"></i> Choose</a>`;
                             } else {
                                 url = '{{ route('rentals.forcopy', ':id') }}'.replace(':id', copy.Id);

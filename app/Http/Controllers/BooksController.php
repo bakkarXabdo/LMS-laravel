@@ -34,11 +34,11 @@ class BooksController extends Controller
         ]);
     }
 
-    public function choose(Customer $customer)
+    public function choose()
     {
         return view('books.index', [
                 "choosing" => true,
-                "customerId" => $customer ? $customer->Id : ''
+                "customerId" => \request('customerId')
             ]);
     }
     public function store()
@@ -133,6 +133,11 @@ class BooksController extends Controller
             }else {
                 $data->where('Title', 'LIKE', "%{$request->search->value}%");
             }
+        }
+        if(isset($request->customerId))
+        {
+            // you probably want to sort by Availability first
+            $data->orderByDesc('NumberAvailable');
         }
         foreach ($request->order as $order) {
             $data->orderBy($rcol->where('Id', '=', $order->column)->first()['name'], $order->dir);

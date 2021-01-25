@@ -27,11 +27,9 @@ class PagesController extends Controller
      */
     public function index()
     {
-        $books = Book::all();
         $categories = Category::all();
         $langs = BookLanguage::all();
         $data = array(
-            'books' => $books,
             'categories' => $categories,
             'langs' => $langs,
         );

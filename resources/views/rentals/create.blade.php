@@ -34,7 +34,7 @@
                         </tr>
                         <tr>
                             <th>Title</th>
-                            <td>{{ $copy->book->Title }}</td>
+                            <td style="font-size: large; font-weight: bold">{{ $copy->book->Title }}</td>
                         </tr>
                     </table>
                 @endif
@@ -48,7 +48,7 @@
                     </tr>
                     <tr>
                         <th>Name</th>
-                        <td>{{ $customer->Name }}</td>
+                        <td style="font-size: large; font-weight: bold">{{ $customer->Name }}</td>
                     </tr>
                 </table>
                 @endif
@@ -81,6 +81,7 @@
             </tr>
         </table>
         <form method="post" action="{{ route('rentals.store') }}">
+            @csrf
             <div class="form-group">
                 <label class="h4">Rental Duration (Days)</label>
                 <input value="15" type="number" min="1" class="form-control" name="duration" />
