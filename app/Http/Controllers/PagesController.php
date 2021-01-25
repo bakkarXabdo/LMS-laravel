@@ -48,7 +48,7 @@ class PagesController extends Controller
         $langs = BookLanguage::all();
         $searchQuery = request()['search_query'];
         $search_book = Book::where('Title', 'LIKE', "%$searchQuery%")
-            ->orWhere('Authors', 'LIKE', "%$searchQuery%")->get();
+            ->orWhere('Authors', 'LIKE', "%$searchQuery%")->paginate(50);
         return view('pages.search', [
             'search_book' => $search_book,
             'categories' => $categories,
@@ -62,7 +62,7 @@ class PagesController extends Controller
         $categories = Category::all();
         $langs = BookLanguage::all();
         $lang_id = BookLanguage::find($id);
-        $filter_book = Book::where('LanguageId', '=', $lang_id->Id)->get();
+        $filter_book = Book::where('LanguageId', '=', $lang_id->Id)->paginate(50);
         $data = array(
             'filter_book' => $filter_book,
             'categories' => $categories,
@@ -76,7 +76,7 @@ class PagesController extends Controller
         $langs = BookLanguage::all();
         $categories = Category::all();
         $category_id = Category::find($id);
-        $filter_book_cat = Book::where('CategoryId', '=', $category_id->Id)->get();
+        $filter_book_cat = Book::where('CategoryId', '=', $category_id->Id)->paginate(50);
         $data = array(
             'filter_book_cat' => $filter_book_cat,
             'categories' => $categories,

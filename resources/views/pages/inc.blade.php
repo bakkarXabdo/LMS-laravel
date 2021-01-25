@@ -84,7 +84,7 @@
     }
   </style> 
 <h1 class="jumbotron text-center">{{config('app.name')}}</h1>
-<div style="height: 400px">
+<div style="height: 300px">
   <form action="{{url('/search')}}" method="get" class="form-container">
     {{-- <h5>make a search</h5> --}}
     <input

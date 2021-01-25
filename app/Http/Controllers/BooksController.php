@@ -28,7 +28,7 @@ class BooksController extends Controller
     }
     public function create()
     {
-        return view('books.create',[
+        return view('books.create', [
             'categories' => Category::all(),
             'languages' => BookLanguage::all()
         ]);
@@ -52,19 +52,17 @@ class BooksController extends Controller
     public function show($bookId)
     {
         $book = Book::where('Id', '=', $bookId)->withCount(['copies as NumberInStock', 'rentals as RentalsCount'])->first();
-        if(!$book)
-        {
+        if (!$book) {
             abort(404);
         }
         $book->NumberAvailable = $book->NumberInStock - $book->RentalsCount;
-        return view('books.show',["book" => $book])->with($book->attributesToArray());
+        return view('books.show', ["book" => $book])->with($book->attributesToArray());
     }
 
     public function edit($bookId)
     {
         $book = Book::find($bookId);
-        if(!$book)
-        {
+        if (!$book) {
             abort(404);
         }
         return view('books.edit', [
@@ -78,8 +76,7 @@ class BooksController extends Controller
     {
         $request = $this->validateRequest();
         $book = Book::find(request()['Id']);
-        if(!$book)
-        {
+        if (!$book) {
             abort(404);
         }
         $book->update($request);
@@ -90,44 +87,41 @@ class BooksController extends Controller
     {
         $book = Book::find($bookId);
 
-        if(isset($book->Id))
-        {
-            if($book->rentals()->count() > 0)
-            {
-                return Response::json((object)["success" => false,
-                    "message"=>"Book has active Rentals, <a href='"
-                        .route('rentals.forbook',$bookId)
-                        ."'>View</a>"
+        if (isset($book->Id)) {
+            if ($book->rentals()->count() > 0) {
+                return Response::json((object) [
+                    "success" => false,
+                    "message" => "Book has active Rentals, <a href='"
+                        . route('rentals.forbook', $bookId)
+                        . "'>View</a>"
                 ], 200);
-            }else
-            {
-                $res = DB::transaction(function() use ($book) {
+            } else {
+                $res = DB::transaction(function () use ($book) {
                     return $book->delete();
                 });
-                if($res){
-                    return Response::json((object)["success" => true, "message"=>"Book #$bookId Was Removed"], 200);
-                }else{
-                    return Response::json((object)["success" => false, "message"=>"Unknown Error occurred"], 200);
+                if (!isset($choosing) || !$choosing) {
+                    return Response::json((object) ["success" => true, "message" => "Book #$bookId Was Removed"], 200);
+                } else {
+                    return Response::json((object) ["success" => false, "message" => "Unknown Error occurred"], 200);
                 }
             }
-        }else{
-            return Response::json((object)["success" => false, "message"=>"Book #$bookId Was Not Found"], 200);
+        } else {
+            return Response::json((object) ["success" => false, "message" => "Book #$bookId Was Not Found"], 200);
         }
-
-
-
     }
 
     public function table()
     {
         $request = json_decode(json_encode(request()->all()));
-        $data = Book::query()->select(['books.*',
+        $data = Book::query()->select([
+            'books.*',
             Db::raw('@RentalsCount := (select count(*) from `rentals` where `books`.`Id` = `rentals`.`BookId`) as `RentalsCount`'),
             Db::raw('@NumberInStock := (select count(*) from `bookcopies` where `books`.`Id` = `bookcopies`.`BookId`) as `NumberInStock`'),
-            Db::raw('@NumberInStock - @RentalsCount as `NumberAvailable`')]);
+            Db::raw('@NumberInStock - @RentalsCount as `NumberAvailable`')
+        ]);
 
         $rcol = collect(request()->all()['columns']);
-        $rcol = $rcol->map(function($col) use ($rcol) {
+        $rcol = $rcol->map(function ($col) use ($rcol) {
             $col['Id'] = $rcol->search($col);
             return $col;
         });
@@ -140,19 +134,17 @@ class BooksController extends Controller
                 $data->where('Title', 'LIKE', "%{$request->search->value}%");
             }
         }
-        foreach ($request->order as $order)
-        {
+        foreach ($request->order as $order) {
             $data->orderBy($rcol->where('Id', '=', $order->column)->first()['name'], $order->dir);
         }
         $data = $data->orderByDesc('Popularity');
         $count = $data->count();
-        if ($request->length > 0)
-        {
+        if ($request->length > 0) {
             $data = $data->skip($request->start);
             $data = $data->take($request->length);
         }
         $data = $data->get();
-        $data->map(function($book){
+        $data->map(function ($book) {
             // don't remove
             $book->Category = $book->category;
             return $book;
@@ -165,14 +157,15 @@ class BooksController extends Controller
         return Response::json($resp);
     }
 
-    public function validateRequest(){
+    public function validateRequest()
+    {
         return Validator::make(request()->all(), [
             'Title' => 'required|max:255',
             'Authors' => 'required|max:255',
-            'ClassCode' =>'required',
-            'LanguageId' =>'required',
+            'ClassCode' => 'required',
+            'LanguageId' => 'required',
             'CategoryId' => 'required'
-        ],[
+        ], [
             'Title.required' => 'You must specify the title of the Book',
             'Title.max' => 'The book title must be shorter than 255 characters',
 
