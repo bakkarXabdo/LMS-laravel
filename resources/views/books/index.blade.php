@@ -105,7 +105,7 @@
                     print:false,
                     render: function (_,_,book) {
                         var edit = remove = choose = url = "";
-                        @if (!isset($choosing))
+                        @if (!isset($choosing) || !$choosing)
                             url = '{{ route('books.edit', ':id') }}'.replace(':id', book.Id);
                             edit = `<a href="${url}" class="mx-1 btn btn-primary"><i class="fa fa-edit"></i>Edit</a>`;
                             remove = `<a href="#" data-book-id='${book.Id}' class='js-delete mx-1 btn btn-danger'><i class="fa fa-trash"></i>Delete</a>`;

@@ -110,7 +110,7 @@
                                 success: function (data) {
                                     if (data.success) {
                                         toastr.success(data.message);
-                                        window.location.href = '{{ route('books.index') }}';
+                                        location.href = document.referrer;
                                     } else {
                                         toastr.error(data.message);
                                     }

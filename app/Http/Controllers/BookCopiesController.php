@@ -21,7 +21,10 @@ class BookCopiesController extends Controller
 
     public function show(BookCopy $bookCopy)
     {
-        //
+        $bookCopy->Rented = $bookCopy->rental() ? true : false;
+        return view('books.show',[
+            "copy"=>$bookCopy
+        ])->with($bookCopy->attributesToArray());
     }
 
     public function create()

@@ -2,7 +2,7 @@
 
 
 
-@section('PageTitle') @endsection
+@section('PageTitle') Rentals @endsection
 
 
 

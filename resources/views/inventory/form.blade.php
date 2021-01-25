@@ -7,6 +7,7 @@
     <h3>New Inventory</h3>
     @if ($errors->any())
         <div class="alert alert-danger">
+            Please Fix These Errors-
             <ul>
                 @foreach ($errors->all() as $error)
                     <li>{{ $error }}</li>

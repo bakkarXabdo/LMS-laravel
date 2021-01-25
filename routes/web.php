@@ -34,13 +34,12 @@ function dev(){
     });
     dd($res);
 }
-
 Auth::routes();
 Route::get('/manage', function () {
     return "NOT IMPLEMENTED!";
 })->name('user.manage');
 
-Route::get('/books/choose', [BooksController::class, 'choose'])->name('books.choose');
+Route::get('/books/choose?customerId={Customer?}', [BooksController::class, 'choose'])->name('books.choose');
 Route::post('/books/table', [BooksController::class, 'table'])->name('books.table');
 Route::resource('books', BooksController::class);
 
@@ -56,16 +55,16 @@ Route::get('/rentals/forbook/{Book}', [RentalsController::class, 'forBook'])->na
 Route::get('/rentals/forcustomer/{Customer}', [RentalsController::class, 'forCustomer'])->name('rentals.forcustomer');
 Route::get('/rentals/forcopy/{BookCopy}', [RentalsController::class, 'forCopy'])->name('rentals.forcopy');
 Route::get('/rentals/return/{Rental}', [RentalsController::class, 'returnRental'])->name('rentals.return');
+Route::get('/rentals/create', [RentalsController::class, 'create'])->name('rentals.create');
 Route::resource('rentals', RentalsController::class);
 
 Route::post('/inventory/table', [InventoryController::class, 'table'])->name('inventory.table');
 Route::resource('inventory', InventoryController::class);
 
-Route::get('/customer/choose', [CustomerController::class, 'choose'])->name('customer.choose');
+Route::get('/customer/choose?copyId={BookCopy?}', [CustomerController::class, 'choose'])->name('customer.choose');
 Route::resource('/customer', CustomerController::class);
 
 Route::get('/test', function(){return view('tests.test');});
-Route::get('/', [PagesController::class, 'index']);
 Route::get('/', [PagesController::class, 'index']);
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [PagesController::class, 'about']);

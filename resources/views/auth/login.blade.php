@@ -2,6 +2,16 @@
 
 @section('content')
 <h1 class="text-center">{{ config('app.name', 'Laravel') }}</h1>
+@if ($errors->any())
+    <div class="alert alert-danger">
+        Please Fix These Errors-
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 <div style="height: 500px; padding: 100px 0px 0px 300px;" class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -11,7 +21,6 @@
                 <div style="padding:30px 20px ; " class="card-body">
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
-
                         <div class="form-group row">
                             <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('E-Mail Address') }}</label>
 

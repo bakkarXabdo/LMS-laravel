@@ -22,7 +22,8 @@ class BooksController extends Controller
     public function index()
     {
         return view('books.index', [
-            "choosing" => false
+            "choosing" => false,
+            "customerId" => \request('customerId') ?: 'false'
         ]);
     }
     public function create()
@@ -33,11 +34,11 @@ class BooksController extends Controller
         ]);
     }
 
-    public function choose()
+    public function choose(Customer $customer)
     {
         return view('books.index', [
                 "choosing" => true,
-                "customerId" => \request('customerId') ?: 'false'
+                "customerId" => $customer ? $customer->Id : ''
             ]);
     }
     public function store()
@@ -132,7 +133,12 @@ class BooksController extends Controller
         });
         if (!ctype_space($request->search->value) && !empty($request->search->value))
         {
-            $data = $data->where('Title', 'LIKE', "%{$request->search->value}%");
+            if(str_starts_with(strtolower($request->search->value), 'id:'))
+            {
+                $data->where((new Book)->getKeyName(), '=', substr($request->search->value, 3));
+            }else {
+                $data->where('Title', 'LIKE', "%{$request->search->value}%");
+            }
         }
         foreach ($request->order as $order)
         {

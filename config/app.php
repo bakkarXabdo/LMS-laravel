@@ -13,8 +13,8 @@ return [
     |
     */
 
-    'name' => 'Library Management System',
-    'brandName' => 'LMS',
+    'name' => env('APP_NAME', 'Website'),
+    'brandName' => env('APP_BRAND_NAME', 'Site'),
 
     /*
     |--------------------------------------------------------------------------

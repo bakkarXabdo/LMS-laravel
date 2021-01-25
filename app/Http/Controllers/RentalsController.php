@@ -22,21 +22,43 @@ class RentalsController extends Controller
     public function index()
     {
         return view('rentals.index',[
-            "customer" => Customer::find(\request('customerId')),
-            "book" => Book::find(\request('bookId'))
+            "book" => null,
+            "customer" => null
         ]);
     }
-
+    public function forBook($bookId)
+    {
+        $book = Book::find($bookId);
+        if(!$book)
+        {
+            abort(404, 'book not found');
+        }
+        return view('rentals.index',[
+            "book" => $book,
+            "customer" => null
+        ]);
+    }
+    public function forCustomer(Customer $customer)
+    {
+        if(!$customer || !$customer->getKey())
+        {
+            abort(404, 'customer not found');
+        }
+        return view('rentals.index',[
+            "book" => null,
+            "customer" => $customer
+        ]);
+    }
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(BookCopy $copy, Customer $customer)
     {
         return view('rentals.create',[
-            "copy" => BookCopy::find(\request('copyId')),
-            "customer" => Customer::find(\request('customerId'))
+            "copy" => $copy,
+            "customer" => $customer
         ]);
     }
 
@@ -88,29 +110,7 @@ class RentalsController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Rental  $rental
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Rental $rental)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Rental  $rental
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Rental $rental)
-    {
-        //
-    }
-    public function destroy(Rental $rental)
+    public function returnRental(Rental $rental)
     {
         $rental->delete();
         $r = Rental::where('Id', $rental->Id);
@@ -159,7 +159,7 @@ class RentalsController extends Controller
         }
         if(isset($request->customerId))
         {
-            if(!Book::find($request->customerId))
+            if(!Customer::find($request->customerId))
             {
                 return abort(404, 'customer not found');
             }
