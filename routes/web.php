@@ -9,9 +9,12 @@ use App\Http\Controllers\PagesController;
 use App\Http\Controllers\RentalsController;
 use App\Models\BookCopy;
 use App\Models\Rental;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,13 +29,16 @@ use Illuminate\Support\Facades\Route;
 
 
 
-//test();
+//dev();
 function test(){if (strpos(php_sapi_name(), 'cli') === false) { dev();exit;}}
 function dev(){
-    $res = Db::transaction(function() {
-
-    });
-    dd($res);
+//    $customers = \App\Models\Customer::all();
+//    Db::transaction(function () use ($customers) {
+//        foreach ($customers as $customer)
+//        {
+//            $customer->user->update(['username' => $customer->CardId]);
+//        }
+//    });
 }
 Auth::routes();
 Route::get('/manage', function () {
@@ -43,11 +49,9 @@ Route::get('/books/choose', [BooksController::class, 'choose'])->name('books.cho
 Route::post('/books/table', [BooksController::class, 'table'])->name('books.table');
 Route::resource('books', BooksController::class);
 
-Route::get('/bookcopies/forbook/{Book}', [BookCopiesController::class, 'forBook'])->name('bookcopies.forbook');
-Route::post('/bookcopies/forbooktable', [BookCopiesController::class, 'forBookTable'])->name('bookcopies.forbooktable');
-
+Route::get('/bookcopies/index?bookId={Book}&inventoryId={Inventory}', [BookCopiesController::class, 'index'])->name('bookcopies.index');
+Route::post('/bookcopies/table', [BookCopiesController::class, 'table'])->name('bookcopies.table');
 Route::get('/bookcopies/choose', [BookCopiesController::class, 'choose'])->name('bookcopies.choose');
-Route::get('/bookcopies/forinventory/{Inventory}', [BookCopiesController::class, 'forInventory'])->name('bookcopies.forinventory');
 Route::resource('bookcopies', BookCopiesController::class);
 
 Route::post('/rentals/table', [RentalsController::class, 'table'])->name('rentals.table');
@@ -60,12 +64,13 @@ Route::resource('rentals', RentalsController::class);
 Route::post('/inventory/table', [InventoryController::class, 'table'])->name('inventory.table');
 Route::resource('inventory', InventoryController::class);
 
+Route::post('/customer/password/{Customer}', [CustomerController::class, 'changePassword'])->name('customer.changePassword');
 Route::post('/customer/table', [CustomerController::class, 'table'])->name('customer.table');
 Route::get('/customer/choose', [CustomerController::class, 'choose'])->name('customer.choose');
 Route::resource('/customer', CustomerController::class);
 
 Route::get('/test', function(){return view('tests.test');});
-Route::get('/', [PagesController::class, 'index']);
+Route::get('/', [PagesController::class, 'index'])->name('guests-landing');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [PagesController::class, 'about']);
 Route::get('/search', [PagesController::class, 'search']);

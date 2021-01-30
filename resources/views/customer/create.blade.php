@@ -5,7 +5,15 @@
 
 @section('content')
     <h2>New Customer</h2>
-    
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 <form action="{{ route('customer.store') }}" method="post" novalidate="novalidate">
     <div class="form-group">
         <label for="Name">Name</label>
@@ -13,8 +21,10 @@
         <span class="field-validation-valid text-danger" data-valmsg-for="Name" data-valmsg-replace="true"></span>
     </div>
     <div class="form-group">
-        <label for="Birthdate">Birthdate</label>
-        <input class="form-control" id="Birthdate" name="Birthdate" type="date" value="{{ old('Birthdate') }}">
+        <label for="BirthDate">Birthdate</label>
+        <input class="form-control" id="BirthDate" name="BirthDate" type="date" value="{{ old('Birthdate') }}">
+        <span class="field-validation-valid text-danger" data-valmsg-for="BirthDate" data-valmsg-replace="true"></span>
+
     </div>
     <div class="form-group">
         <label for="CardId">Card Id</label>

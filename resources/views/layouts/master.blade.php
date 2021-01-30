@@ -22,10 +22,14 @@
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="{{ route('books.index') }}">Books</a></li>
-                        <li><a href="{{ route('customer.index') }}">Customers</a></li>
-                        <li><a href="{{ route('rentals.index') }}">Rentals</a></li>
-                        <li><a href="{{ route('inventory.index') }}">Inventory</a></li>
+                        @if(Auth::user() && Auth::user()->IsAdmin)
+                            <li><a href="{{ route('books.index') }}">Books</a></li>
+                            <li><a href="{{ route('customer.index') }}">Customers</a></li>
+                            <li><a href="{{ route('rentals.index') }}">Rentals</a></li>
+                            <li><a href="{{ route('inventory.index') }}">Inventory</a></li>
+                        @else
+
+                        @endif
                     </ul>
                     @include('layouts._login')
                 </div>

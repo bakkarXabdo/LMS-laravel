@@ -26,4 +26,9 @@ class Inventory extends Model
     {
         return route('inventory.show', $this->getKey());
     }
+
+    function getNotationAttribute()
+    {
+        return "$this->Shelf/$this->Column/$this->Row";
+    }
 }

@@ -20,8 +20,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name',
-        'email',
+        'username',
         'password',
     ];
 
@@ -47,4 +46,8 @@ class User extends Authenticatable
     protected $table = "users";
     protected $primaryKey = "id";
 
+    public function getIsAdminAttribute()
+    {
+        return boolval($this->attributes["IsAdmin"]);
+    }
 }

@@ -14,6 +14,12 @@ use stdClass;
 
 class RentalsController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('admin');
+
+    }
     /**
      * Display a listing of the resource.
      *
@@ -119,7 +125,12 @@ class RentalsController extends Controller
             abort(404, "Rental $rentalId not found");
         }
         if(Db::transaction(function() use ($rental) {
-            return $rental->delete();
+            $rentalData = $rental->att
+            $res = $rental->delete();
+            RentalHistory::create([
+                "CustomerCardId" =>
+            ])
+            return $res;
         })){
             return redirect(route('rentals.index'));
         }else{
@@ -145,7 +156,7 @@ class RentalsController extends Controller
             'customers.Name',
             'customers.CardId',
             'bookcopies.BookId as `bookcopy.Id`',
-            Db::raw('IF(Expires < NOW(), -1 * timestampdiff(DAY ,rentals.CreatedAt,now()), timestampdiff(DAY ,rentals.CreatedAt,now())) as `RemainingDays`')
+            Db::raw('timestampdiff(DAY , CURRENT_TIMESTAMP, Expires) as `RemainingDays`')
         ]);
         foreach ($request->order as $order)
         {

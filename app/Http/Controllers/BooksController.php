@@ -18,12 +18,18 @@ use Symfony\Component\VarDumper\Cloner\Data;
 
 class BooksController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('admin');
+
+    }
 
     public function index()
     {
         return view('books.index', [
             "choosing" => false,
-            "customerId" => \request('customerId') ?: 'false'
+            "customerId" => \request('customerId') ?: false
         ]);
     }
     public function create()
@@ -86,9 +92,8 @@ class BooksController extends Controller
     public function destroy($bookId)
     {
         $book = Book::find($bookId);
-
         if (isset($book->Id)) {
-            if ($book->rentals()->count() > 0) {
+            if ($book->rentals->count() > 0) {
                 return Response::json((object) [
                     "success" => false,
                     "message" => "Book has active Rentals, <a href='"
@@ -96,10 +101,9 @@ class BooksController extends Controller
                         . "'>View</a>"
                 ], 200);
             } else {
-                $res = DB::transaction(function () use ($book) {
+                if (DB::transaction(function () use ($book) {
                     return $book->delete();
-                });
-                if (!isset($choosing) || !$choosing) {
+                })) {
                     return Response::json((object) ["success" => true, "message" => "Book #$bookId Was Removed"], 200);
                 } else {
                     return Response::json((object) ["success" => false, "message" => "Unknown Error occurred"], 200);
@@ -134,7 +138,7 @@ class BooksController extends Controller
                 $data->where('Title', 'LIKE', "%{$request->search->value}%");
             }
         }
-        if(isset($request->customerId))
+        if(isset($request->choosing))
         {
             // you probably want to sort by Availability first
             $data->orderByDesc('NumberAvailable');

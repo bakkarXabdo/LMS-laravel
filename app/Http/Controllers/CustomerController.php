@@ -6,13 +6,24 @@ use App\Models\Book;
 use App\Models\BookCopy;
 use App\Models\Customer;
 use App\Models\Rental;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Str;
 use stdClass;
 
 class CustomerController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('admin');
+
+    }
 
     public function index()
     {
@@ -26,9 +37,46 @@ class CustomerController extends Controller
 
     public function store()
     {
-        return true;
+        $validated = \request()->validate([
+            'CardId' => 'required|unique:customers',
+            'Name' => 'required',
+            'BirthDate' => 'required'
+        ]);
+        $pwd = strtolower(Str::random(4));
+        $customer = Db::transaction(function() use ($pwd, $validated) {
+            $user = User::create([
+                "username" => $validated["CardId"],
+                "password" => Hash::make($pwd)
+            ]);
+            $validated["UserId"] = $user->getKey();
+            return Customer::create($validated);
+        });
+        if($customer && $customer->getKey())
+        {
+            Cache::put("customer-password", $pwd);
+            return redirect(route('customer.show', $customer->getKey()));
+        }else{
+            abort(500, "Internal Server Error");
+        }
     }
 
+    public function changePassword($customerId)
+    {
+        $customer = Customer::find($customerId);
+        if(!$customer)
+        {
+            abort(404, 'customer not found');
+        }
+        $pwd = strtolower(Str::random(4));
+        if($customer->user->update(["password" => Hash::make($pwd)]))
+        {
+            Cache::put("customer-password", $pwd);
+            return redirect(route('customer.show', $customer->getKey()));
+        }else{
+            abort(500, "Internal Server Error");
+        }
+
+    }
     public function show($Id)
     {
         $customer = Customer::where('Id', $Id)->withCount(["rentals as RentalCount"])->first();
@@ -47,18 +95,60 @@ class CustomerController extends Controller
     }
     public function edit($customerId)
     {
-        return view('customer.edit');
+        $customer = Customer::find($customerId);
+        if(!$customer || !$customer->getKey())
+        {
+            abort(404, "Customer #$customerId not found");
+        }
+        return view('customer.edit')->with($customer->attributesToArray());
     }
 
     public function update()
     {
-        return true;
+        $customer = Customer::find(\request('Id'));
+        if(!$customer || !$customer->getKey())
+        {
+            abort(404, "Customer not found");
+        }
+        $validated = \request()->validate([
+            'CardId' => 'required',
+            'Name' => 'required',
+            'BirthDate' => 'required'
+        ]);
+        if($customer->update($validated))
+        {
+            return redirect(route('customer.show', $customer->getKey()));
+        }else{
+            abort(500, "internal server Error");
+        }
     }
 
     public function destroy($customerId)
     {
-        return true;
+        $customer = Customer::find($customerId);
+        if (isset($customer) && $customer->getKey()) {
+            $rentalsCount = $customer->rentals->count();
+            if($rentalsCount > 0) {
+                return Response::json((object) [
+                    "success" => false,
+                    "message" => "Customer has $rentalsCount active Rentals, <a style='color:blue;text-decoration:underline' href='"
+                        . route('rentals.forcustomer', $customerId)
+                        . "'>View</a>"
+                ], 200);
+            } else {
+                if (DB::transaction(function () use ($customer) {
+                    return $customer->delete();
+                })) {
+                    return Response::json((object) ["success" => true, "message" => "Customer #$customerId Was Removed"], 200);
+                } else {
+                    return Response::json((object) ["success" => false, "message" => "Unknown Error occurred"], 200);
+                }
+            }
+        } else {
+            return Response::json((object) ["success" => false, "message" => "Customer #$customerId Was Not Found"], 200);
+        }
     }
+
     public function table()
     {
         // the request

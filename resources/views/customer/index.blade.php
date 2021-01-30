@@ -82,10 +82,10 @@
                             actions += `<a href="${url}" class="mx-1 btn btn-success"><i class="fa fa-check"></i> Choose</a>`;
                         @else
                             url = '{{ route('customer.edit', ':id') }}'.replace(':id', customerId);
-                            actions += `<a href="${url}" class="mx-1 btn btn-primary"><i class="fa fa-edit"></i>Edit</a>`;
-                            actions += `<a href="#" data-customer-id='${customerId}' class='js-customer-delete mx-1 btn btn-danger'><i class="fa fa-trash"></i>Delete</a>`;
+                        actions += `<a href="${url}" class="mx-1 btn btn-primary"><i class="fa fa-edit"></i>Edit</a>`;
+                        actions += `<a href="#" data-customer-id='${customerId}' class='js-customer-delete mx-1 btn btn-danger'><i class="fa fa-trash"></i>Delete</a>`;
                         @endif
-                        return `<span style="display:flex">${actions}</span>`;
+                            return `<span style="display:flex">${actions}</span>`;
                     }
                 }
             ],

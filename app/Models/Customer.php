@@ -17,8 +17,17 @@ class Customer extends Model
 
     protected $table = "customers";
     protected $primaryKey = "Id";
+    protected $guarded = ['Id'];
+
+    const UPDATED_AT = null;
+    const CREATED_AT = "CreatedAt";
 
     function rentals(){
         return $this->hasMany(Rental::class, 'CustomerId', 'Id');
+    }
+
+    function user()
+    {
+        return $this->belongsTo(User::class, "UserId", "Id");
     }
 }

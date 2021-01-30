@@ -31,6 +31,14 @@
                         @endif
                     </td>
                 </tr>
+            @if(\Illuminate\Support\Facades\Cache::has("customer-password"))
+                <tr style="background: rgb(212 189 107)">
+                    <th>Password</th>
+                    <td>
+                        {{ \Illuminate\Support\Facades\Cache::pull("customer-password") }}
+                    </td>
+                </tr>
+            @endif
             </tbody>
         </table>
         <h4>Actions</h4>
@@ -38,10 +46,56 @@
         <div class="row" style="margin-left:0">
             <a class="btn btn-primary" href="{{ route('customer.edit', $Id) }}">Edit</a>
             <a class="btn btn-primary" href="{{ route('rentals.create', ["customerId" => $Id]) }}">Rent</a>
-            <form style="display: inline-block;" action="{{ route('customer.destroy', $Id) }}">
-                @csrf
-                <button type="submit" class="btn btn-danger">Delete</button>
-            </form>
+            @if(!\Illuminate\Support\Facades\Cache::has("customer-password"))
+                <form style="display: inline-block;" method="post" action="{{ route('customer.changePassword', $Id) }}">
+                    @csrf
+                    <button type="submit" class="btn btn-primary">Change Password</button>
+                </form>
+            @endif
+            <a id="delete-customer" href="#" class="btn btn-danger">Delete</a>
         </div>
     </div>
 @endsection
+
+
+@push('scripts')
+    <script>
+        $("#delete-customer").on("click",  function () {
+            var button = $(this);
+            bootbox.dialog({
+                title: "Confirm Your Action",
+                message: `<span>Delete Customer <strong>{{ $Name }}</strong> ?</span>`,
+                backdrop:true,
+                buttons: {
+                    confirm: {
+                        label: 'Delete',
+                        className: 'btn-danger',
+                        callback: function () {
+                            $.ajax({
+                                url: '{{ route('customer.destroy', $Id) }}',
+                                data:{
+                                    _method: "DELETE"
+                                },
+                                method: "POST",
+                                dataType:"json",
+                                success: function (data) {
+                                    if (data.success) {
+                                        toastr.success(data.message);
+                                        location.href = document.referrer;
+                                    } else {
+                                        toastr.error(data.message);
+                                    }
+                                }
+                            })
+                        }
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-secondary',
+                    }
+                }
+            });
+            return false;
+        });
+    </script>
+@endpush

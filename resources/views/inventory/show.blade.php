@@ -26,7 +26,7 @@
                 @if ($Copies == 0)
                     0 Copies
                 @else
-                    <a href="{{ route('bookcopies.forinventory', $Id) }}">{{ $Copies }} {{ $Copies > 1 ? "Copies" : "Copy"}}</a>
+                    <a href="{{ route('bookcopies.index', ["inventoryId" => $Id]) }}">{{ $Copies }} {{ $Copies > 1 ? "Copies" : "Copy"}}</a>
                 @endif
             </td>
         </tr>
@@ -46,7 +46,7 @@
             bootbox.dialog({
                 title: "Error",
                 message:
-                    `<span>This Inventory Has <a href="{{ route('bookcopies.forinventory', $Id) }}">{{ $Copies }} {{ $Copies > 1 ? "Copies" : "Copy" }} </a>, Yout must empty it first</span>`,
+                    `<span>This Inventory Has <a href="{{ route('bookcopies.index', ["inventoryId" => $Id]) }}">{{ $Copies }} {{ $Copies > 1 ? "Copies" : "Copy" }} </a>, Yout must empty it first</span>`,
                 backdrop:true,
                 buttons: {
                     cancel: {

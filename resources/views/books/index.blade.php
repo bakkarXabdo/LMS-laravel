@@ -36,9 +36,9 @@
                 url: "{{ route('books.table') }}",
                 method: "POST",
                 dataSrc: "data",
-                @if($customerId)
+                @if($choosing)
                 data:function(d){
-                    d.customerId = '{{ $customerId }}';
+                    d.choosing = true;
                 }
                 @endif
             },
@@ -67,7 +67,7 @@
                     searchable: false,
                     render: function (_, _, book) {
                         if (book.NumberInStock > 0) {
-                            let url = '{{ route('bookcopies.forbook', ':Id') }}'.replace(':Id', book.Id);
+                            let url = '{{ route('bookcopies.index', ["bookId" => ':id']) }}'.replace(encodeURIComponent(':id'), book.Id);
                             return `<a title="view Copies" href="${url}">${book.NumberInStock} ${book.NumberInStock > 1 ? " Copies" : " Copy"}</a>`;
                         }else return `<span class="text-danger">No Stock!</span>`;
                     }
@@ -91,10 +91,10 @@
                     data: "NumberAvailable",
                     orderSequence: [ "desc", "asc" ],
                     searchable: false,
-                    orderable:{{ $customerId ? 'false' : 'true' }},
+                    orderable:{{ $choosing ? 'false' : 'true' }},
                     render: function (_, _, book) {
                         if (book.NumberAvailable > 0) {
-                            let url = '{{ route('bookcopies.forbook', ':Id') }}'.replace(':Id', book.Id);
+                            let url = '{{ route('bookcopies.index', ["bookId" => ':id']) }}'.replace(encodeURIComponent(':id'), book.Id);
                             return `<a title="View Rented Books" href="${url}">${book.NumberAvailable} <span class="v-only">${book.NumberAvailable > 1 ? " Copies" : " Copy"}</span></a>`;
                         } else if (book.NumberInStock > 0)
                             return `<span class="text-danger v-only">Out of Stock!</span><span class="p-only">0</span>`;

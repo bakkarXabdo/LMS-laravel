@@ -1,16 +1,29 @@
 @extends('layouts.master')
-
-@section('PageTitle') Copies of {{ $book->Title }} @endsection
+@php
+    $forbook = isset($book) && $book->getKey();
+    $url = $forbook ? route('bookcopies.table', ["bookId" => $book->getKey()]) : route('bookcopies.table', ["inventoryId" => $inventory->getKey()]);
+@endphp
+@section('PageTitle')
+    @if($forbook)
+        Copies of {{ $book->Title }}
+    @else
+        Copies In {{ $inventory->Notation }}
+    @endif
+@endsection
 
 @section('content')
-    <h3>Available Copies of book <a href="{{ route('books.show', $book->getKey()) }}">{{ $book->Title }}</a></h3>
-    <div class="container">
-        <div class="row mb-2">
-            <div class="col-sm-2 pl-0">
-                <a href="{{ route('bookcopies.create', $book->getKey()) }}" class="btn btn-primary">Add Copy</a>
+    @if($forbook)
+        <h3>Stored Copies of book <a href="{{ route('books.show', $book->getKey()) }}">{{ $book->Title }}</a></h3>
+        <div class="container">
+            <div class="row mb-2">
+                <div class="col-sm-2 pl-0">
+                    <a href="{{ route('bookcopies.create', $book->getKey()) }}" class="btn btn-primary">Add Copy</a>
+                </div>
             </div>
         </div>
-    </div>
+    @else
+        <h3>Copies in Inventory <a href="{{ route('inventory.show', $inventory->getKey()) }}">{{ $inventory->Notation }}</a></h3>
+    @endif
     <style>
         #js-copies-table tfoot tr {
             width: 100%;
@@ -33,11 +46,16 @@
                 processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><div class="text-black-50">Loading...</div> '
             },
             ajax: {
-                url: "{{ route('bookcopies.forbooktable', $book->Id) }}",
+                url: "{{ $url }}",
                 method: "POST",
                 dataSrc: "data",
                 "data": function (d) {
+                    @if($book && $book->getKey())
                     d.bookId = '{{ $book->Id }}';
+                    @endif
+                    @if($inventory && $inventory->getKey())
+                    d.inventoryId = '{{ $inventory->getKey() }}';
+                    @endif
                 }
             },
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
@@ -71,7 +89,7 @@
                     searchable: false,
                     render: function (rented, _, copy) {
                         if (rented) {
-                            let url = '{{ route('rentals.forcopy', ':id') }}'.replace(':id', copy.Id);
+                            let url = '{{ route('rentals.show', ':id') }}'.replace(':id', copy.RentalId);
                             return `<a title="View rental: ${"Customer#" + copy.Customer.CardId + "(" + copy.Customer.Name + ")"}" href="${url}">Rented</a>`;
                         }
                         return "No";
@@ -101,7 +119,7 @@
                             remove = `<a href="#" data-copy-id='${copyId}' class='js-delete mx-1 btn btn-danger'><i class="fa fa-trash"></i>Delete</a>`;
                             if(!copy.Rented)
                             {
-                                url = '{{ route('rentals.create',["customer" => $customerId, "copy" => ":id"]) }}'.replace(encodeURIComponent(':id'), copy.Id);
+                                url = '{{ route('rentals.create',["customer" => $customerId, "copyId" => ":id"]) }}'.replace(encodeURIComponent(':id'), copy.Id);
                                 rent = `<a href="${url}" class='mx-1 btn btn-primary'>Rent</a>`;
                             }
                         @endif

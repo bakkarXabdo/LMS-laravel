@@ -76,7 +76,7 @@
                         data: "Copies",
                         searchable: false,
                         render: function (Stored, _, inventory) {
-                            url = '{{ route('bookcopies.forinventory', ':id') }}'.replace(':id', inventory.Id);
+                            url = '{{ route('bookcopies.index', ["inventoryId" => ':id']) }}'.replace(encodeURIComponent(':id'), inventory.Id);
                             if (Stored == 1) {
                                 return `<a title="View" href="${url}">1 <span class="v-only">Copy</span></a>`;
                             } else if (Stored <= 0) {

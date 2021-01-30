@@ -38,7 +38,7 @@
                 @if ($NumberInStock == 0)
                     <span class="text-danger">No Copies!</span>
                 @else
-                    <a href="{{ route('bookcopies.forbook', $Id) }}">
+                    <a href="{{ route('bookcopies.index', ["bookId" => $Id]) }}">
                         {{ $NumberInStock }} {{ $NumberInStock > 1 ? "Copies" : "Copy" }}
                     </a>
                 @endif
@@ -70,8 +70,18 @@
     <h4>Actions</h4>
     <hr />
     <div class="row" style="margin-left:0">
+        @php
+            $url = route('bookcopies.choose', ['bookId' => $Id]);
+        @endphp
         @if ($NumberAvailable > 0)
-            <a href="{{ route('bookcopies.choose', ['bookId' => $Id]) }}" class="btn btn-primary">Rent</a>
+            @if($NumberAvailable == 1)
+                @php
+                    $copies = App\Models\BookCopy::query()->select(['bookcopies.Id'])->join('rentals', 'rentals.BookCopyId', 'bookcopies.Id')->where('bookcopies.BookId', $book->getKey())->get();
+                    $copy = App\Models\BookCopy::query()->whereNotIn('bookcopies.Id', $copies)->where('bookcopies.BookId', $book->getKey())->first();
+                    $url = route('rentals.create', ['copyId' => $copy->getKey()]);
+                @endphp
+            @endif
+            <a href="{{ $url }}" class="btn btn-primary">Rent</a>
         @endif
         <a href="{{ route('bookcopies.create', $Id) }}" class="btn btn-{{ $NumberAvailable > 0 ? "primary" : "success" }}">Add Copy</a>
         <a href="{{ route('books.edit', $Id) }}" class="btn btn-primary">Edit</a>
@@ -90,7 +100,7 @@
                 title: "Confirm Your Action",
                 message: `
                         @if($NumberInStock > 1)
-                            <span>This Book Has <a href="{{ route('bookcopies.forbook', $Id) }}">{{ $NumberInStock }} Copies</a>, Are you sure You want To Delete Them All?</span>
+                            <span>This Book Has <a href="{{ route('bookcopies.index', ["bookId" => $Id]) }}">{{ $NumberInStock }} Copies</a>, Are you sure You want To Delete Them All?</span>
                         @else
                             <span>Delete <strong>{{ $Title }}</strong> ?</span>
                         @endif`,
