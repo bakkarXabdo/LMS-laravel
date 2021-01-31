@@ -1,5 +1,5 @@
 @extends('layouts.master')
-
+@section('PageTitle') Home @endsection
 @section('content')
     <div class="jumbotron">
         <h1>Library Managment System</h1>

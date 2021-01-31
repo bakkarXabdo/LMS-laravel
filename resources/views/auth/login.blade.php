@@ -2,19 +2,20 @@
 
 @section('content')
 <h1 class="text-center">{{ config('app.name', 'Laravel') }}</h1>
-@if ($errors->any())
-    <div class="alert alert-danger">
-        Please Fix These Errors-
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+
 <div style="height: 500px; padding: 100px 0px 0px 300px;" class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    Please Fix These Errors-
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
             <div style="border: 1px solid gainsboro; border-radius: 4px;" class="card">
                 <div style="padding: 15px; border-bottom: 1px solid gainsboro; background-color: whitesmoke" class="card-header">{{ __('Login') }}</div>
 

@@ -6,6 +6,8 @@ use App\Models\Book;
 use App\Models\BookCopy;
 use App\Models\Customer;
 use App\Models\Rental;
+use App\Models\RentalHistory;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -124,15 +126,25 @@ class RentalsController extends Controller
         {
             abort(404, "Rental $rentalId not found");
         }
-        if(Db::transaction(function() use ($rental) {
-            $rentalData = $rental->att
-            $res = $rental->delete();
-            RentalHistory::create([
-                "CustomerCardId" =>
-            ])
-            return $res;
-        })){
-            return redirect(route('rentals.index'));
+        $rentalHistory = Db::transaction(function() use ($rental) {
+            $r = RentalHistory::create([
+                "CustomerCardId" => $rental->customer->CardId,
+                "CustomerName" => $rental->customer->Name,
+                "BookId" => $rental->book->getKey(),
+                "BookTitle" => $rental->book->Title,
+                "RentalCreatedAt" => $rental->CreatedAt,
+                "RentalExpiresAt" => $rental->Expires,
+                "RentalReturnedAt" => Carbon::now()
+            ]);
+            if($rental->delete()){
+                return $r;
+            }else{
+                throw new Exception("can't delete rental");
+            }
+
+        });
+        if($rentalHistory && $rentalHistory->getKey()){
+            return redirect(route('rentalhistory.show', $rentalHistory->getKey()));
         }else{
             abort(500, "Internal Server Error");
         }

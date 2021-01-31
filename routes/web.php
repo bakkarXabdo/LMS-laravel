@@ -6,6 +6,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PagesController;
+use App\Http\Controllers\RentalHistoryController;
 use App\Http\Controllers\RentalsController;
 use App\Models\BookCopy;
 use App\Models\Rental;
@@ -68,6 +69,7 @@ Route::post('/customer/password/{Customer}', [CustomerController::class, 'change
 Route::post('/customer/table', [CustomerController::class, 'table'])->name('customer.table');
 Route::get('/customer/choose', [CustomerController::class, 'choose'])->name('customer.choose');
 Route::resource('/customer', CustomerController::class);
+Route::resource('/history', RentalHistoryController::class);
 
 Route::get('/test', function(){return view('tests.test');});
 Route::get('/', [PagesController::class, 'index'])->name('guests-landing');
