@@ -37,8 +37,11 @@
         </div>
 
 
-        <div style="min-height: 100vh"class="container body-content" id="wrapper">
-            @yield('content')
+        <div style="min-height: 100vh"class="container body-content" id="wrapper" >
+            <div style="min-height: 90vh;">
+                @yield('content')
+            </div>
+
             <hr />
             <footer class="text-center">
                 <div class="row">

@@ -146,6 +146,18 @@
                 col.search($(this).val()).draw();
             }
         } );
+        // $("<tr role='row'></tr>").insertBefore(jst.find('thead tr'));
+        // jst.find('thead tr th').each(function (index) {
+        //     jst.find('thead tr:nth-child(1)').append(`<th></th>`);
+        // });
+        // jst.find('thead tr:nth-child(1) th').each(function (index) {
+        //     if(index == 0 || index == 2)
+        //     {
+        //         $(this).html(`<input data-col-indx=${index} type="text" style="width: 100%" class="form-control d-flex px-1 mt-2" placeholder="Search " />`);
+        //     }else{
+        //         $(this).html(`<input data-col-indx=${index} hidden />`);
+        //     }
+        // });
     });
 </script>
 @endpush

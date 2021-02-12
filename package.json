@@ -23,9 +23,12 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
+        "@chartisan/chartjs": "^2.1.0",
+        "@chartisan/node": "^1.3.0",
         "bootbox": "^5.5.2",
         "bootstrap": "^3.4.1",
         "bootswatch": "^3.4.1",
+        "chart.js": "^2.9.4",
         "datatables": "^1.10.18",
         "datatables.net": "^1.10.23",
         "font-awesome": "^4.7.0",

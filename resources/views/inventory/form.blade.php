@@ -16,6 +16,9 @@
         </div>
     @endif
     <form action="{{ $target }}" method="post" novalidate="novalidate">
+        @if(isset($Id))
+            @method('PUT')
+        @endif
         @csrf
         <div class="form-group">
             <label for="Shelf">Shelf</label>

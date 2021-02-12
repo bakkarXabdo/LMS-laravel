@@ -41,9 +41,9 @@ class InventoryController extends Controller
             'Size' => 'required|integer'
         ]);
         $dup = Inventory::where('Shelf', $request['Shelf'])->where('Column', $request['Column'])->where('Row', $request['Row'])->first();
-        if($dup)
+        if($dup && $dup->getKey())
         {
-            return "Inventory <a href='" . $dup->path . "'>$dup->Shelf/$dup->Column/$dup->Row</a> Already Exists";
+            return "Error: Inventory <a href='$dup->path'>$dup->notation</a> Already Exists!";
         }
         $i = Inventory::create($validated);
         $i->save();
@@ -83,7 +83,7 @@ class InventoryController extends Controller
         $dup = Inventory::where('Shelf', $request['Shelf'])->where('Column', $request['Column'])->where('Row', $request['Row'])->first();
         if($dup && $dup->getKey() != $inventory->getKey())
         {
-            return "Inventory <a href='" . $dup->path . "'>$dup->Shelf/$dup->Column/$dup->Row</a> Already Exists";
+            return "Error: Inventory <a href='$dup->path'>$dup->notation</a> Already Exists!";
         }
         $inventory->update($validated);
         return redirect($inventory->path);

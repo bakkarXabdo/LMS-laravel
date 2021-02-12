@@ -28,7 +28,7 @@ class HomeController extends Controller
         $book = Book::find(97740);
         $copies = BookCopy::query()->select(['bookcopies.Id'])->join('rentals', 'rentals.BookCopyId', 'bookcopies.Id')->where('bookcopies.BookId', $book->getKey())->get();
         BookCopy::query()->whereNotIn('bookcopies.Id', $copies)->where('bookcopies.BookId', $book->getKey())->first();
-        return view('welcome',[
+        return view('pages.dashboard',[
                 'bookCount' => Book::count(),
                 'BookCopiesCount' => BookCopy::count(),
                 'CustomersCount' => Customer::count(),

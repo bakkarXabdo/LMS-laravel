@@ -13,7 +13,6 @@ class Rental extends Model
 {
     use HasFactory;
 
-
     /**-- DB RELATIONS --*/
 
     protected $table = "rentals";

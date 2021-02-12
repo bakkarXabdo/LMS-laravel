@@ -1,11 +1,11 @@
 @extends('layouts.master')
-@section('PageTitle') Home @endsection
+@section('PageTitle') DashBoard @endsection
 @section('content')
     <div class="jumbotron">
         <h1>Library Managment System</h1>
         <p class="lead">Manage your library more easily with LMS, now it's time to ditch the old excel!</p>
     </div>
-
+    <div id="chart" style="height: 300px;"></div>
     <div class="row">
         <h4>Latest Statistics</h4>
         <table class="table table-striped table-bordered">
@@ -36,3 +36,18 @@
         </table>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        const chart = new Chartisan({
+            el: '#chart',
+            url: "@chart('charts')",
+            hooks: new ChartisanHooks().colors()
+                .responsive()
+                .colors()
+                .beginAtZero()
+                .borderColors()
+                .datasets([{type:'line', fill:false}])
+        });
+    </script>
+@endpush

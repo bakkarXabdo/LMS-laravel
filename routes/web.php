@@ -60,6 +60,8 @@ Route::get('/rentals/forbook/{Book}', [RentalsController::class, 'forBook'])->na
 Route::get('/rentals/forcustomer/{Customer}', [RentalsController::class, 'forCustomer'])->name('rentals.forcustomer');
 Route::get('/rentals/forcopy/{BookCopy}', [RentalsController::class, 'forCopy'])->name('rentals.forcopy');
 Route::post('/rentals/return/{Rental}', [RentalsController::class, 'returnRental'])->name('rentals.return');
+Route::post('/rentals/ajaxreturn/{Rental}', [RentalsController::class, 'ajaxReturnRental'])->name('rentals.ajaxreturn');
+
 Route::resource('rentals', RentalsController::class);
 
 Route::post('/inventory/table', [InventoryController::class, 'table'])->name('inventory.table');
@@ -71,14 +73,8 @@ Route::get('/customer/choose', [CustomerController::class, 'choose'])->name('cus
 Route::resource('/customer', CustomerController::class);
 Route::resource('/history', RentalHistoryController::class);
 
-Route::get('/test', function(){return view('tests.test');});
-Route::get('/', [PagesController::class, 'index'])->name('guests-landing');
+Route::get('/test', [PagesController::class, 'test'])->name('pages.test');
+Route::get('/about', [PagesController::class, 'about'])->name('pages.about');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
-Route::get('/about', [PagesController::class, 'about']);
-Route::get('/search', [PagesController::class, 'search']);
-Route::get('/filter_category/{id}', [PagesController::class, 'filterCategory']);
-Route::get('/filter/{id}', [PagesController::class, 'filter']);
-Route::get('/about', [App\Http\Controllers\PagesController::class, 'about'])->name('pages.about');
-Route::get('/search', [App\Http\Controllers\PagesController::class, 'search']);
-Route::get('/filter_category/{id}', [App\Http\Controllers\PagesController::class, 'filterCategory']);
-Route::get('/filter/{id}', [App\Http\Controllers\PagesController::class, 'filter']);
+Route::get('/about', [PagesController::class, 'about'])->name('pages.about');
+Route::get('/', [PagesController::class, 'index'])->name('pages.index');

@@ -110,7 +110,7 @@
                                 url = '{{ route('rentals.create',["customerId" => $customerId, "copyId" => ":id"]) }}'.replace(encodeURIComponent(':id'), copy.Id);
                                 choose = `<a href="${url}" class='mx-1 btn btn-success'><i class="fa fa-check"></i> Choose</a>`;
                             } else {
-                                url = '{{ route('rentals.forcopy', ':id') }}'.replace(':id', copy.Id);
+                                url = '{{ route('rentals.show', ':id') }}'.replace(':id', copy.RentalId);
                                 choose = `<a href="${url}" class='mx-1 btn btn-primary'>Rental Details</a>`;
                             }
                         @else

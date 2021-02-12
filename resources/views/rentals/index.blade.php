@@ -94,6 +94,12 @@
                         name: "CreatedAt",
                         data: "CreatedAt",
                         orderable:true,
+                        render:function(time)
+                        {
+                            time = time.replace('T', ' ');
+                            time = time.substring(0, time.indexOf('.'));
+                            return time;
+                        }
                     },
                     {
                         title: "Expires",
@@ -130,7 +136,7 @@
                             className: 'btn-warning',
                             callback: function () {
                                 $.ajax({
-                                    url: "{{ route('rentals.return', ':id') }}".replace(':id', button.data("rental-id")),
+                                    url: "{{ route('rentals.ajaxreturn', ':id') }}".replace(':id', button.data("rental-id")),
                                     method: "POST",
                                     success: function (data) {
                                         if (data.success) {

@@ -10,4 +10,9 @@ class RentalHistory extends Model
     use HasFactory;
 
     protected $table = "rentalhistories";
+
+    protected $guarded = [];
+
+    const CREATED_AT = null;
+    const UPDATED_AT = null;
 }

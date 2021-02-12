@@ -2,27 +2,85 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\CollectionHelper;
 use App\Models\Book;
 use App\Models\BookLanguage;
 use App\Models\Category;
-use Illuminate\Http\Request;
+use Chartisan\PHP\Chartisan;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Response;
+
 
 class PagesController extends Controller
 {
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
     public function index()
     {
+        if(Auth::user() && Auth::user()->IsAdmin)
+        {
+            return (new HomeController)->index();
+        }
+//        DB::transaction(function(){
+//           $books = Book::all();
+//           $books = $books->shuffle();
+//           foreach ($books as $book)
+//           {
+//               $r = rand(0, 100);
+//               if($r < 2)
+//               {
+//                   $book->Popularity = rand(40, 80);
+//               }else if($r < 5){
+//                   $book->Popularity = rand(20, 40);
+//               }else if($r < 10){
+//                   $book->Popularity = rand(10, 20);
+//               }else if($r < 20){
+//                   $book->Popularity = rand(5, 10);
+//               }else if($r < 40){
+//                   $book->Popularity = rand(3, 5);
+//               }else if($r < 60){
+//                   $book->Popularity = rand(1, 3);
+//               }
+//               $book->save();
+//           }
+//        });
+//        exit;
         $categories = Category::all();
-        $langs = BookLanguage::all();
+        $languages = BookLanguage::all();
         $data = array(
+            'results' => $results = Book::query(),
             'categories' => $categories,
-            'langs' => $langs,
+            'languages' => $languages
         );
+        $searchTerm = request('term');
+        if(\request('category'))
+        {
+            $data["filterCategory"] = $categories->where('Id', \request('category'))->first();
+            $data['results']->where('books.CategoryId', \request('category'));
+        }
+        if(\request('language'))
+        {
+            $data["filterLanguage"] = $languages->where('Id', \request('language'))->first();
+            $data['results']->where('books.LanguageId', \request('language'));
+        }
+
+        if($searchTerm)
+        {
+            $clone = Book::query();
+            // don't look at this
+            \Closure::bind(function ($q){$this->query->wheres = $q->wheres;$this->query->bindings = $q->bindings;}, $clone, get_class($clone))(\Closure::bind(function(){return $this->query;}, $data['results'], get_class($data['results']))());
+            $clone->where(function ($query) use ($searchTerm) {
+                $query->where('Title', 'LIKE', "%$searchTerm%")
+                    ->orWhere('Authors', 'LIKE', "%$searchTerm%");
+            });
+            $data['results']->where(function ($query) use ($searchTerm) {
+                $query->whereRaw("LOWER((REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(Title, '[,\-.()|:]', ''), 'ه', 'ة'), 'é', 'e'), 'ç', 'c'), 'ï', 'i'), '  ', ' '))) " .
+                    "like CONCAT('%', LOWER((REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE('$searchTerm', '[,\-.()|:]', ''), 'ه', 'ة'), 'é', 'e'), 'ç', 'c'), 'ï', 'i'), '  ', ' '))), '%')")
+                    ->orWhere('Authors', 'LIKE', "%$searchTerm%");
+            });
+            $data['results']->union($clone);
+        }
+        $data['results']->orderBy('Popularity');
+        $data['results'] = $data['results']->paginate(50);
         return view('pages.index')->with($data);
     }
     public function about()
@@ -30,46 +88,8 @@ class PagesController extends Controller
         return view('pages.about');
     }
 
-    public function search()
+    public function test()
     {
-        $categories = Category::all();
-        $langs = BookLanguage::all();
-        $searchQuery = request()['search_query'];
-        $search_book = Book::where('Title', 'LIKE', "%$searchQuery%")
-            ->orWhere('Authors', 'LIKE', "%$searchQuery%")->paginate(50);
-        return view('pages.search', [
-            'search_book' => $search_book,
-            'categories' => $categories,
-            'langs' => $langs
-        ]);
-    }
-
-    public function filter($id)
-    {
-        
-        $categories = Category::all();
-        $langs = BookLanguage::all();
-        $lang_id = BookLanguage::find($id);
-        $filter_book = Book::where('LanguageId', '=', $lang_id->Id)->paginate(50);
-        $data = array(
-            'filter_book' => $filter_book,
-            'categories' => $categories,
-            'langs' => $langs
-        );
-        return view('pages.filter')->with($data);
-    }
-
-    public function filterCategory($id)
-    {
-        $langs = BookLanguage::all();
-        $categories = Category::all();
-        $category_id = Category::find($id);
-        $filter_book_cat = Book::where('CategoryId', '=', $category_id->Id)->paginate(50);
-        $data = array(
-            'filter_book_cat' => $filter_book_cat,
-            'categories' => $categories,
-            'langs' => $langs
-        );
-        return view('pages.filter_category')->with($data);
+        return view('tests.test');
     }
 }

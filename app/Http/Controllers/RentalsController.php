@@ -141,7 +141,6 @@ class RentalsController extends Controller
             }else{
                 throw new Exception("can't delete rental");
             }
-
         });
         if($rentalHistory && $rentalHistory->getKey()){
             return redirect(route('rentalhistory.show', $rentalHistory->getKey()));
@@ -149,7 +148,35 @@ class RentalsController extends Controller
             abort(500, "Internal Server Error");
         }
     }
-
+    public function ajaxReturnRental($rentalId)
+    {
+        $rental = Rental::find($rentalId);
+        if(!$rental || !$rental->getKey())
+        {
+            abort(404, "Rental $rentalId not found");
+        }
+        $rentalHistory = Db::transaction(function() use ($rental) {
+            $r = RentalHistory::create([
+                "CustomerCardId" => $rental->customer->CardId,
+                "CustomerName" => $rental->customer->Name,
+                "BookId" => $rental->book->getKey(),
+                "BookTitle" => $rental->book->Title,
+                "RentalCreatedAt" => $rental->CreatedAt,
+                "RentalExpiresAt" => $rental->Expires,
+                "RentalReturnedAt" => Carbon::now()
+            ]);
+            if($rental->delete()){
+                return $r;
+            }else{
+                throw new Exception("can't delete rental");
+            }
+        });
+        if($rentalHistory && $rentalHistory->getKey()){
+            return Response::json((object) ["success" => true, "message" => "Rental Was Removed"], 200);
+        }else{
+            return Response::json((object) ["success" => false, "message" => "Internal Server Error"], 200);
+        }
+    }
     public function table()
     {
         $request = json_decode(json_encode(request()->all()));
