@@ -3,19 +3,13 @@
 use App\Http\Controllers\BookCopiesController;
 use App\Http\Controllers\BooksController;
 use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\RentalHistoryController;
 use App\Http\Controllers\RentalsController;
-use App\Models\BookCopy;
-use App\Models\Rental;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,6 +69,6 @@ Route::resource('/history', RentalHistoryController::class);
 
 Route::get('/test', [PagesController::class, 'test'])->name('pages.test');
 Route::get('/about', [PagesController::class, 'about'])->name('pages.about');
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/home', [DashboardController::class, 'index'])->name('home');
 Route::get('/about', [PagesController::class, 'about'])->name('pages.about');
 Route::get('/', [PagesController::class, 'index'])->name('pages.index');

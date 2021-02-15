@@ -12,16 +12,8 @@
             </td>
         </tr>
         <tr>
-            <th>Shelf</th>
-            <td>{{ $copy->inventory->Shelf }}</td>
-        </tr>
-        <tr>
-            <th>Column</th>
-            <td>{{ $copy->inventory->Column }}</td>
-        </tr>
-        <tr>
-            <th>Row</th>
-            <td>{{ $copy->inventory->Row }}</td>
+            <th>Inventory</th>
+            <td><a href="{{ route('inventory.show', $copy->inventory->getKey()) }}">{{ $copy->inventory->notation }}</a></td>
         </tr>
         <tr>
             <th>Rented</th>
@@ -37,9 +29,17 @@
     <h4>Actions</h4>
     <hr>
     <div class="row" style="margin-left:0">
-    <a class="btn btn-primary" href="{{ route('bookcopies.edit', $Id) }}">Edit</a>
-    <a class="btn btn-primary" href="{{ route('rentals.create', ["copyId" => $Id]) }}">Rent</a>
-    <a class="btn btn-danger" if="copy-delete" href="#">Delete</a></div>
+        <a class="btn btn-primary" href="{{ route('bookcopies.edit', $Id) }}">Edit</a>
+        @if(!$copy->rental)
+            <a class="btn btn-primary" href="{{ route('rentals.create', ["copyId" => $Id]) }}">Rent</a>
+            <a class="btn btn-danger" id="copy-delete" href="#">Delete</a>
+        @else
+            <form style="display: inline-block" action="{{ route('rentals.return', $copy->rental->getKey()) }}" method="post">
+                @csrf
+                <button style="display: inline-block" class="btn btn-warning" type="submit">Put Back</button>
+            </form>
+        @endif
+    </div>
 @endsection
 
 @push('scripts')

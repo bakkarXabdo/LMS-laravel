@@ -83,7 +83,7 @@
             @endif
             <a href="{{ $url }}" class="btn btn-primary">Rent</a>
         @endif
-        <a href="{{ route('bookcopies.create', $Id) }}" class="btn btn-{{ $NumberAvailable > 0 ? "primary" : "success" }}">Add Copy</a>
+        <a href="{{ route('bookcopies.create', ["bookId" => $Id]) }}" class="btn btn-{{ $NumberAvailable > 0 ? "primary" : "success" }}">Add Copy</a>
         <a href="{{ route('books.edit', $Id) }}" class="btn btn-primary">Edit</a>
         <a href="#" id="delete-book" class="btn btn-danger">Delete</a>
     </div>

@@ -84,14 +84,20 @@
                     </tr>
                     </thead>
                     <tbody>
-                    @forelse ($results as $book)
-                        <tr>
-                            <td>{{$book->Id}}</td>
-                            <td>{{$book->Title}}</td>
-                            <td>{{$book->Authors}}</td>
-                            <td>{{ $book->category->Name}}</td>
-                            <td>{{ $book->language->Name}}</td>
-                        </tr>
+                    @forelse ($results as $key => $book)
+                        @if($splits->contains($key + $results->firstItem() - 1))
+                            <tr>
+                                <td colspan="99" style="background-color: rgb(238 238 238);"></td>
+                            </tr>
+                        @else
+                            <tr>
+                                <td>{{$book->Id}}</td>
+                                <td>{{$book->Title}}</td>
+                                <td>{{$book->Authors}}</td>
+                                <td>{{ $book->category->Name}}</td>
+                                <td>{{ $book->language->Name}}</td>
+                            </tr>
+                        @endif
                     @empty
                         <tr>
                             <td class="text-center" colspan="5">No Results</td>
@@ -101,7 +107,7 @@
                 </table>
                 <div>
                     <div style="padding: 10px;"  class="text-center">
-                        {{$results->links()}}
+                        {{$results->withQueryString()->links()}}
                     </div>
                 </div>
             </div>

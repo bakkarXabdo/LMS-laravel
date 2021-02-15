@@ -6,10 +6,10 @@ use App\Models\Book;
 use App\Models\BookCopy;
 use App\Models\Customer;
 use App\Models\Rental;
-use Illuminate\Http\Request;
+use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Support\Facades\DB;
 
-class HomeController extends Controller
+class DashboardController extends Controller
 {
 
     public function __construct()
@@ -21,13 +21,10 @@ class HomeController extends Controller
     /**
      * Show the application dashboard.
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return Renderable
      */
-    public function index()
+    public function index(): Renderable
     {
-        $book = Book::find(97740);
-        $copies = BookCopy::query()->select(['bookcopies.Id'])->join('rentals', 'rentals.BookCopyId', 'bookcopies.Id')->where('bookcopies.BookId', $book->getKey())->get();
-        BookCopy::query()->whereNotIn('bookcopies.Id', $copies)->where('bookcopies.BookId', $book->getKey())->first();
         return view('pages.dashboard',[
                 'bookCount' => Book::count(),
                 'BookCopiesCount' => BookCopy::count(),

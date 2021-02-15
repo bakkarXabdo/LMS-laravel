@@ -131,13 +131,12 @@ class BooksController extends Controller
         });
         if (!ctype_space($request->search->value) && !empty($request->search->value))
         {
-//            if(str_starts_with(strtolower($request->search->value), 'id:'))
-//            {
-//                $data->where((new Book)->getKeyName(), '=', substr($request->search->value, 3));
-//            }else {
-//                $data->where('Title', 'LIKE', "%{$request->search->value}%");
-//            }
-            $data->where((new Book)->getKeyName(), '=', $request->search->value);
+            if(str_starts_with(strtolower($request->search->value), 'title:'))
+            {
+                $data->where("Title", 'Like', "%".substr($request->search->value, 6)."%");
+            }else {
+                $data->where((new Book)->getKeyName(), '=', $request->search->value);
+            }
         }
         if(isset($request->choosing))
         {

@@ -29,5 +29,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Charts\ChartsController::class
         ]);
         AbstractPaginator::useBootstrapThree();
+
+        //check if timezone is correct, it should be set on php.ini
+        if(strtolower(date_default_timezone_get()) !== "africa/algiers")
+        {
+            date_default_timezone_set("Africa/Algiers");
+        }
     }
 }

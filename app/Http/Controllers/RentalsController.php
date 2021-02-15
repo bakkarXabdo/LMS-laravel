@@ -143,7 +143,7 @@ class RentalsController extends Controller
             }
         });
         if($rentalHistory && $rentalHistory->getKey()){
-            return redirect(route('rentalhistory.show', $rentalHistory->getKey()));
+            return redirect(route('history.show', $rentalHistory->getKey()));
         }else{
             abort(500, "Internal Server Error");
         }

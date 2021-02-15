@@ -41,6 +41,10 @@
             <span class="field-validation-valid text-danger" data-valmsg-for="Size" data-valmsg-replace="true"></span>
         </div>
         <input data-val="true" data-val-number="The field Id must be a number." data-val-required="The Id field is required." id="Id" name="Id" type="hidden" value="{{ isset($Id) ? $Id : '' }}">
-        <button type="submit" class="btn btn-primary">Add</button>
+        @if(isset($Id))
+            <button type="submit" class="btn btn-primary">Save</button>
+        @else
+                <button type="submit" class="btn btn-primary">Add</button>
+        @endif
     </form>
 @endsection

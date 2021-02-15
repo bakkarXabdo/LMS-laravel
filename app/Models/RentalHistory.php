@@ -12,6 +12,7 @@ class RentalHistory extends Model
     protected $table = "rentalhistories";
 
     protected $guarded = [];
+    protected $primaryKey = "Id";
 
     const CREATED_AT = null;
     const UPDATED_AT = null;

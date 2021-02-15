@@ -50,25 +50,87 @@ class BookCopiesController extends Controller
         ])->with($copy->attributesToArray());
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $book = Book::find($request['bookId']);
+        if(!$book)
+        {
+            abort(404, "Book #" . $request['bookId'] . " Was not Found");
+        }
+        return view('bookcopies.create', [
+            "book" => $book
+        ]);
     }
 
     public function store(Request $request)
     {
-        //
+        $book = Book::find($request['BookId']);
+        if(!$book)
+        {
+            abort(404, "Book #" . $request['bookId'] . " Was not Found");
+        }
+        $validated = $request->validate([
+            "Shelf" => "required",
+            "Column" => "required",
+            "Row" => "required",
+            "BookId" => "required"
+        ]);
+        $inventory = Inventory::where('Shelf', $validated['Shelf'])
+            ->where('Column', $validated['Column'])
+            ->where('Row', $validated['Row'])
+            ->first();
+        if(!$inventory)
+        {
+            abort(404, "Inventory $validated[Shelf]/$validated[Column]/$validated[Row] Not Found");
+        }
+        $copy = BookCopy::create([
+            "BookId" => $validated["BookId"],
+            "InventoryId" => $inventory->getKey()
+        ]);
+        if(!$copy)
+        {
+            abort(501, "Internal Server Error");
+        }
+        return redirect(route('bookcopies.show', $copy->getKey()));
     }
 
-    public function edit(BookCopy $bookCopy)
+    public function edit(BookCopy $bookcopy)
     {
-        //
+        if(!$bookcopy)
+        {
+            return abort(404, "Copy Not Found");
+        }
+        return view('bookcopies.edit', [
+            "copy" => $bookcopy
+        ]);
     }
 
 
-    public function update(Request $request, BookCopy $bookCopy)
+    public function update(Request $request, BookCopy $bookcopy)
     {
-        //
+        $copy = $bookcopy;
+        if(!$copy)
+        {
+            abort(404, "Copy Not Found");
+        }
+        $validated = $request->validate([
+            "Shelf" => "required",
+            "Column" => "required",
+            "Row" => "required",
+        ]);
+        $inventory = Inventory::where('Shelf', $validated['Shelf'])
+            ->where('Column', $validated['Column'])
+            ->where('Row', $validated['Row'])
+            ->first();
+        if(!$inventory)
+        {
+            abort(404, "Inventory $validated[Shelf]/$validated[Column]/$validated[Row] Not Found");
+        }
+        if(!$copy->update(["InventoryId" => $inventory->getKey()]))
+        {
+            abort(501, "Internal Server Error");
+        }
+        return redirect(route('bookcopies.show', $copy->getKey()));
     }
 
 
@@ -80,6 +142,10 @@ class BookCopiesController extends Controller
             abort(404, "copy not found");
         }
         $book = $copy->book;
+        if($copy->rental)
+        {
+            return "Error: Copy is <a href='".route('rentals.show', $copy->rental->getKey())."'>Rented</a>";
+        }
         if(Db::transaction(function() use ($copy) {
             $copy->delete();
         }))
@@ -88,6 +154,27 @@ class BookCopiesController extends Controller
         }else{
             abort(500, "Internal Server Error");
         }
+    }
+
+    public function ajaxDestroy($copyId)
+    {
+        $copy = BookCopy::find($copyId);
+        if(!$copy || !$copy->getKey())
+        {
+            abort(404, "copy not found");
+        }
+        if($copy->rental)
+        {
+            return Response::json((object) ["success" => false, "message" => "Copy Is Rented"], 200);
+        }
+        if(Db::transaction(function() use ($copy) {
+            $copy->delete();
+        }))
+        {
+            return Response::json((object) ["success" => true, "message" => "BookCopy Was Removed"], 200);
+        }
+
+        return Response::json((object) ["success" => false, "message" => "Unknown Error"], 200);
     }
 
     public function choose()
@@ -104,10 +191,6 @@ class BookCopiesController extends Controller
            "book" => $book,
            "customerId" => \request('customerId') ?: 'false'
         ]);
-    }
-    public function forInventory(Inventory $inventory)
-    {
-        //
     }
     public function table()
     {
@@ -151,6 +234,7 @@ class BookCopiesController extends Controller
                 $copy->Customer->Id = $customer->Id;
                 $copy->Customer->Name = $customer->Name;
             }
+            $copy->Title = $copy->book->Title;
             $inventory = $copy->inventory;
             $copy->Shelf = $inventory->Shelf;
             $copy->Row = $inventory->Row;

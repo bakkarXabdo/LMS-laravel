@@ -18,8 +18,9 @@ class BookCopy extends Model
 
     protected $table = "bookcopies";
     protected $primaryKey = "Id";
-    const CREATED_AT = "DateAdded";
-    const UPDATED_AT = "DateUpdated";
+    const CREATED_AT = null;
+    const UPDATED_AT = null;
+    protected $guarded = [];
 
     function book(){
         return $this->belongsTo(Book::class, 'BookId', 'Id', 'books');

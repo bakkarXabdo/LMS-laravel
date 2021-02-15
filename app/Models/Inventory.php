@@ -17,6 +17,9 @@ class Inventory extends Model
 
     protected $table = "inventory";
     protected $primaryKey = "Id";
+    protected $guarded = [];
+    const UPDATED_AT = null;
+    const CREATED_AT = null;
 
     function copies(){
         return $this->hasMany(BookCopy::class, 'InventoryId', 'Id');

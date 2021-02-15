@@ -60,6 +60,18 @@
             },
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
             columns: [
+                @if(isset($inventory))
+                {
+                    title: "Book Copy",
+                    name: "Title",
+                    searchable: false,
+                    orderable: false,
+                    render:function(_,_,copy){
+                        let url = '{{ route('bookcopies.show', ":id") }}'.replace(':id', copy.Id);
+                        return `<a title="View Copy" href='${url}'>${copy.Title}</a>`
+                    }
+                },
+                @else
                 {
 
                     title: "Location - Shelf",
@@ -82,6 +94,7 @@
                     searchable:false,
                     orderable: false
                 },
+                @endif
                 {
                     title: "Rented",
                     name: "Rented",
@@ -116,9 +129,9 @@
                         @else
                             url = '{{ route('bookcopies.edit', ':id') }}'.replace(':id', copy.Id);
                             edit = `<a href="${url}" class="mx-1 btn btn-primary"><i class="fa fa-edit"></i>Edit</a>`;
-                            remove = `<a href="#" data-copy-id='${copyId}' class='js-delete mx-1 btn btn-danger'><i class="fa fa-trash"></i>Delete</a>`;
                             if(!copy.Rented)
                             {
+                                remove = `<a href="#" data-copy-id='${copyId}' class='js-delete mx-1 btn btn-danger'><i class="fa fa-trash"></i>Delete</a>`;
                                 url = '{{ route('rentals.create',["customer" => $customerId, "copyId" => ":id"]) }}'.replace(encodeURIComponent(':id'), copy.Id);
                                 rent = `<a href="${url}" class='mx-1 btn btn-primary'>Rent</a>`;
                             }
@@ -127,7 +140,7 @@
                     }
                 }
             ],
-            order:[[3, "asc"]]
+            order:[[{{ isset($inventory) ? "1" : "3" }}, "asc"]]
         });
         $("#js-copies-table").on("click", ".js-delete", function () {
             var button = $(this);
