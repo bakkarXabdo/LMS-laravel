@@ -9,11 +9,11 @@ class RentalHistory extends Model
 {
     use HasFactory;
 
-    protected $table = "rentalhistories";
+    protected $table = "rentals_history";
 
     protected $guarded = [];
     protected $primaryKey = "Id";
 
-    const CREATED_AT = null;
+    const CREATED_AT = 'RentalReturnedAt';
     const UPDATED_AT = null;
 }

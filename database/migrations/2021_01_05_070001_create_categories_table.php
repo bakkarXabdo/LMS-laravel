@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Category;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,9 +14,9 @@ class CreateCategoriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('categories', function (Blueprint $table) {
-            $table->id();
-            $table->string('Code', 3);
+        $cat = new Category();
+        Schema::create($cat->getTable(), function (Blueprint $table) use ($cat) {
+            $table->id($cat->getKeyName());
             $table->string('Name');
         });
     }
@@ -27,6 +28,6 @@ class CreateCategoriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('book_classes');
+        Schema::dropIfExists((new Category)->getTable());
     }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\BookCopy;
-use App\Models\Customer;
+use App\Models\Student;
 use App\Models\Rental;
 use App\Models\User;
 use Carbon\Carbon;
@@ -49,7 +49,7 @@ class CustomerController extends Controller
                 "password" => Hash::make($pwd)
             ]);
             $validated["UserId"] = $user->getKey();
-            return Customer::create($validated);
+            return Student::create($validated);
         });
         if($customer && $customer->getKey())
         {
@@ -62,7 +62,7 @@ class CustomerController extends Controller
 
     public function changePassword($customerId)
     {
-        $customer = Customer::find($customerId);
+        $customer = Student::find($customerId);
         if(!$customer)
         {
             abort(404, 'customer not found');
@@ -79,7 +79,7 @@ class CustomerController extends Controller
     }
     public function show($Id)
     {
-        $customer = Customer::where('Id', $Id)->withCount(["rentals as RentalCount"])->first();
+        $customer = Student::where('Id', $Id)->withCount(["rentals as RentalCount"])->first();
         if(!$customer)
         {
             abort(404, 'customer not found');
@@ -95,7 +95,7 @@ class CustomerController extends Controller
     }
     public function edit($customerId)
     {
-        $customer = Customer::find($customerId);
+        $customer = Student::find($customerId);
         if(!$customer || !$customer->getKey())
         {
             abort(404, "Customer #$customerId not found");
@@ -105,7 +105,7 @@ class CustomerController extends Controller
 
     public function update()
     {
-        $customer = Customer::find(\request('Id'));
+        $customer = Student::find(\request('Id'));
         if(!$customer || !$customer->getKey())
         {
             abort(404, "Customer not found");
@@ -125,7 +125,7 @@ class CustomerController extends Controller
 
     public function destroy($customerId)
     {
-        $customer = Customer::find($customerId);
+        $customer = Student::find($customerId);
         if (isset($customer) && $customer->getKey()) {
             $rentalsCount = $customer->rentals->count();
             if($rentalsCount > 0) {
@@ -160,7 +160,7 @@ class CustomerController extends Controller
         });
 
         // database
-        $data = Customer::query();
+        $data = Student::query();
         $data->withCount(['rentals as RentalsCount']);
 
         // ordering

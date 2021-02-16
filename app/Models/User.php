@@ -44,10 +44,10 @@ class User extends Authenticatable
     // ];
 
     protected $table = "users";
-    protected $primaryKey = "id";
+    protected $primaryKey = "Id";
 
     public function getIsAdminAttribute()
     {
-        return boolval($this->attributes["IsAdmin"]);
+        return (bool)$this->attributes["IsAdmin"];
     }
 }

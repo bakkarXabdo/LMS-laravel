@@ -6,7 +6,7 @@ use App\Models\Book;
 use App\Models\BookCopy;
 use App\Models\BookLanguage;
 use App\Models\Category;
-use App\Models\Customer;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;

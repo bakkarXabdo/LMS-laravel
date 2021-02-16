@@ -14,10 +14,15 @@ class Book extends Model
 {
     use HasFactory;
     protected $table ="books";
-    protected $primaryKey = "Id";
+    protected $primaryKey = "InventoryNumber";
+    public const FOREIGN_KEY = "BookId";
+    protected $keyType = "string";
+
     protected $guarded = [];
-    const CREATED_AT = "DateAdded";
-    const UPDATED_AT = "DateUpdated";
+
+    public const CREATED_AT = "DateAdded";
+    public const UPDATED_AT = null;
+
     /**-- Attributes --*/
 
     function getPathAttribute(){

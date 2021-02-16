@@ -21,16 +21,13 @@ class BookCopy extends Model
     const CREATED_AT = null;
     const UPDATED_AT = null;
     protected $guarded = [];
+    protected $keyType = "string";
 
     function book(){
-        return $this->belongsTo(Book::class, 'BookId', 'Id', 'books');
+        return $this->belongsTo(Book::class, 'BookId', (new Book)->getKeyName(), 'books');
     }
 
     function rental(){
-        return $this->hasOne(Rental::class, 'BookCopyId', 'Id');
-    }
-
-    function inventory(){
-        return $this->belongsTo(Inventory::class, 'InventoryId', 'Id', 'inventory');
+        return $this->hasOne(Rental::class, 'BookCopyId', $this->getKeyName());
     }
 }

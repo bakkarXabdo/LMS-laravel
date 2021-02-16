@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Book;
+use App\Models\BookCopy;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,15 +15,19 @@ class CreateBookCopiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('bookcopies', function (Blueprint $table) {
-            $table->id('Id');
-            $table->foreignId('BookId');
-            $table->foreignId('InventoryId');
-            $table->boolean('Rented');
-            $table->timestamps();
+        $copy = new BookCopy;
+        $book = new Book;
+        Schema::create($copy->getTable(), function (Blueprint $table) use ($book, $copy) {
+            $table->string($copy->getKeyName())->primary();
+            $table->string($book::FOREIGN_KEY)->nullable(false);
 
-            $table->foreign('BookId')->references('Id')->on('books');
-            $table->foreign('InventoryId')->references('Id')->on('inventory');
+            $table->foreign($book::FOREIGN_KEY)->references($book->getKeyName())->on($book->getTable())->cascadeOnUpdate()->cascadeOnDelete();
+            if($copy::CREATED_AT) {
+                $table->timestamp($copy::CREATED_AT);
+            }
+            if($copy::UPDATED_AT) {
+                $table->timestamp($copy::UPDATED_AT);
+            }
         });
     }
 
@@ -32,6 +38,6 @@ class CreateBookCopiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('book_copies');
+        Schema::dropIfExists((new BookCopy)->getTable());
     }
 }

@@ -1,5 +1,9 @@
 <?php
 
+use App\Models\Book;
+use App\Models\BookCopy;
+use App\Models\Rental;
+use App\Models\Student;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,19 +17,27 @@ class CreateRentalsTable extends Migration
      */
     public function up()
     {
-        Schema::create('rentals', function (Blueprint $table) {
-            $table->id('Id');
-            $table->foreignId('CustomerId');
-            $table->foreignId('BookId');
-            $table->foreignId('BookCopyId');
+        $student = new Student;
+        $book = new Book;
+        $copy = new BookCopy;
+        $rental = new Rental;
+        Schema::create($rental->getTable(), function (Blueprint $table) use ($student, $book, $copy, $rental) {
+            $table->id($rental->getKeyName());
+            $table->foreignId('StudentId');
+            $table->string('BookId');
+            $table->string('BookCopyId');
             $table->timestamp('ExpiresAt', 6);
             $table->timestamp('ReturnedAt', 6);
-            $table->timestamps();
 
-            $table->foreign('CustomerId')->references('Id')->on('customers');
-            $table->foreign('BookId')->references('Id')->on('books');
-            $table->foreign('BookCopyId')->references('Id')->on('bookcopies');
-
+            $table->foreign('StudentId')->references($student->getKeyName())->on($student->getTable())->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreign('BookId')->references($book->getKeyName())->on($book->getTable())->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreign('BookCopyId')->references($copy->getKeyName())->on($copy->getTable())->cascadeOnUpdate()->restrictOnDelete();
+            if(Rental::CREATED_AT) {
+                $table->timestamp(Rental::CREATED_AT);
+            }
+            if(Rental::UPDATED_AT) {
+                $table->timestamp(Rental::UPDATED_AT);
+            }
         });
     }
 
@@ -36,6 +48,6 @@ class CreateRentalsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('rentals');
+        Schema::dropIfExists((new Rental)->getTable());
     }
 }

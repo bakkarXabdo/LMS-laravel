@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @mixin Builder
  */
-class Customer extends Model
+class Student extends Model
 {
     use HasFactory;
 
@@ -23,7 +23,7 @@ class Customer extends Model
     const CREATED_AT = "CreatedAt";
 
     function rentals(){
-        return $this->hasMany(Rental::class, 'CustomerId', 'Id');
+        return $this->hasMany(Rental::class, 'StudentId', 'Id');
     }
 
     function user()

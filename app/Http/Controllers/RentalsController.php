@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\BookCopy;
-use App\Models\Customer;
+use App\Models\Student;
 use App\Models\Rental;
 use App\Models\RentalHistory;
 use Exception;
@@ -48,7 +48,7 @@ class RentalsController extends Controller
     }
     public function forCustomer($customerId)
     {
-        $customer = Customer::find($customerId);
+        $customer = Student::find($customerId);
         if(!$customer || !$customer->getKey())
         {
             abort(404, 'customer not found');
@@ -67,7 +67,7 @@ class RentalsController extends Controller
     {
         return view('rentals.create',[
             "copy" => BookCopy::find(\request('copyId')),
-            "customer" => Customer::find(\request('customerId'))
+            "customer" => Student::find(\request('customerId'))
         ]);
     }
 
@@ -78,7 +78,7 @@ class RentalsController extends Controller
             'copyId' => 'required',
             'duration' => 'required|integer'
         ]);
-        $customer = Customer::find(request('customerId'));
+        $customer = Student::find(request('customerId'));
         $copy = BookCopy::find(\request('copyId'));
         if(!$customer)
         {
@@ -187,7 +187,7 @@ class RentalsController extends Controller
         });
         $data = Rental::query();
         $data->join((new BookCopy)->getTable(), (new BookCopy)->getTable().'.'.(new BookCopy)->getKeyName(), '=', (new Rental)->getTable().'.BookCopyId')
-            ->join((new Customer)->getTable(), (new Rental)->getTable().'.CustomerId', '=', (new Customer)->getTable().'.'.(new Customer)->getKeyName())
+            ->join((new Student)->getTable(), (new Rental)->getTable().'.CustomerId', '=', (new Student)->getTable().'.'.(new Student)->getKeyName())
             ->join((new Book)->getTable(), (new Rental)->getTable().'.BookId', '=', (new Book)->getTable().'.'.(new Book)->getKeyName());
         $data->select([
             'rentals.*',
@@ -218,7 +218,7 @@ class RentalsController extends Controller
         }
         if(isset($request->customerId))
         {
-            if(!Customer::find($request->customerId))
+            if(!Student::find($request->customerId))
             {
                 return abort(404, 'customer not found');
             }

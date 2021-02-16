@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Charts\ChartsController;
+use App\Models\BookCopy;
+use App\Observers\BookCopyObserver;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\ServiceProvider;
 use ConsoleTVs\Charts\Registrar as Charts;
@@ -26,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(Charts $charts)
     {
         $charts->register([
-            \App\Charts\ChartsController::class
+            ChartsController::class
         ]);
         AbstractPaginator::useBootstrapThree();
 
@@ -35,5 +38,6 @@ class AppServiceProvider extends ServiceProvider
         {
             date_default_timezone_set("Africa/Algiers");
         }
+        BookCopy::observe(BookCopyObserver::class);
     }
 }

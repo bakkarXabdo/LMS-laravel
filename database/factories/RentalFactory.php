@@ -3,7 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\BookCopy;
-use App\Models\Customer;
+use App\Models\Student;
 use App\Models\Rental;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -30,7 +30,7 @@ class RentalFactory extends Factory
             $c->Rented = 1;
             return $c;
         });
-        $cu = Customer::query()->inRandomOrder()->first();
+        $cu = Student::query()->inRandomOrder()->first();
         return [
             "BookCopyId" => $c->getKey(),
             "BookId" => $c->book->getKey(),

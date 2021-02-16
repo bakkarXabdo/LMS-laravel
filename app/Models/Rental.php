@@ -23,7 +23,7 @@ class Rental extends Model
     const UPDATED_AT = null;
 
     function customer(){
-        return $this->belongsTo(Customer::class, 'CustomerId', 'Id');
+        return $this->belongsTo(Student::class, 'CustomerId', 'Id');
     }
 
     function book(){
