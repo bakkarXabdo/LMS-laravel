@@ -14,13 +14,19 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create((new User)->getTable(), function (Blueprint $table) {
-            $table->id((new User)->getKeyName());
-            $table->boolean('IsAdmin');
+        Schema::create(User::TABLE, function (Blueprint $table) {
+            $table->id(User::KEY);
+            $table->boolean('IsAdmin')->default(0);
             $table->string('username');
-            $table->string('Password');
+            $table->string('password');
             $table->rememberToken();
-            $table->timestamps();
+
+            if(User::CREATED_AT) {
+                $table->timestamp(User::CREATED_AT)->default(DB::raw("CURRENT_TIMESTAMP()"));
+            }
+            if(User::UPDATED_AT) {
+                $table->timestamp(User::UPDATED_AT)->default(DB::raw("CURRENT_TIMESTAMP()"));
+            }
         });
     }
 
@@ -31,6 +37,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists((new User)->getTable());
+        Schema::dropIfExists(User::TABLE);
     }
 }

@@ -5,90 +5,89 @@
 @section('content')
 
     <br /><br />
-    <h4>Book Details</h4>
+    <h4>تفاصيل الكتاب</h4>
     <table class="table table-responsive table-bordered">
         <tr class="d-flex">
-            <th class="col-sm-2">Title</th>
+            <th class="col-sm-2">العُنوان</th>
             <td>{{ $Title }}</td>
         </tr>
         <tr>
-            <th>Authors</th>
+            <th>المؤلف</th>
             <td>{{ $book->Authors }}</td>
         </tr>
         <tr>
-            <th>Category</th>
+            <th>الصِنف</th>
             <td>{{ $book->category->Name }}</td>
         </tr>
         <tr>
-            <th>Language</th>
+            <th>اللغة</th>
             <td>{{ $book->language->Name }}</td>
         </tr>
         <tr>
-            <th>Release Year</th>
+            <th>تاريخ الإصدار</th>
             <td>{{ $ReleaseYear }}</td>
         </tr>
         <tr>
-            <th>Date Added</th>
+            <th>تاريخ الإضافة</th>
             <td>{{\Illuminate\Support\Carbon::parse($DateAdded)->format('d-m-Y H:i:s') }}</td>
         </tr>
 
         <tr>
-            <th>Library Stock</th>
+            <th>نُسخ الكتاب</th>
             <td>
-                @if ($NumberInStock == 0)
-                    <span class="text-danger">No Copies!</span>
+                @if ($NumberInStock === 0)
+                    <span class="text-danger">لا يوجد نُسخ</span>
                 @else
-                    <a href="{{ route('bookcopies.index', ["bookId" => $Id]) }}">
-                        {{ $NumberInStock }} {{ $NumberInStock > 1 ? "Copies" : "Copy" }}
+                    <a href="{{ route('bookcopies.index', ["bookId" => $book->getKey()]) }}">
+                        {{ $NumberInStock }}  نُسخة
                     </a>
                 @endif
             </td>
         </tr>
         <tr>
-            <th>Rented Copies</th>
+            <th>النُسخ المعارة</th>
             <td>
                 @if ($RentalsCount > 0)
-                    <a href="{{ route('rentals.forbook', $Id) }}">{{ $RentalsCount }} {{ $RentalsCount > 1 ? "Copies" : "Copy"}}</a>
+                    <a href="{{ route('rentals.forbook', $book->getKey()) }}">{{ $RentalsCount }}  نُسخة </a>
                 @else
-                    None
+                    لا يوجد
                 @endif
             </td>
         </tr>
         <tr>
-            <th>Available</th>
+            <th>النُسخ المُتوفِرة</th>
             <td>
                 @if ($NumberInStock == 0)
-                    <span class="text-danger">No Copies!</span>
+                    <span class="text-danger">كُل النُسخ مُعارة</span>
                 @elseif($NumberAvailable > 0)
                     {{ $NumberAvailable }}
                 @else
-                    <span class="text-danger">Out Of Stock!</span>
+                    <span class="text-danger">الكِتاب بِدون نُسخ</span>
                 @endif
             </td>
         </tr>
     </table>
-    <h4>Actions</h4>
+    <h4>الإجرائات</h4>
     <hr />
     <div class="row" style="margin-left:0">
         @php
-            $url = route('bookcopies.choose', ['bookId' => $Id]);
+            $url = route('bookcopies.choose', ['bookId' => $book->getKey()]);
         @endphp
         @if ($NumberAvailable > 0)
             @if($NumberAvailable == 1)
                 @php
-                    $copies = App\Models\BookCopy::query()->select(['bookcopies.Id'])->join('rentals', 'rentals.BookCopyId', 'bookcopies.Id')->where('bookcopies.BookId', $book->getKey())->get();
-                    $copy = App\Models\BookCopy::query()->whereNotIn('bookcopies.Id', $copies)->where('bookcopies.BookId', $book->getKey())->first();
+                    $copy = \App\Models\BookCopy::where(\App\Models\BookCopy::KEY, $book->getKeyName())->whereDoesntHave('rental')->first();
                     $url = route('rentals.create', ['copyId' => $copy->getKey()]);
                 @endphp
             @endif
-            <a href="{{ $url }}" class="btn btn-primary">Rent</a>
+            <a href="{{ $url }}" class="btn btn-primary">إعارة</a>
         @endif
-        <a href="{{ route('bookcopies.create', ["bookId" => $Id]) }}" class="btn btn-{{ $NumberAvailable > 0 ? "primary" : "success" }}">Add Copy</a>
-        <a href="{{ route('books.edit', $Id) }}" class="btn btn-primary">Edit</a>
-        <a href="#" id="delete-book" class="btn btn-danger">Delete</a>
+        <a href="{{ route('bookcopies.create', ["bookId" => $book->getKey()]) }}" class="btn btn-{{ $NumberAvailable > 0 ? "primary" : "success" }}">إضافة نُسخة</a>
+        <a href="{{ route('books.edit', $book->getKey()) }}" class="btn btn-primary">تعديل</a>
+        <a href="#" id="delete-book" class="btn btn-danger">حذف</a>
     </div>
     <br />
-    <a href="{{ route('books.index') }}">Back To List</a>
+    <a href="{{ route('books.index') }}">الرجوع إلى القائمة</a>
 
 @endsection
 
@@ -100,7 +99,7 @@
                 title: "Confirm Your Action",
                 message: `
                         @if($NumberInStock > 1)
-                            <span>This Book Has <a href="{{ route('bookcopies.index', ["bookId" => $Id]) }}">{{ $NumberInStock }} Copies</a>, Are you sure You want To Delete Them All?</span>
+                            <span>This Book Has <a href="{{ route('bookcopies.index', ["bookId" => $book->getKey()]) }}">{{ $NumberInStock }} Copies</a>, Are you sure You want To Delete Them All?</span>
                         @else
                             <span>Delete <strong>{{ $Title }}</strong> ?</span>
                         @endif`,
@@ -111,7 +110,7 @@
                         className: 'btn-danger',
                         callback: function () {
                             $.ajax({
-                                url: '{{ route('books.destroy', $Id) }}',
+                                url: '{{ route('books.destroy', $book->getKey()) }}',
                                 data:{
                                     _method: "DELETE"
                                 },

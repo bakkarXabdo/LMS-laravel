@@ -14,5 +14,6 @@ window.bootbox = require('bootbox');
 require('jquery-validation');
 require('./asp.validation.js');
 window.toastr = require('toastr');
-require('./charts.js')
+require('./charts.js');
 require('./chartisan');
+require('./prettyFile');

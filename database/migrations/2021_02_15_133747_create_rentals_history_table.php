@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\Book;
 use App\Models\RentalHistory;
+use App\Models\Student;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,20 +16,20 @@ class CreateRentalsHistoryTable extends Migration
      */
     public function up()
     {
-        Schema::create((new RentalHistory)->getTable(), function (Blueprint $table) {
-            $table->id((new RentalHistory)->getKeyName());
-            $table->string('StudentId');
-            $table->string('CustomerName');
-            $table->string('BookId');
+        Schema::create(RentalHistory::TABLE, function (Blueprint $table) {
+            $table->id(RentalHistory::KEY);
+            $table->string(Student::FOREIGN_KEY);
+            $table->string('StudentName');
+            $table->string(Book::FOREIGN_KEY);
             $table->string('BookTitle');
             $table->timestamp('RentalCreatedAt');
             $table->timestamp('RentalExpiresAt');
 
             if(RentalHistory::CREATED_AT) {
-                $table->timestamp(RentalHistory::CREATED_AT);
+                $table->timestamp(RentalHistory::CREATED_AT)->default(DB::raw("CURRENT_TIMESTAMP()"));
             }
             if(RentalHistory::UPDATED_AT) {
-                $table->timestamp(RentalHistory::UPDATED_AT);
+                $table->timestamp(RentalHistory::UPDATED_AT)->default(DB::raw("CURRENT_TIMESTAMP()"));
             }
         });
     }
@@ -39,6 +41,6 @@ class CreateRentalsHistoryTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists((new RentalHistory())->getTable());
+        Schema::dropIfExists(RentalHistory::TABLE);
     }
 }

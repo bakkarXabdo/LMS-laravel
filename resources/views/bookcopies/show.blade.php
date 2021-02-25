@@ -1,42 +1,42 @@
 @extends('layouts.master')
 
-@section('PageTitle') Copies of {{ $copy->book->Title }} @endsection
+@section('PageTitle') {{ $copy->book->Title }} @endsection
 
 @section('content')
-    <h2>Copy Details</h2>
+    <h2>معلومات النُسخة</h2>
     <table class="table table-responsive table-bordered">
         <tbody><tr class="d-flex">
-            <th class="col-sm-2">Book</th>
+            <th class="col-sm-2">الكِتاب</th>
             <td class="col-sm-10">
                 <a href="{{ route('books.show', $copy->book->getKey()) }}">{{ $copy->book->Title }}</a>
             </td>
         </tr>
         <tr>
-            <th>Inventory</th>
-            <td><a href="{{ route('inventory.show', $copy->inventory->getKey()) }}">{{ $copy->inventory->notation }}</a></td>
-        </tr>
-        <tr>
-            <th>Rented</th>
+            <th>مُعارة</th>
             <td>
                 @if($copy->rental)
-                    <a title="view rental" href="{{ route('rentals.show', $copy->rental->getKey()) }}">Rented</a> To Customer <a title="view customer" href="{{ route('customer.show', $copy->rental->customer->getKey()) }}">{{ $copy->rental->customer->CardId }} ({{ $copy->rental->customer->Name }})</a>
+                    <a title="تفاصيل الإعارة" href="{{ route('rentals.show', $copy->rental->getKey()) }}">مُعارة</a>
+                    إلى الطالب
+                    <a title="تفاصيل الطالب" href="{{ route('students.show', $copy->rental->student->getKey()) }}">
+                        {{ $copy->rental->student->getKey() }} ({{ $copy->rental->student->Name }})
+                    </a>
                 @else
-                    No
+                    لا
                 @endif
             </td>
         </tr>
         </tbody></table>
-    <h4>Actions</h4>
+    <h4>الإجرائات</h4>
     <hr>
     <div class="row" style="margin-left:0">
-        <a class="btn btn-primary" href="{{ route('bookcopies.edit', $Id) }}">Edit</a>
+        <a class="btn btn-primary" href="{{ route('bookcopies.edit', $Id) }}">تعديل</a>
         @if(!$copy->rental)
-            <a class="btn btn-primary" href="{{ route('rentals.create', ["copyId" => $Id]) }}">Rent</a>
-            <a class="btn btn-danger" id="copy-delete" href="#">Delete</a>
+            <a class="btn btn-primary" href="{{ route('rentals.create', ["copyId" => $Id]) }}">إعارة</a>
+            <a class="btn btn-danger" id="copy-delete" href="#">حذف</a>
         @else
             <form style="display: inline-block" action="{{ route('rentals.return', $copy->rental->getKey()) }}" method="post">
                 @csrf
-                <button style="display: inline-block" class="btn btn-warning" type="submit">Put Back</button>
+                <button style="display: inline-block" class="btn btn-warning" type="submit">إرجاع</button>
             </form>
         @endif
     </div>
@@ -47,15 +47,15 @@
         $("#copy-delete").on("click",  function () {
             bootbox.dialog({
                 title: "Confirm Your Action",
-                message: 'Delete Book Copy #{{ $Id }}?',
+                message: 'حذف النُسخة #{{ $copy->getKey() }}?',
                 backdrop:true,
                 buttons: {
                     confirm: {
-                        label: 'Delete',
+                        label: 'حذف',
                         className: 'btn-danger',
                         callback: function () {
                             $.ajax({
-                                url: '{{ route('bookcopies.destroy', $Id) }}',
+                                url: '{{ route('bookcopies.destroy', $copy->getKey()) }}',
                                 data:{
                                     _method: "DELETE"
                                 },
@@ -73,7 +73,7 @@
                         }
                     },
                     cancel: {
-                        label: 'Cancel',
+                        label: 'إلغاء',
                         className: 'btn-secondary'
                     }
                 }

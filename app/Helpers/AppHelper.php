@@ -21,4 +21,19 @@ class AppHelper
         }
         return $s;
     }
+
+    public static function ArabicFormat($text, $params): string
+    {
+        if(!is_array($params))
+        {
+            $params = [$params];
+        }
+        return vsprintf(str_replace('؟', '%s', $text), $params);
+    }
+
+    public static function dieWithMessage($message)
+    {
+        echo $message;
+        exit;
+    }
 }

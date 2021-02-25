@@ -176,7 +176,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
-
+        Maatwebsite\Excel\ExcelServiceProvider::class,
+        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
     ],
 
     /*
@@ -229,6 +230,12 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Debugbar' => 'Barryvdh\Debugbar\Facade',
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'Carbon' => \Carbon\Carbon::class,
+        'Book' => \App\Models\Book::class,
+        'BookCopy' => \App\Models\BookCopy::class,
+        'Rental' => \App\Models\Rental::class,
+        'Student' => \App\Models\Student::class
     ],
 
 ];

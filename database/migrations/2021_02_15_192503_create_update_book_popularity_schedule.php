@@ -11,15 +11,16 @@ class CreateUpdateBookPopularitySchedule extends Migration
      *
      * @return void
      */
+    public const NAME = "UPDATE_BOOK_POPULARITY";
     public function up()
     {
         DB::unprepared("
-CREATE EVENT UPDATE_BOOK_POPULARITY ON SCHEDULE
+CREATE EVENT ". self::NAME ." ON SCHEDULE
 EVERY 1 MONTH STARTS NOW()
 ENABLE
 DO BEGIN
-    SET @DIV = least(2, greatest(1.4, (select 1 + log(max(Popularity), avg(Popularity)) from `". (new Book)->getTable() ."`)));
-    UPDATE `". (new Book)->getTable() ."` SET Popularity = Popularity / @DIV;
+    SET @DIV = least(2, greatest(1.4, (select 1 + log(max(Popularity), avg(Popularity)) from `". Book::TABLE ."`)));
+    UPDATE `". Book::TABLE ."` SET Popularity = Popularity / @DIV;
 END;
 ");
     }
@@ -31,6 +32,6 @@ END;
      */
     public function down()
     {
-        DB::unprepared("drop event IF EXISTS UPDATE_BOOK_POPULARITY;");
+        DB::unprepared("drop event IF EXISTS ". self::NAME .";");
     }
 }

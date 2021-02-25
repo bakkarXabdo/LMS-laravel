@@ -1,29 +1,18 @@
 @extends('layouts.master')
-@php
-    $forbook = isset($book) && $book->getKey();
-    $url = $forbook ? route('bookcopies.table', ["bookId" => $book->getKey()]) : route('bookcopies.table', ["inventoryId" => $inventory->getKey()]);
-@endphp
+
 @section('PageTitle')
-    @if($forbook)
-        Copies of {{ $book->Title }}
-    @else
-        Copies In {{ $inventory->Notation }}
-    @endif
+    {{ " " . $book->Title . " "}}نسخ الكتاب
 @endsection
 
 @section('content')
-    @if($forbook)
-        <h3>Stored Copies of book <a href="{{ route('books.show', $book->getKey()) }}">{{ $book->Title }}</a></h3>
-        <div class="container">
-            <div class="row mb-2">
-                <div class="col-sm-2 pl-0">
-                    <a href="{{ route('bookcopies.create', $book->getKey()) }}" class="btn btn-primary">Add Copy</a>
-                </div>
+    <h3>Stored Copies of book <a href="{{ route('books.show', $book->getKey()) }}">{{ $book->Title }}</a></h3>
+    <div class="container">
+        <div class="row mb-2">
+            <div class="col-sm-2 pl-0">
+                <a href="{{ route('bookcopies.create', $book->getKey()) }}" class="btn btn-primary">إضافة نسخة</a>
             </div>
         </div>
-    @else
-        <h3>Copies in Inventory <a href="{{ route('inventory.show', $inventory->getKey()) }}">{{ $inventory->Notation }}</a></h3>
-    @endif
+    </div>
     <style>
         #js-copies-table tfoot tr {
             width: 100%;
@@ -46,71 +35,49 @@
                 processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><div class="text-black-50">Loading...</div> '
             },
             ajax: {
-                url: "{{ $url }}",
+                url: "{{ route('bookcopies.table', ["bookId" => $book->getKey()]) }}",
                 method: "POST",
                 dataSrc: "data",
                 "data": function (d) {
-                    @if($book && $book->getKey())
-                    d.bookId = '{{ $book->Id }}';
-                    @endif
-                    @if($inventory && $inventory->getKey())
-                    d.inventoryId = '{{ $inventory->getKey() }}';
-                    @endif
+                    d.bookId = '{{ $book->{\App\Models\Book::KEY} }}';
                 }
             },
             lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
             columns: [
-                @if(isset($inventory))
                 {
-                    title: "Book Copy",
-                    name: "Title",
+                    title: "الشفرة",
+                    name: "{{ \App\Models\BookCopy::KEY }}",
                     searchable: false,
                     orderable: false,
                     render:function(_,_,copy){
-                        let url = '{{ route('bookcopies.show', ":id") }}'.replace(':id', copy.Id);
-                        return `<a title="View Copy" href='${url}'>${copy.Title}</a>`
+                        let url = encodeURIComponent('{{ route('bookcopies.show', ":id") }}'.replace(':id', copy.{{ \App\Models\BookCopy::KEY }}));
+                        return `<a title="إظهار النسخة" href='${url}'>${copy.{{ \App\Models\BookCopy::KEY }}}</a>`
                     }
                 },
-                @else
                 {
 
-                    title: "Location - Shelf",
-                    name: "Shelf",
-                    data: "Shelf",
+                    title: "رقم الجرد",
+                    name: "InventoryId",
+                    data: "InventoryId",
                     searchable: false,
                     orderable: false
                 },
                 {
-                    title: "Location - Column",
-                    name: "Column",
-                    data: "Column",
-                    searchable: false,
-                    orderable: false
-                },
-                {
-                    title: "Location - Row",
-                    name: "Row",
-                    data: "Row",
-                    searchable:false,
-                    orderable: false
-                },
-                @endif
-                {
-                    title: "Rented",
+                    title: "معار",
                     name: "Rented",
                     data: "Rented",
                     searchable: false,
                     render: function (rented, _, copy) {
                         if (rented) {
                             let url = '{{ route('rentals.show', ':id') }}'.replace(':id', copy.RentalId);
-                            return `<a title="View rental: ${"Customer#" + copy.Customer.CardId + "(" + copy.Customer.Name + ")"}" href="${url}">Rented</a>`;
+                            return `<a title="View rental: ${"الطالب#" + copy.Student.{{ \App\Models\Student::KEY }} + "(" + copy.Student.Name + ")"}" href="${url}">نعم</a>`;
                         }
-                        return "No";
+                        return "لا";
                     }
                 },
                 {
-                    title: "Actions",
-                    data: "Id",
+                    title: "العمليات",
+                    data: "{{ \App\Models\BookCopy::KEY }}",
                     orderable: false,
                     searchable: false,
                     width:1,
@@ -121,19 +88,19 @@
                             if (!copy.Rented)
                             {
                                 url = '{{ route('rentals.create',["customerId" => $customerId, "copyId" => ":id"]) }}'.replace(encodeURIComponent(':id'), copy.Id);
-                                choose = `<a href="${url}" class='mx-1 btn btn-success'><i class="fa fa-check"></i> Choose</a>`;
+                                choose = `<a href="${url}" class='mx-1 btn btn-success'><i class="fa fa-check"></i> إختيار</a>`;
                             } else {
                                 url = '{{ route('rentals.show', ':id') }}'.replace(':id', copy.RentalId);
-                                choose = `<a href="${url}" class='mx-1 btn btn-primary'>Rental Details</a>`;
+                                choose = `<a href="${url}" class='mx-1 btn btn-primary'>تفاصيل الإعارة</a>`;
                             }
                         @else
                             url = '{{ route('bookcopies.edit', ':id') }}'.replace(':id', copy.Id);
-                            edit = `<a href="${url}" class="mx-1 btn btn-primary"><i class="fa fa-edit"></i>Edit</a>`;
+                            edit = `<a href="${url}" class="mx-1 btn btn-primary"><i class="fa fa-edit"></i>تعديل</a>`;
                             if(!copy.Rented)
                             {
                                 remove = `<a href="#" data-copy-id='${copyId}' class='js-delete mx-1 btn btn-danger'><i class="fa fa-trash"></i>Delete</a>`;
                                 url = '{{ route('rentals.create',["customer" => $customerId, "copyId" => ":id"]) }}'.replace(encodeURIComponent(':id'), copy.Id);
-                                rent = `<a href="${url}" class='mx-1 btn btn-primary'>Rent</a>`;
+                                rent = `<a href="${url}" class='mx-1 btn btn-primary'>إعارة</a>`;
                             }
                         @endif
                         return `<span style="display:flex;">${rent+edit+remove+choose}</span>`;

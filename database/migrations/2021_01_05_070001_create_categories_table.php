@@ -14,9 +14,9 @@ class CreateCategoriesTable extends Migration
      */
     public function up()
     {
-        $cat = new Category();
-        Schema::create($cat->getTable(), function (Blueprint $table) use ($cat) {
-            $table->id($cat->getKeyName());
+        Schema::create(Category::TABLE, function (Blueprint $table) {
+            $table->id(Category::KEY);
+            $table->string('Code');
             $table->string('Name');
         });
     }

@@ -14,9 +14,9 @@ class CreateLanguagesTable extends Migration
      */
     public function up()
     {
-        $lang = new BookLanguage();
-        Schema::create($lang->getTable(), function (Blueprint $table) use ($lang) {
-            $table->id($lang->getKeyName());
+        Schema::create(BookLanguage::TABLE, function (Blueprint $table) {
+            $table->id(BookLanguage::KEY);
+            $table->string('Code');
             $table->string('Name');
         });
     }
@@ -28,6 +28,6 @@ class CreateLanguagesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists((new BookLanguage)->getTable());
+        Schema::dropIfExists(BookLanguage::TABLE);
     }
 }

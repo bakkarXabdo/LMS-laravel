@@ -15,18 +15,17 @@ class CreateBookCopiesTable extends Migration
      */
     public function up()
     {
-        $copy = new BookCopy;
-        $book = new Book;
-        Schema::create($copy->getTable(), function (Blueprint $table) use ($book, $copy) {
-            $table->string($copy->getKeyName())->primary();
-            $table->string($book::FOREIGN_KEY)->nullable(false);
+        Schema::create(BookCopy::TABLE, function (Blueprint $table){
+            $table->string(BookCopy::KEY)->primary();
+            $table->string('InventoryId')->nullable();
+            $table->string(Book::FOREIGN_KEY);
 
-            $table->foreign($book::FOREIGN_KEY)->references($book->getKeyName())->on($book->getTable())->cascadeOnUpdate()->cascadeOnDelete();
-            if($copy::CREATED_AT) {
-                $table->timestamp($copy::CREATED_AT);
+            $table->foreign(Book::FOREIGN_KEY)->references(Book::KEY)->on(Book::TABLE)->cascadeOnUpdate()->cascadeOnDelete();
+            if(BookCopy::CREATED_AT) {
+                $table->timestamp(BookCopy::CREATED_AT)->default(DB::raw("CURRENT_TIMESTAMP()"));
             }
-            if($copy::UPDATED_AT) {
-                $table->timestamp($copy::UPDATED_AT);
+            if(BookCopy::UPDATED_AT) {
+                $table->timestamp(BookCopy::UPDATED_AT)->default(DB::raw("CURRENT_TIMESTAMP()"));
             }
         });
     }
@@ -38,6 +37,6 @@ class CreateBookCopiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists((new BookCopy)->getTable());
+        Schema::dropIfExists(BookCopy::TABLE);
     }
 }

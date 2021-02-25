@@ -2,35 +2,35 @@
 
 
 
-@section('PageTitle') Rentals @endsection
+@section('PageTitle') الإعارات @endsection
 
 
 
 @section('content')
     @if ($book != null)
-        <h3>Rentals for Book {{ $book->Title }} (#<a href="{{ route('books.show', $book->getKey()) }}">{{ $book->getKey() }}</a>)</h3>
+        <h3> الإعارات الجارية للكتاب {{ $book->Title }} (#<a href="{{ route('books.show', $book->getKey()) }}">{{ $book->getKey() }}</a>)</h3>
         <div class="container">
             <div class="row mb-2">
                 <div class="col-sm-2 pl-0">
-                    <a class="btn btn-primary" href="{{ route('bookcopies.choose', ["bookId" => $book->getKey()]) }}">New Rental</a>
+                    <a class="btn btn-primary" href="{{ route('bookcopies.choose', ["bookId" => $book->getKey()]) }}">إعارة جديدة</a>
                 </div>
             </div>
         </div>
-    @elseif($customer != null)
-        <h3>Rentals for Customer {{ $customer->Name }} (#<a href="{{ route('customer.show', $customer->getKey()) }}">{{ $customer->CardId }}</a>)</h3>
+    @elseif($student != null)
+        <h3>الإعارات الجارية للطالب {{ $student->Name }} (#<a href="{{ route('students.show', $student->getKey()) }}">{{ $student->CardId }}</a>)</h3>
         <div class="container">
             <div class="row mb-2">
                 <div class="col-sm-2 pl-0">
-                    <a class="btn btn-primary" href="{{ route('rentals.create', ["customerId" => $customer->getKey()]) }}">New Rental</a>
+                    <a class="btn btn-primary" href="{{ route('rentals.create', ["studentId" => $student->getKey()]) }}">إعارة جديدة</a>
                 </div>
             </div>
         </div>
     @else
-        <h3>Rentals</h3>
+        <h3>الإعارات الجارية</h3>
         <div class="container">
             <div class="row mb-2">
                 <div class="col-sm-2 pl-0">
-                    <a class="btn btn-primary" href="{{ route('rentals.create') }}">New Rental</a>
+                    <a class="btn btn-primary" href="{{ route('rentals.create') }}">إعارة جديدة</a>
                 </div>
             </div>
         </div>
@@ -52,7 +52,7 @@
                 autoWidth: true,
                 processing: true,
                 language: {
-                    processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+                    processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">تحميل...</span> '
                 },
                 ajax: {
                     url: "{{ route('rentals.table') }}",
@@ -62,62 +62,88 @@
                         @if($book != null)
                             d.bookId = '{{ $book->getKey() }}';
                         @endif
-                        @if($customer != null)
-                            d.customerId = '{{ $customer->getKey() }}';
+                        @if($student != null)
+                            d.studentId = '{{ $student->getKey() }}';
                         @endif
                     }
                 },
                 lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                 columns: [
                     {
-                        title: "Customer Card-Id",
-                        name: "customers.CardId",
+                        title: "رقم الطالب",
+                        name: "StudentId",
                         orderable:false,
                         searchable:true,
                         render: function(_,_,rental){
-                            url = '{{ route('customer.show', ':id') }}'.replace(':id', rental.customer.Id);
-                            return `<a title="${rental.customer.Name}" href="${url}">${rental.customer.CardId}</a`;
+                            url = '{{ route('students.show', ':id') }}'.replace(':id', rental.StudentId);
+                            return `<a title="${rental.StudentName}" href="${url}">${rental.StudentId}</a`;
                         }
                     },
                     {
-                        title: "Book Copy",
-                        name: "books.Title",
+                        title: "الطالب",
+                        name: "StudentName",
+                        orderable:false,
+                        searchable:true,
+                        render: function(_,_,rental){
+                            url = '{{ route('students.show', ':id') }}'.replace(':id', rental.StudentId);
+                            return `<a title="${rental.StudentId}" href="${url}">${rental.StudentName}</a`;
+                        }
+                    },
+                    {
+                        title: "النُسخة",
+                        name: "{{ \App\Models\Rental::TABLE . "." . \App\Models\BookCopy::FOREIGN_KEY }}",
+                        data: "{{ \App\Models\BookCopy::FOREIGN_KEY }}",
                         searchable:true,
                         orderable: true,
-                        render:function(_,__,rental){
-                            url = '{{ route('bookcopies.show', ':id') }}'.replace(':id', rental.BookCopyId);
-                            return `<a title="View copy" href="${url}">${rental.book.Title}</a>`;
+                        render:function(copyId,__,rental){
+                            url = '{{ route('bookcopies.show', ':id') }}'.replace(':id', copyId);
+                            return `<a title="إظهار النسخة" href="${url}">${copyId}</a>`;
                         }
                     },
                     {
-                        title: "Rental Created",
-                        name: "CreatedAt",
-                        data: "CreatedAt",
+                        title: "الكِتاب",
+                        name: "BookTitle",
+                        data: "{{ \App\Models\Book::FOREIGN_KEY }}",
+                        searchable:true,
+                        orderable: true,
+                        render:function(bookId,__,rental){
+                            url = '{{ route('books.show', ':id') }}'.replace(':id', bookId);
+                            return `<a title="إظهار الكتاب" href="${url}">${rental.BookTitle}</a>`;
+                        }
+                    },
+                    {
+                        title: "تاريخ الإعارة",
+                        name: "{{ \App\Models\Rental::TABLE . "." . \App\Models\Rental::CREATED_AT}}",
+                        data: "{{ \App\Models\Rental::CREATED_AT }}",
                         orderable:true,
                         render:function(time)
                         {
+                            if(!time)
+                            {
+                                return "";
+                            }
                             time = time.replace('T', ' ');
                             time = time.substring(0, time.indexOf('.'));
                             return time;
                         }
                     },
                     {
-                        title: "Expires",
+                        title: "تاريخ الإرجاع",
                         name: "RemainingDays",
                         data: "RemainingDays",
                         searchable: false,
                         orderable: true,
-                        render: (days) => days <= 0 ? `<span class="text-danger">Expired before ${days} Days</span>` : `<span>After ${days} Days</span>`
+                        render: (days) => `<span class="text-danger"> بعد ${days} يوم </span>`
                     },
                     {
-                        title: "Actions",
+                        title: "الإجرائات",
                         orderable: false,
                         searchable: false,
-                        data:"Id",
+                        data:"{{ \App\Models\Rental::KEY }}",
                         width:1,
                         render: function (rentalId,_,rental) {
                             var actions = "";
-                            actions += `<a href="#" data-rental-id="${rentalId}" data-bookcopy-id="${rental.BookCopyId}" class="js-confirm mx-1 btn btn-primary">Put Back</a>`;
+                            actions += `<a href="#" data-rental-id="${rentalId}" data-bookcopy-id="${rental.{{ \App\Models\BookCopy::FOREIGN_KEY }}}" class="js-confirm mx-1 btn btn-primary">إرجاع</a>`;
                             return `<span style="display:flex;">${actions}</span>`;
                         }
                     }
@@ -127,12 +153,12 @@
             jst.on("click", ".js-confirm", function () {
                 var button = $(this);
                 bootbox.dialog({
-                    title: "Confirm Your Action",
-                    message: '<span>Mark Book Copy #' + button.data("bookcopy-id") + ' As Returned</span>',
+                    title: "تأكيد الإجراء",
+                    message: `<span>هل تريد فعلا إرجاع النسخة ${button.data("bookcopy-id")} </span>`,
                     backdrop:true,
                     buttons: {
                         confirm: {
-                            label: 'Put Back',
+                            label: 'إرجاع',
                             className: 'btn-warning',
                             callback: function () {
                                 $.ajax({
@@ -150,7 +176,7 @@
                             }
                         },
                         cancel: {
-                            label: 'Cancel',
+                            label: 'إلغاء',
                             className: 'btn-secondary'
                         }
 

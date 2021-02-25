@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\BooksExport;
+use App\Helpers\AppHelper;
+use App\Imports\BooksImport;
 use App\Models\Book;
 use App\Models\BookCopy;
 use App\Models\BookLanguage;
 use App\Models\Category;
-use App\Models\Student;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use phpDocumentor\Reflection\Types\Integer;
+use App\Models\Rental;
+use Cache;
+use Carbon\Carbon;
+use DB;
+use Excel;
+use Response;
 use stdClass;
-use Symfony\Component\VarDumper\Cloner\Data;
+use Validator;
 
 class BooksController extends Controller
 {
@@ -22,7 +24,6 @@ class BooksController extends Controller
     {
         $this->middleware('auth');
         $this->middleware('admin');
-
     }
 
     public function index()
@@ -40,6 +41,60 @@ class BooksController extends Controller
         ]);
     }
 
+    public function import()
+    {
+        ini_set('max_execution_time', 99999);
+        if(request()->files->count() === 0)
+        {
+            echo "لم يتم تحديد اي ملفات";
+            exit;
+        }
+        $file = request()->file('data');
+        $path = $file->getFileInfo()->getPathname();
+        $content = file_get_contents($path);
+        $hash = md5($content);
+        $GLOBALS["fileHash"] = $hash;
+        if(Cache::has('fileHash-'.$hash)) {
+            (new BooksImport())->collection(collect(unserialize(Cache::get('fileHash-'.$hash), ["allowedClasses" => true])));
+        }else {
+            Excel::import(new BooksImport(), $path);
+        }
+    }
+    public function export()
+    {
+        ini_set('max_execution_time', 600);
+        $name = "out";
+        $file = storage_path('app\public') . DIRECTORY_SEPARATOR . $name .'.xlsx';
+        $oldLastUpdated = Carbon::parse(Cache::get('books-bookcopies-last-update'))->unix();
+        $lastUpdatedAt = Book::query()->select(Db::raw("unix_timestamp(max(UpdatedAt)) as t"))->union(BookCopy::query()->select(Db::raw("unix_timestamp(max(UpdatedAt))")))->get()->max('t');
+        $useOld = (int)$lastUpdatedAt === (int)$oldLastUpdated;
+        if(!$useOld || !file_exists($file))
+        {
+            Excel::store(new BooksExport, "$name.xlsx", "public", \Maatwebsite\Excel\Excel::XLSX);
+            Cache::put('books-bookcopies-last-update', $lastUpdatedAt);
+        }
+        $this->DownloadFile($file);
+    }
+    function DownloadFile($file) { // $file = include path
+        if(file_exists($file)) {
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename='. basename($file));
+            header('Content-Transfer-Encoding: binary');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($file));
+            ob_clean();
+            flush();
+            readfile($file);
+            exit;
+        }
+    }
+    public function importing()
+    {
+        return view('books.importing');
+    }
     public function choose()
     {
         return view('books.index', [
@@ -57,9 +112,9 @@ class BooksController extends Controller
 
     public function show($bookId)
     {
-        $book = Book::where('Id', '=', $bookId)->withCount(['copies as NumberInStock', 'rentals as RentalsCount'])->first();
+        $book = Book::find($bookId)->withCount(['copies as NumberInStock', 'rentals as RentalsCount'])->first();
         if (!$book) {
-            abort(404);
+            echo "";
         }
         $book->NumberAvailable = $book->NumberInStock - $book->RentalsCount;
         return view('books.show', ["book" => $book])->with($book->attributesToArray());
@@ -92,7 +147,8 @@ class BooksController extends Controller
     public function destroy($bookId)
     {
         $book = Book::find($bookId);
-        if (isset($book->Id)) {
+        if (isset($book->{Book::KEY})) {
+            $copiesCount = $book->copies->count();
             if ($book->rentals->count() > 0) {
                 return Response::json((object) [
                     "success" => false,
@@ -101,16 +157,18 @@ class BooksController extends Controller
                         . "'>View</a>"
                 ], 200);
             } else {
-                if (DB::transaction(function () use ($book) {
-                    return $book->delete();
-                })) {
-                    return Response::json((object) ["success" => true, "message" => "Book #$bookId Was Removed"], 200);
-                } else {
-                    return Response::json((object) ["success" => false, "message" => "Unknown Error occurred"], 200);
+                try {
+                    if (DB::transaction(function () use ($book) {
+                        return $book->delete();
+                    })) {
+                        return Response::json((object)["success" => true, "message" => "<span dir='rtl' class='text-right'>" . AppHelper::ArabicFormat("تم حذف الكتاب (؟) و (؟) نُسخة بنجاح", [$bookId, $copiesCount]) . "</span>"], 200);
+                    }
+                }catch (\Throwable $e) {
                 }
+                return Response::json((object)["success" => false, "message" => "خطأ غير معروف لا يمكن حذف الكتاب"], 200);
             }
         } else {
-            return Response::json((object) ["success" => false, "message" => "Book #$bookId Was Not Found"], 200);
+            return Response::json((object) ["success" => false, "message" => AppHelper::ArabicFormat("الكتاب (؟) غير موجود", $bookId)], 200);
         }
     }
 
@@ -119,9 +177,9 @@ class BooksController extends Controller
         $request = json_decode(json_encode(request()->all()));
         $data = Book::query()->select([
             'books.*',
-            Db::raw('@RentalsCount := (select count(*) from `rentals` where `books`.`Id` = `rentals`.`BookId`) as `RentalsCount`'),
-            Db::raw('@NumberInStock := (select count(*) from `bookcopies` where `books`.`Id` = `bookcopies`.`BookId`) as `NumberInStock`'),
-            Db::raw('@NumberInStock - @RentalsCount as `NumberAvailable`')
+            Db::raw("@RentalsCount := (select count(*) from `". Rental::TABLE . "` where `". Book::TABLE ."`.`". Book::KEY ."` = `". Rental::TABLE ."`.`". Book::FOREIGN_KEY ."`) as `RentalsCount`"),
+            Db::raw("@NumberInStock := (select count(*) from `". BookCopy::TABLE ."` where `". Book::TABLE ."`.`". Book::KEY ."` = `". BookCopy::TABLE ."`.`". Book::FOREIGN_KEY ."`) as `NumberInStock`"),
+            Db::raw("@NumberInStock - @RentalsCount as `NumberAvailable`")
         ]);
 
         $rcol = collect(request()->all()['columns']);
@@ -129,13 +187,13 @@ class BooksController extends Controller
             $col['Id'] = $rcol->search($col);
             return $col;
         });
-        if (!ctype_space($request->search->value) && !empty($request->search->value))
+        if (!empty($request->search->value) && !ctype_space($request->search->value))
         {
             if(str_starts_with(strtolower($request->search->value), 'title:'))
             {
                 $data->where("Title", 'Like', "%".substr($request->search->value, 6)."%");
             }else {
-                $data->where((new Book)->getKeyName(), '=', $request->search->value);
+                $data->where(Book::KEY, '=', $request->search->value);
             }
         }
         if(isset($request->choosing))
@@ -156,6 +214,7 @@ class BooksController extends Controller
         $data->map(function ($book) {
             // don't remove
             $book->Category = $book->category;
+            $book->EncodedKey = $book->EncodedKey;
             return $book;
         });
         $resp = new stdClass;

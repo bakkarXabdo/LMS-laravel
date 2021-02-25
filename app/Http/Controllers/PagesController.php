@@ -35,24 +35,26 @@ class PagesController extends Controller
         $searchTerm = request('term');
         if(\request('category'))
         {
-            $data["filterCategory"] = $categories->where('Id', \request('category'))->first();
-            $normalSearch->where('books.CategoryId', \request('category'));
-            $advnacedSearch->where('books.CategoryId', \request('category'));
-            $wordsSearch->where('books.CategoryId', \request('category'));
-            $authorsSearch->where('books.CategoryId', \request('category'));
+            $cid = Book::TABLE . "." . Category::FOREIGN_KEY;
+            $data["filterCategory"] = $categories->find(\request('category'));
+            $normalSearch->where($cid , \request('category'));
+            $advnacedSearch->where($cid, \request('category'));
+            $wordsSearch->where($cid, \request('category'));
+            $authorsSearch->where($cid, \request('category'));
         }
         if(\request('language'))
         {
-            $data["filterLanguage"] = $languages->where('Id', \request('language'))->first();
-            $normalSearch->where('books.LanguageId', \request('language'));
-            $advnacedSearch->where('books.LanguageId', \request('language'));
-            $wordsSearch->where('books.LanguageId', \request('language'));
-            $authorsSearch->where('books.LanguageId', \request('language'));
+            $lid = Book::TABLE . "." . BookLanguage::FOREIGN_KEY;
+            $data["filterLanguage"] = $languages->find(\request('language'));
+            $normalSearch->where($lid, \request('language'));
+            $advnacedSearch->where($lid, \request('language'));
+            $wordsSearch->where($lid, \request('language'));
+            $authorsSearch->where($lid, \request('language'));
         }
         $normalSearch->orderByDesc('Popularity');
         if($searchTerm)
         {
-            $authorsSearch->Where('Authors', 'LIKE', "%$searchTerm%");
+            $authorsSearch->Where('Author', 'LIKE', "%$searchTerm%");
             $normalSearch->where(function ($query) use ($searchTerm) {
                 $query->where('Title', 'LIKE', "%$searchTerm%");
             });
@@ -79,11 +81,14 @@ class PagesController extends Controller
                     {
                         continue;
                     }
+                    if(strpos($word, 'ال') === 0)
+                    {
+                        $word = str_replace('ال', '', $word);
+                    }
                     $q->orWhere('Title', 'LIKE', "%$word%");
                 }
             });
             $splits = [$normalSearch->count(), $advnacedSearch->count(), $wordsSearch->count(), $authorsSearch->count()];
-            $s = $splits;
             $splits = array_filter($splits, static function($c){
                 return $c;
             });

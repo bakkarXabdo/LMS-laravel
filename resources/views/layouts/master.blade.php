@@ -1,15 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang='ar'>
     <head>
         <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="lang" content="">
         <title> @yield('PageTitle') - {{ config('app.brandName') }} </title>
         <link rel="icon"  href="{{ asset('favicon.ico') }}?v=2" type="image/x-icon">
         <link rel="stylesheet" href="{{asset('css/app.css')}}" >
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+        @stack('src')
     </head>
-    <body>
+    <body lang='ar'>
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
@@ -23,10 +28,10 @@
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
                         @if(Auth::user() && Auth::user()->IsAdmin)
-                            <li><a href="{{ route('books.index') }}">Books</a></li>
-                            <li><a href="{{ route('customer.index') }}">Customers</a></li>
-                            <li><a href="{{ route('rentals.index') }}">Rentals</a></li>
-                            <li><a href="{{ route('inventory.index') }}">Inventory</a></li>
+                            <li><a href="{{ route('books.index') }}">الكُتب</a></li>
+                            <li><a href="{{ route('students.index') }}">الطُلاب</a></li>
+                            <li><a href="{{ route('rentals.index') }}">الإعارات</a></li>
+                            <li><a href="{{ route('inventory.index') }}">الإعدادات</a></li>
                         @else
 
                         @endif
@@ -49,7 +54,7 @@
                         <p class="d-inline">&copy; {{ date('Y') }} - {{config('app.name')}}</p>
                     </div>
                     <div class="col-lg-1">
-                        <a class="nav-link" href="{{ route('pages.about') }}">About</a>
+                        <a class="nav-link" href="{{ route('pages.about') }}">حول الموقع</a>
                     </div>
                   </div>
             </footer>

@@ -9,7 +9,7 @@
         <tbody>
             <tr class="d-flex">
                 <th class="col-sm-2">Customer</th>
-                <td><a href="{{ route('customer.show', $rental->customer->Id) }}">{{ $rental->customer->Name }}</a></td>
+                <td><a href="{{ route('students.show', $rental->customer->Id) }}">{{ $rental->customer->Name }}</a></td>
             </tr>
             <tr class="d-flex">
                 <th class="col-sm-2">Customer Card-Id</th>

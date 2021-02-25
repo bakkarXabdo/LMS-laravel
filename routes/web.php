@@ -2,12 +2,13 @@
 
 use App\Http\Controllers\BookCopiesController;
 use App\Http\Controllers\BooksController;
-use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\StudentsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\RentalHistoryController;
 use App\Http\Controllers\RentalsController;
+use App\Models\Book;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -42,30 +43,34 @@ Route::get('/manage', function () {
 
 Route::get('/books/choose', [BooksController::class, 'choose'])->name('books.choose');
 Route::post('/books/table', [BooksController::class, 'table'])->name('books.table');
+Route::get('/books/importing', [BooksController::class, 'importing'])->name('books.importing');
+Route::get('/books/export', [BooksController::class, 'export'])->name('books.export');
+
 Route::resource('books', BooksController::class);
 
-Route::get('/bookcopies/index?bookId={Book}&inventoryId={Inventory}', [BookCopiesController::class, 'index'])->name('bookcopies.index');
+Route::get('/bookcopies/index?bookId={book}&inventoryId={inventory}', [BookCopiesController::class, 'index'])->name('bookcopies.index');
 Route::post('/bookcopies/table', [BookCopiesController::class, 'table'])->name('bookcopies.table');
 Route::get('/bookcopies/choose', [BookCopiesController::class, 'choose'])->name('bookcopies.choose');
 Route::resource('bookcopies', BookCopiesController::class);
 
 Route::post('/rentals/table', [RentalsController::class, 'table'])->name('rentals.table');
-Route::get('/rentals/forbook/{Book}', [RentalsController::class, 'forBook'])->name('rentals.forbook');
-Route::get('/rentals/forcustomer/{Customer}', [RentalsController::class, 'forCustomer'])->name('rentals.forcustomer');
-Route::get('/rentals/forcopy/{BookCopy}', [RentalsController::class, 'forCopy'])->name('rentals.forcopy');
-Route::post('/rentals/return/{Rental}', [RentalsController::class, 'returnRental'])->name('rentals.return');
-Route::post('/rentals/ajaxreturn/{Rental}', [RentalsController::class, 'ajaxReturnRental'])->name('rentals.ajaxreturn');
+Route::get('/rentals/forbook/{book}', [RentalsController::class, 'forBook'])->name('rentals.forbook');
+Route::get('/rentals/forcustomer/{customer}', [RentalsController::class, 'forCustomer'])->name('rentals.forcustomer');
+Route::get('/rentals/forcopy/{bookcopy}', [RentalsController::class, 'forCopy'])->name('rentals.forcopy');
+Route::post('/rentals/return/{rental}', [RentalsController::class, 'returnRental'])->name('rentals.return');
+Route::post('/rentals/ajaxreturn/{rental}', [RentalsController::class, 'ajaxReturnRental'])->name('rentals.ajaxreturn');
 
 Route::resource('rentals', RentalsController::class);
 
 Route::post('/inventory/table', [InventoryController::class, 'table'])->name('inventory.table');
 Route::resource('inventory', InventoryController::class);
 
-Route::post('/customer/password/{Customer}', [CustomerController::class, 'changePassword'])->name('customer.changePassword');
-Route::post('/customer/table', [CustomerController::class, 'table'])->name('customer.table');
-Route::get('/customer/choose', [CustomerController::class, 'choose'])->name('customer.choose');
-Route::resource('/customer', CustomerController::class);
+Route::post('/student/password/{Student}', [StudentsController::class, 'changePassword'])->name('students.changePassword');
+Route::post('/students/table', [StudentsController::class, 'table'])->name('students.table');
+Route::get('/students/choose', [StudentsController::class, 'choose'])->name('students.choose');
+Route::resource('/students', StudentsController::class);
 Route::resource('/history', RentalHistoryController::class);
+Route::post('/import', [BooksController::class, 'import'])->name('books.import');
 
 Route::get('/test', [PagesController::class, 'test'])->name('pages.test');
 Route::get('/about', [PagesController::class, 'about'])->name('pages.about');

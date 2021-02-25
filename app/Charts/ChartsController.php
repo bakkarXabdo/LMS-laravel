@@ -4,11 +4,10 @@ declare(strict_types = 1);
 
 namespace App\Charts;
 
-use App\Models\Rental;
-use App\Models\RentalHistory;
 use Carbon\Carbon;
 use Chartisan\PHP\Chartisan;
 use ConsoleTVs\Charts\BaseChart;
+use CreateRentalHistoryChartRoutine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -30,14 +29,33 @@ class ChartsController extends BaseChart
 
         $now = Carbon::now();
         $temp = $now;
-        $temp->addMonths(-12);
+        $temp->addMonths(-11);
+        $months = array(
+            "January" => "جانفي",
+            "February" => "فيفري",
+            "March" => "مارس",
+            "April" => "أفريل",
+            "May" => "ماي",
+            "June" => "جوان",
+            "July" => "جويلية",
+            "August" => "أوت",
+            "September" => "سبتمبر",
+            "October" => "أكتوبر",
+            "November" => "نوفمبر",
+            "December" => "ديسمبر"
+        );
         for($i = 0; $i < 12; $i++)
         {
-            $labels[] = $temp->format('F (m-Y)');
+            $m = $temp->format('F');
+            if(array_key_exists($m, $months))
+            {
+                $m = $months[$m];
+            }
+            $labels[] =  $m;
             $temp->addMonth();
         }
         $chart->labels($labels);
-        $chart->dataset("N. Rentals Created Each Month", $rentalHistoryDataSet);
+        $chart->dataset("عدد الإعارات في الأشهر الماضية", $rentalHistoryDataSet);
         return $chart;
     }
 

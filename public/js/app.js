@@ -92363,6 +92363,8 @@ __webpack_require__(/*! ./charts.js */ "./resources/js/charts.js");
 
 __webpack_require__(/*! ./chartisan */ "./resources/js/chartisan.js");
 
+__webpack_require__(/*! ./prettyFile */ "./resources/js/prettyFile.js");
+
 /***/ }),
 
 /***/ "./resources/js/asp.validation.js":
@@ -95636,6 +95638,83 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;function _typeof
 
   return DataTable;
 });
+
+/***/ }),
+
+/***/ "./resources/js/prettyFile.js":
+/*!************************************!*\
+  !*** ./resources/js/prettyFile.js ***!
+  \************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+(function ($) {
+  $.fn.extend({
+    prettyFile: function prettyFile(options) {
+      var defaults = {
+        text: "Select Files"
+      };
+      var options = $.extend(defaults, options);
+      var plugin = this;
+
+      function make_form($el, text) {
+        $el.wrap('<div></div>');
+        $el.hide();
+        $el.after('\
+				<div class="input-append input-group"">\
+					<span class="input-group-btn">\
+						<button class="btn btn-default" type="button">' + text + '</button>\
+					</span>\
+					<input name="data" class="input-large form-control" type="text">\
+				</div>\
+				');
+        return $el.parent();
+      }
+
+      ;
+
+      function bind_change($wrap, multiple) {
+        $wrap.find('input[type="file"]').change(function () {
+          // When original file input changes, get its value, show it in the fake input
+          var files = $(this)[0].files,
+              info = '';
+          if (files.length == 0) return false;
+
+          if (!multiple || files.length == 1) {
+            var path = $(this).val().split('\\');
+            info = path[path.length - 1];
+          } else if (files.length > 1) {
+            // Display number of selected files instead of filenames
+            info = files.length + ' files selected';
+          }
+
+          $wrap.find('.input-append input').val(info);
+        });
+      }
+
+      ;
+
+      function bind_button($wrap, multiple) {
+        $wrap.find('.input-append').click(function (e) {
+          e.preventDefault();
+          $wrap.find('input[type="file"]').click();
+        });
+      }
+
+      ;
+      return plugin.each(function () {
+        $this = $(this);
+
+        if ($this) {
+          var multiple = $this.attr('multiple');
+          $wrap = make_form($this, options.text);
+          bind_change($wrap, multiple);
+          bind_button($wrap);
+        }
+      });
+    }
+  });
+})(jQuery);
 
 /***/ }),
 

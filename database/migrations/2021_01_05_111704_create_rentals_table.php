@@ -17,26 +17,22 @@ class CreateRentalsTable extends Migration
      */
     public function up()
     {
-        $student = new Student;
-        $book = new Book;
-        $copy = new BookCopy;
-        $rental = new Rental;
-        Schema::create($rental->getTable(), function (Blueprint $table) use ($student, $book, $copy, $rental) {
-            $table->id($rental->getKeyName());
-            $table->foreignId('StudentId');
-            $table->string('BookId');
-            $table->string('BookCopyId');
-            $table->timestamp('ExpiresAt', 6);
-            $table->timestamp('ReturnedAt', 6);
+        Schema::create(Rental::TABLE, function (Blueprint $table){
+            $table->id(Rental::KEY);
+            $table->foreignId(Student::FOREIGN_KEY);
+            $table->string(Book::FOREIGN_KEY);
+            $table->string(BookCopy::FOREIGN_KEY);
 
-            $table->foreign('StudentId')->references($student->getKeyName())->on($student->getTable())->cascadeOnUpdate()->restrictOnDelete();
-            $table->foreign('BookId')->references($book->getKeyName())->on($book->getTable())->cascadeOnUpdate()->restrictOnDelete();
-            $table->foreign('BookCopyId')->references($copy->getKeyName())->on($copy->getTable())->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreign(Student::FOREIGN_KEY)->references(Student::KEY)->on(Student::TABLE)->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreign(Book::FOREIGN_KEY)->references(Book::KEY)->on(Book::TABLE)->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreign(BookCopy::FOREIGN_KEY)->references(BookCopy::KEY)->on(BookCopy::TABLE)->cascadeOnUpdate()->restrictOnDelete();
+
+            $table->timestamp('ExpiresAt', 6);
             if(Rental::CREATED_AT) {
-                $table->timestamp(Rental::CREATED_AT);
+                $table->timestamp(Rental::CREATED_AT)->default(DB::raw("CURRENT_TIMESTAMP()"));
             }
             if(Rental::UPDATED_AT) {
-                $table->timestamp(Rental::UPDATED_AT);
+                $table->timestamp(Rental::UPDATED_AT)->default(DB::raw("CURRENT_TIMESTAMP()"));
             }
         });
     }
@@ -48,6 +44,6 @@ class CreateRentalsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists((new Rental)->getTable());
+        Schema::dropIfExists(Rental::TABLE);
     }
 }

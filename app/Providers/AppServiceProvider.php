@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Charts\ChartsController;
 use App\Models\BookCopy;
+use App\Models\Student;
 use App\Observers\BookCopyObserver;
 use Illuminate\Pagination\AbstractPaginator;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use ConsoleTVs\Charts\Registrar as Charts;
 
@@ -18,7 +20,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+
+        if ($this->app->isLocal()) {
+            $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
+        }
+
     }
 
     /**
@@ -38,6 +44,5 @@ class AppServiceProvider extends ServiceProvider
         {
             date_default_timezone_set("Africa/Algiers");
         }
-        BookCopy::observe(BookCopyObserver::class);
     }
 }

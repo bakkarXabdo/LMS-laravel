@@ -31,7 +31,7 @@ class RentalsController extends Controller
     {
         return view('rentals.index',[
             "book" => null,
-            "customer" => null
+            "student" => null
         ]);
     }
     public function forBook($bookId)
@@ -74,11 +74,11 @@ class RentalsController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'customerId' => 'required',
+            'studentId' => 'required',
             'copyId' => 'required',
             'duration' => 'required|integer'
         ]);
-        $customer = Student::find(request('customerId'));
+        $student = Student::find(request('customerId'));
         $copy = BookCopy::find(\request('copyId'));
         if(!$customer)
         {
@@ -93,7 +93,7 @@ class RentalsController extends Controller
             return "Copy is already Rented (<a href='".route('rentals.show', $copy->rental->getKey())."'>View</a>)";
         }
         $rental = Rental::create([
-            "CustomerId" => $customer->getKey(),
+            "CustomerId" => $student->getKey(),
             "BookCopyId" => $copy->getKey(),
             "BookId" => $copy->book->getKey(),
             "Expires" => Carbon::now()->addDays($validated['duration'])->toDateTimeString()
@@ -124,29 +124,34 @@ class RentalsController extends Controller
         $rental = Rental::find($rentalId);
         if(!$rental || !$rental->getKey())
         {
-            abort(404, "Rental $rentalId not found");
+            return abort(404, "Rental $rentalId not found");
         }
         $rentalHistory = Db::transaction(function() use ($rental) {
-            $r = RentalHistory::create([
-                "CustomerCardId" => $rental->customer->CardId,
-                "CustomerName" => $rental->customer->Name,
-                "BookId" => $rental->book->getKey(),
-                "BookTitle" => $rental->book->Title,
-                "RentalCreatedAt" => $rental->CreatedAt,
-                "RentalExpiresAt" => $rental->Expires,
-                "RentalReturnedAt" => Carbon::now()
-            ]);
+            $r = null;
+            try {
+                $r = RentalHistory::create([
+                    "StudentId" => $rental->student->CardId,
+                    "StudentName" => $rental->student->Name,
+                    "BookId" => $rental->book->getKey(),
+                    "BookTitle" => $rental->book->Title,
+                    "RentalCreatedAt" => $rental->CreatedAt,
+                    "RentalExpiresAt" => $rental->Expires,
+                ]);
+            }catch (Exception $e)
+            {
+                throw new Exception("لا يمكن إنشاء أرشيف للإعارة: " . $e->getMessage());
+            }
             if($rental->delete()){
                 return $r;
             }else{
-                throw new Exception("can't delete rental");
+                throw new Exception("لا يمكن حذف الإعارة");
             }
         });
         if($rentalHistory && $rentalHistory->getKey()){
             return redirect(route('history.show', $rentalHistory->getKey()));
-        }else{
-            abort(500, "Internal Server Error");
         }
+
+        return abort(500, "Internal Server Error");
     }
     public function ajaxReturnRental($rentalId)
     {
@@ -156,26 +161,32 @@ class RentalsController extends Controller
             abort(404, "Rental $rentalId not found");
         }
         $rentalHistory = Db::transaction(function() use ($rental) {
-            $r = RentalHistory::create([
-                "CustomerCardId" => $rental->customer->CardId,
-                "CustomerName" => $rental->customer->Name,
-                "BookId" => $rental->book->getKey(),
-                "BookTitle" => $rental->book->Title,
-                "RentalCreatedAt" => $rental->CreatedAt,
-                "RentalExpiresAt" => $rental->Expires,
-                "RentalReturnedAt" => Carbon::now()
-            ]);
+            $r = null;
+            try {
+                $r = RentalHistory::create([
+                    "StudentId" => $rental->student->CardId,
+                    "StudentName" => $rental->student->Name,
+                    "BookId" => $rental->book->getKey(),
+                    "BookTitle" => $rental->book->Title,
+                    "RentalCreatedAt" => $rental->CreatedAt,
+                    "RentalExpiresAt" => $rental->Expires,
+                ]);
+            }catch (Exception $e)
+            {
+                throw new Exception("لا يمكن إنشاء أرشيف للإعارة: " . $e->getMessage());
+            }
             if($rental->delete()){
                 return $r;
             }else{
-                throw new Exception("can't delete rental");
+                throw new Exception("لا يمكن حذف الإعارة");
             }
         });
+
         if($rentalHistory && $rentalHistory->getKey()){
-            return Response::json((object) ["success" => true, "message" => "Rental Was Removed"], 200);
-        }else{
-            return Response::json((object) ["success" => false, "message" => "Internal Server Error"], 200);
+            return Response::json((object) ["success" => true, "message" => "تم حذف الإعارة"], 200);
         }
+
+        return Response::json((object) ["success" => false, "message" => "حدث خطأ غير معروف"], 200);
     }
     public function table()
     {
@@ -186,16 +197,16 @@ class RentalsController extends Controller
             return $col;
         });
         $data = Rental::query();
-        $data->join((new BookCopy)->getTable(), (new BookCopy)->getTable().'.'.(new BookCopy)->getKeyName(), '=', (new Rental)->getTable().'.BookCopyId')
-            ->join((new Student)->getTable(), (new Rental)->getTable().'.CustomerId', '=', (new Student)->getTable().'.'.(new Student)->getKeyName())
-            ->join((new Book)->getTable(), (new Rental)->getTable().'.BookId', '=', (new Book)->getTable().'.'.(new Book)->getKeyName());
+        $m = new Rental;
+        $data = Book::joinWithSelf($data, $m);
+        $data = Student::joinWithSelf($data, $m);
+        $data = BookCopy::joinWithSelf($data, $m);
         $data->select([
-            'rentals.*',
-            'books.Title',
-            'customers.Name',
-            'customers.CardId',
-            'bookcopies.BookId as `bookcopy.Id`',
-            Db::raw('timestampdiff(DAY , CURRENT_TIMESTAMP, Expires) as `RemainingDays`')
+            Rental::TABLE . '.*',
+            Book::TABLE . '.Title as BookTitle',
+            Student::TABLE . '.Name as StudentName',
+            Student::TABLE . '.' . Student::KEY . " as StudentId",
+            Db::raw('timestampdiff(DAY , CURRENT_TIMESTAMP, ExpiresAt) as `RemainingDays`')
         ]);
         foreach ($request->order as $order)
         {
@@ -212,17 +223,17 @@ class RentalsController extends Controller
         {
             if(!Book::find($request->bookId))
             {
-                return abort(404, 'book not found');
+                return abort(404, 'الكتاب غير موجود');
             }
-            $data->where('rentals.BookId', '=', $request->bookId);
+            $data->where(Rental::TABLE . '.' . Book::FOREIGN_KEY,  $request->bookId);
         }
-        if(isset($request->customerId))
+        if(isset($request->studentId))
         {
-            if(!Student::find($request->customerId))
+            if(!Student::find($request->studentId))
             {
-                return abort(404, 'customer not found');
+                return abort(404, 'الطالب غير موجود');
             }
-            $data->where('rentals.CustomerId', '=', $request->customerId);
+            $data->where(Rental::TABLE . '.' . Student::FOREIGN_KEY , $request->studentId);
         }
         $count = $data->count();
         if($request->length > 0)
@@ -231,13 +242,6 @@ class RentalsController extends Controller
             $data->take($request->length);
         }
         $data = $data->get();
-        $data->map(function($rental){
-            // don't remove
-            $rental->customer = $rental->customer;
-            $rental->copy = $rental->copy;
-            $rental->book = $rental->book;
-            return $rental;
-        });
         $resp = new stdClass;
         $resp->draw = $request->draw;
         $resp->recordsTotal = $data->count();

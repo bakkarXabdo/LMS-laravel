@@ -7,27 +7,65 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @mixin Builder
+ * App\Models\BookCopy
+ *
+ * @property string $Id
+ * @property string|null $InventoryId
+ * @property string $BookId
+ * @property \Illuminate\Support\Carbon $UpdatedAt
+ * @property-read \App\Models\Book $book
+ * @property-read int $copy_number
+ * @property-read \App\Models\Rental|null $rental
+ * @method static Builder|BookCopy newModelQuery()
+ * @method static Builder|BookCopy newQuery()
+ * @method static Builder|BookCopy query()
+ * @method static Builder|BookCopy whereBookId($value)
+ * @method static Builder|BookCopy whereId($value)
+ * @method static Builder|BookCopy whereInventoryId($value)
+ * @method static Builder|BookCopy whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class BookCopy extends Model
 {
     use HasFactory;
 
+    public const TABLE = "bookcopies";
+    public const KEY = "Id";
+    public const FOREIGN_KEY = "BookCopyId";
+    public const CREATED_AT = null;
+    public const UPDATED_AT = "UpdatedAt";
 
-    /**-- DB RELATIONS --*/
-
-    protected $table = "bookcopies";
-    protected $primaryKey = "Id";
-    const CREATED_AT = null;
-    const UPDATED_AT = null;
-    protected $guarded = [];
+    protected $table = self::TABLE;
+    protected $primaryKey = self::KEY;
     protected $keyType = "string";
 
+    protected $guarded = [];
+
     function book(){
-        return $this->belongsTo(Book::class, 'BookId', (new Book)->getKeyName(), 'books');
+        return $this->belongsTo(Book::class, Book::FOREIGN_KEY, Book::KEY, Book::TABLE);
     }
 
     function rental(){
-        return $this->hasOne(Rental::class, 'BookCopyId', $this->getKeyName());
+        return $this->hasOne(Rental::class, self::FOREIGN_KEY, self::KEY);
+    }
+
+    public function getCopyNumberAttribute(): int
+    {
+        return (int) preg_replace('/^[A-Za-z]+\\/\d+\\//', '', $this->getKey());
+    }
+
+    public static function getIdPattern(): string
+    {
+        return '^[A-Za-z]+\/\d+\/\d+$';
+    }
+
+    public function getEncodedKeyAttribute() : string
+    {
+        return urlencode($this->getKey());
+    }
+
+    public static function joinWithSelf(Builder $query,Model $with) : Builder
+    {
+        return $query->join(self::TABLE, $with::TABLE . "." . self::FOREIGN_KEY, '=', self::TABLE . "." . self::KEY);
     }
 }

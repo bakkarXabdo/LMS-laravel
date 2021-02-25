@@ -30,8 +30,8 @@ class DashboardController extends Controller
                 'BookCopiesCount' => BookCopy::count(),
                 'CustomersCount' => Student::count(),
                 'ActiveRentalsCount' => Rental::count(),
-                'ExpiredRentalsCount' => Rental::query()->select(["rentals.*", Db::raw('timestampdiff(DAY ,now(),rentals.Expires) as `RemainingDays`')])->get()->where("RemainingDays", '<', 0)->count(),
-                'MaxRentedCustomer' => Student::query()->withCount(['rentals as RentalsCount'])->orderByDesc('RentalsCount')->first()->RentalsCount
+                'ExpiredRentalsCount' => Rental::query()->select(["rentals.*", Db::raw("timestampdiff(DAY ,now(),`ExpiresAt`) as `RemainingDays`")])->get()->where("RemainingDays", '<', 0)->count(),
+                'MaxRentedCustomer' => Student::query()->withCount(['rentals as RentalsCount'])->orderByDesc('RentalsCount')->first()->RentalsCount ?? "Unkown"
             ]);
     }
 }

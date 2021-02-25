@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Book;
+use App\Models\BookCopy;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -47,6 +49,12 @@ class RouteServiceProvider extends ServiceProvider
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
         });
+        Route::pattern('book', Book::getIdPattern());
+        Route::pattern('bookcopy', BookCopy::getIdPattern());
+
+        Route::pattern('bookId', Book::getIdPattern());
+        Route::pattern('bookCopyId', BookCopy::getIdPattern());
+
     }
 
     /**

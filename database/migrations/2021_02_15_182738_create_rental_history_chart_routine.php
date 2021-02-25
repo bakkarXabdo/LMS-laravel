@@ -14,10 +14,11 @@ class CreateRentalHistoryChartRoutine extends Migration
      *
      * @return void
      */
+    public const NAME = "GET_RENTAL_HISTORY_CHART";
     public function up()
     {
         DB::unprepared("
-create procedure GET_RENTAL_HISTORY_CHART()
+create procedure ". self::NAME ."()
 BEGIN
         declare i int;
         declare diff timestamp;
@@ -26,7 +27,7 @@ BEGIN
         SET i = -12;
         While i != 0 do
             set diff = timestampadd(MONTH, i, NOW());
-            insert into result values(-i-1, (select count(*) from `". (new Rental)->getTable() ."` where `". Rental::CREATED_AT ."` between diff and timestampadd(MONTH, 1, diff)) + (select count(*) from `". (new RentalHistory)->getTable() ."` where `". RentalHistory::CREATED_AT ."` between diff and timestampadd(MONTH, 1, diff)));
+            insert into result values(-i-1, (select count(*) from `". Rental::TABLE ."` where `". Rental::CREATED_AT ."` between diff and timestampadd(MONTH, 1, diff)) + (select count(*) from `". RentalHistory::TABLE ."` where `". RentalHistory::CREATED_AT ."` between diff and timestampadd(MONTH, 1, diff)));
             SET i=i+1;
         End while;
         select * from result order by `month` desc;
@@ -42,6 +43,6 @@ END;
      */
     public function down()
     {
-        DB::unprepared("drop procedure IF EXISTS GET_RENTAL_HISTORY_CHART;");
+        DB::unprepared("drop procedure IF EXISTS ". self::NAME .";");
     }
 }

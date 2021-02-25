@@ -15,21 +15,20 @@ class CreateStudentsTable extends Migration
      */
     public function up()
     {
-        $user = new User();
-        $student = new Student();
-        Schema::create($student->getTable(), function (Blueprint $table) use ($user, $student) {
-            $table->id($student->getKeyName());
+        Schema::create(Student::TABLE, function (Blueprint $table) {
+            $table->id(Student::KEY);
             $table->foreignId('UserId');
             $table->string('Name');
             $table->string('Speciality');
             $table->dateTime('BirthDate', 6);
+            $table->integer('TotalRentals')->default(0);
 
-            $table->foreign('UserId')->references($user->getKeyName())->on($user->getTable())->cascadeOnUpdate();
-            if($student::CREATED_AT) {
-                $table->timestamp($student::CREATED_AT);
+            $table->foreign('UserId')->references(User::KEY)->on(User::TABLE)->cascadeOnUpdate();
+            if(Student::CREATED_AT) {
+                $table->timestamp(Student::CREATED_AT)->default(DB::raw("CURRENT_TIMESTAMP()"));
             }
-            if($student::UPDATED_AT) {
-                $table->timestamp($student::UPDATED_AT);
+            if(Student::UPDATED_AT) {
+                $table->timestamp(Student::UPDATED_AT)->default(DB::raw("CURRENT_TIMESTAMP()"));
             }
         });
     }
@@ -41,6 +40,6 @@ class CreateStudentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists((new Student)->getTable());
+        Schema::dropIfExists(Student::TABLE);
     }
 }

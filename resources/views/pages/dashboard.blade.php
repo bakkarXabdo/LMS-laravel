@@ -46,8 +46,18 @@
                 .responsive()
                 .colors()
                 .beginAtZero()
+                .legend({labels:{
+                    fontColor: 'black',
+                        fontFamily:'Tajawal',
+                        fontSize : 16
+                }
+                })
                 .borderColors()
-                .datasets([{type:'line', fill:false}])
+                .datasets([{
+                    type:'line',
+                    fill:false,
+                    fontFamily:'Tajawal'
+                }]),
         });
     </script>
 @endpush

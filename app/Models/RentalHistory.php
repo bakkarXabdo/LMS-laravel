@@ -5,15 +5,41 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\RentalHistory
+ *
+ * @property int $Id
+ * @property string $StudentId
+ * @property string $CustomerName
+ * @property string $BookId
+ * @property string $BookTitle
+ * @property string $RentalCreatedAt
+ * @property string $RentalExpiresAt
+ * @property \Illuminate\Support\Carbon $RentalReturnedAt
+ * @method static \Illuminate\Database\Eloquent\Builder|RentalHistory newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|RentalHistory newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|RentalHistory query()
+ * @method static \Illuminate\Database\Eloquent\Builder|RentalHistory whereBookId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|RentalHistory whereBookTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|RentalHistory whereCustomerName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|RentalHistory whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|RentalHistory whereRentalCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|RentalHistory whereRentalExpiresAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|RentalHistory whereRentalReturnedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|RentalHistory whereStudentId($value)
+ * @mixin \Eloquent
+ */
 class RentalHistory extends Model
 {
     use HasFactory;
 
-    protected $table = "rentals_history";
+    public const TABLE = "rentals_history";
+    public const KEY = "Id";
+    public const FOREIGN_KEY = "RentalHistoryId";
+    public const CREATED_AT = "RentalReturnedAt";
+    public const UPDATED_AT = null;
 
+    protected $table = self::TABLE;
+    protected $primaryKey = self::KEY;
     protected $guarded = [];
-    protected $primaryKey = "Id";
-
-    const CREATED_AT = 'RentalReturnedAt';
-    const UPDATED_AT = null;
 }

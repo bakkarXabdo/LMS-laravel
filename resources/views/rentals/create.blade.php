@@ -30,7 +30,7 @@
                     <table class="table table-condensed">
                         <tr>
                             <th>Copy Id</th>
-                            <td>{{ $copy->Id }}</td>
+                            <td>{{ $copy->getKey() }}</td>
                         </tr>
                         <tr>
                             <th>Title</th>
@@ -59,7 +59,7 @@
                 <a class="btn btn-primary my-2" href="{{ route('books.choose', ["customerId" => isset($customer) ? $customer->Id : 'false']) }}">{{ isset($copy) ? "Change" : "Choose" }}</a>
             </div>
             <div class="col-sm-6">
-                <a class="btn btn-primary my-2" href="{{ route('customer.choose', ["copyId" => isset($copy) ? $copy->Id : 'false']) }}">{{ isset($customer) ? "Change" : "Choose" }}</a>
+                <a class="btn btn-primary my-2" href="{{ route('students.choose', ["copyId" => isset($copy) ? $copy->Id : 'false']) }}">{{ isset($customer) ? "Change" : "Choose" }}</a>
             </div>
         </div>
     </div>

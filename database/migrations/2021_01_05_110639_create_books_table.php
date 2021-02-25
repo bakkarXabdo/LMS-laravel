@@ -17,32 +17,29 @@ class CreateBooksTable extends Migration
      */
     public function up()
     {
-        $lang = new BookLanguage();
-        $cat = new Category();
-        $book = new Book;
-        Schema::create($book->getTable(), function (Blueprint $table) use ($lang, $cat, $book) {
-            $table->string($book->getKeyName())->primary();
+        Schema::create(Book::TABLE, function (Blueprint $table){
+            $table->string(Book::KEY)->primary();
             $table->string('Title', 400);
-            $table->string('Author')->default('Unknown');
-            $table->string('Publisher')->default('Unknown');
-            $table->year('ReleaseYear')->nullable();
-            $table->integer('copies')->default(0);
+            $table->string('Author')->default('غير معروف');
+            $table->string('Publisher')->default('غير معروف');
+            $table->string('ReleaseYear', 4)->nullable();
+            $table->integer('NumberOfCopies')->default(0);
             $table->integer('Price')->default(0);
 
             $table->float('Popularity')->default(0);
-            $table->foreignId('CategoryId');
-            $table->foreignId('LanguageId');
+            $table->foreignId(Category::FOREIGN_KEY);
+            $table->foreignId(BookLanguage::FOREIGN_KEY);
             $table->integer('TotalRentals')->default(0);
             $table->string('Isbn')->default('');
 
-            $table->foreign('CategoryId')->references($cat->getKeyName())->on($cat->getTable())->cascadeOnUpdate();
-            $table->foreign('LanguageId')->references($lang->getKeyName())->on($lang->getTable())->cascadeOnUpdate();
+            $table->foreign(Category::FOREIGN_KEY)->references(Category::KEY)->on(Category::TABLE)->cascadeOnUpdate();
+            $table->foreign(BookLanguage::FOREIGN_KEY)->references(BookLanguage::KEY)->on(BookLanguage::TABLE)->cascadeOnUpdate();
 
-            if($book::CREATED_AT) {
-                $table->timestamp($book::CREATED_AT)->default(DB::raw('NOW()'));
+            if(Book::CREATED_AT) {
+                $table->timestamp(Book::CREATED_AT)->default(Db::raw("CURRENT_TIMESTAMP()"));
             }
-            if($book::UPDATED_AT) {
-                $table->timestamp($book::UPDATED_AT)->default(DB::raw('NOW()'));
+            if(Book::UPDATED_AT) {
+                $table->timestamp(Book::UPDATED_AT)->default(Db::raw("CURRENT_TIMESTAMP()"));
             }
         });
     }
@@ -54,6 +51,6 @@ class CreateBooksTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists((new Book)->getTable());
+        Schema::dropIfExists(Book::TABLE);
     }
 }
