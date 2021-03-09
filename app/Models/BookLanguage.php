@@ -27,6 +27,8 @@ class BookLanguage extends Model
     use HasFactory;
     public const TABLE = "languages";
     public const KEY = "Id";
+    public const TABLE_DOT_KEY = self::TABLE . "." . self::KEY;
+
     public const FOREIGN_KEY = "LanguageId";
     public const CREATED_AT = null;
     public const UPDATED_AT = null;

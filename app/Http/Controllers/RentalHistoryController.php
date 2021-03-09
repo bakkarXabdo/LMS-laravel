@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 
 class RentalHistoryController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('admin');
+    }
+
     public function show($historyId)
     {
         $history = RentalHistory::find($historyId);

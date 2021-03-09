@@ -35,6 +35,8 @@ class RentalHistory extends Model
 
     public const TABLE = "rentals_history";
     public const KEY = "Id";
+    public const TABLE_DOT_KEY = self::TABLE . "." . self::KEY;
+
     public const FOREIGN_KEY = "RentalHistoryId";
     public const CREATED_AT = "RentalReturnedAt";
     public const UPDATED_AT = null;

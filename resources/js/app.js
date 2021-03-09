@@ -17,3 +17,7 @@ window.toastr = require('toastr');
 require('./charts.js');
 require('./chartisan');
 require('./prettyFile');
+
+require('bootstrap-3-typeahead');
+
+window.Handlebars = require('handlebars');

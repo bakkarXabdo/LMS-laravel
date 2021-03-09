@@ -36,6 +36,8 @@ class Student extends Model
 
     public const TABLE = "students";
     public const KEY = "Id";
+    public const TABLE_DOT_KEY = self::TABLE . "." . self::KEY;
+
     public const FOREIGN_KEY = "StudentId";
     public const CREATED_AT = "RegisteredAt";
     public const UPDATED_AT = null;
@@ -54,8 +56,9 @@ class Student extends Model
         return $this->belongsTo(User::class, User::FOREIGN_KEY, User::KEY);
     }
 
-    public static function joinWithSelf(Builder $query,Model $with) : Builder
+    public static function joinWithSelf(Builder $query) : Builder
     {
+        $with = $query->getModel();
         return $query->join(self::TABLE, $with::TABLE . "." . self::FOREIGN_KEY, '=', self::TABLE . "." . self::KEY);
     }
 }

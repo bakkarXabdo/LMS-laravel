@@ -4,6 +4,8 @@
 namespace App\Helpers;
 
 
+use Illuminate\Support\Collection;
+
 class AppHelper
 {
     public static function getSqlWithBindings($query)
@@ -35,5 +37,23 @@ class AppHelper
     {
         echo $message;
         exit;
+    }
+
+    public static function binarySearch(Collection $arr, int $left, int $right, $search, $key)
+    {
+        if ($right >= $left)
+        {
+            $mid = (int)($left + ($right - $left)/2);
+            if ($arr[$mid][$key] === $search)
+            {
+                return $mid;
+            }
+            if ($arr[$mid][$key] > $search)
+            {
+                return self::binarySearch($arr, $left, $mid-1, $search, $key);
+            }
+            return self::binarySearch($arr, $mid+1, $right, $search, $key);
+        }
+        return -1;
     }
 }

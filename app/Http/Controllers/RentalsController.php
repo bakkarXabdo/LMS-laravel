@@ -65,14 +65,22 @@ class RentalsController extends Controller
      */
     public function create()
     {
+        $c = BookCopy::find(\request(BookCopy::FOREIGN_KEY));
+        $s = Student::find(\request(Student::FOREIGN_KEY));
+        $co = $c && $s ? "true" : "false";
         return view('rentals.create',[
-            "copy" => BookCopy::find(\request('copyId')),
-            "customer" => Student::find(\request('customerId'))
+            "copy" => $c,
+            "customer" => $s,
+            "confirming" => \request('confirming') ? 'false' : $co
         ]);
     }
 
     public function store(Request $request)
     {
+        if(request("confirming"))
+        {
+            return $this->create();
+        }
         $validated = $request->validate([
             'studentId' => 'required',
             'copyId' => 'required',
@@ -197,10 +205,9 @@ class RentalsController extends Controller
             return $col;
         });
         $data = Rental::query();
-        $m = new Rental;
-        $data = Book::joinWithSelf($data, $m);
-        $data = Student::joinWithSelf($data, $m);
-        $data = BookCopy::joinWithSelf($data, $m);
+        $data = Book::joinWithSelf($data);
+        $data = Student::joinWithSelf($data);
+        $data = BookCopy::joinWithSelf($data);
         $data->select([
             Rental::TABLE . '.*',
             Book::TABLE . '.Title as BookTitle',

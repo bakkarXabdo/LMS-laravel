@@ -26,6 +26,8 @@ class Category extends Model
     use HasFactory;
     public const TABLE = "categories";
     public const KEY = "Id";
+    public const TABLE_DOT_KEY = self::TABLE . "." . self::KEY;
+
     public const FOREIGN_KEY = "CategoryId";
     public const CREATED_AT = null;
     public const UPDATED_AT = null;

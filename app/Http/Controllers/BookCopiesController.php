@@ -108,26 +108,7 @@ class BookCopiesController extends Controller
 
     public function update(Request $request, BookCopy $bookcopy)
     {
-        $copy = $bookcopy;
-        if(!$copy)
-        {
-            abort(404, "Copy Not Found");
-        }
-        $validated = $request->validate([
-            "Shelf" => "required",
-            "Column" => "required",
-            "Row" => "required",
-        ]);
-        $inventory;
-        if(!$inventory)
-        {
-            abort(404, "Inventory $validated[Shelf]/$validated[Column]/$validated[Row] Not Found");
-        }
-        if(!$copy->update(["InventoryId" => $inventory->getKey()]))
-        {
-            abort(501, "Internal Server Error");
-        }
-        return redirect(route('bookcopies.show', $copy->getKey()));
+        return abort(404, "Action not available");
     }
 
 
@@ -174,6 +155,16 @@ class BookCopiesController extends Controller
         return Response::json((object) ["success" => false, "message" => "Unknown Error"], 200);
     }
 
+    public function typeahead()
+    {
+        $query = \request('query');
+        $matches = BookCopy::where(BookCopy::KEY, 'LIKE', $query."%")
+            ->select(BookCopy::KEY)
+            ->limit(4)->get()->map(function($result){
+                return $result->getKey();
+            });
+        return Response::json($matches);
+    }
     public function choose()
     {
         $book = Book::find(request('bookId'));

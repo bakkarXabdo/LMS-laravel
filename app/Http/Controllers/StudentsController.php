@@ -152,6 +152,17 @@ class StudentsController extends Controller
         AppHelper::dieWithMessage("خطأ غير معروف, لا يمكن تحديث معلومات الطالب");
     }
 
+    public function typeahead()
+    {
+        $query = \request('query');
+        $matches = Student::where(Student::KEY, 'LIKE', $query."%")
+            ->select(Student::KEY)
+            ->limit(4)->get()->map(function($result){
+                return (string)$result->getKey();
+            });
+        return Response::json($matches);
+    }
+
     public function destroy($customerId)
     {
         $customer = Student::find($customerId);

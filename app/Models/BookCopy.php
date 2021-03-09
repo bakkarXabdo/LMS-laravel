@@ -34,6 +34,7 @@ class BookCopy extends Model
     public const FOREIGN_KEY = "BookCopyId";
     public const CREATED_AT = null;
     public const UPDATED_AT = "UpdatedAt";
+    public const TABLE_DOT_KEY = self::TABLE . "." . self::KEY;
 
     protected $table = self::TABLE;
     protected $primaryKey = self::KEY;
@@ -64,8 +65,9 @@ class BookCopy extends Model
         return urlencode($this->getKey());
     }
 
-    public static function joinWithSelf(Builder $query,Model $with) : Builder
+    public static function joinWithSelf(Builder $query) : Builder
     {
+        $with = $query->getModel();
         return $query->join(self::TABLE, $with::TABLE . "." . self::FOREIGN_KEY, '=', self::TABLE . "." . self::KEY);
     }
 }

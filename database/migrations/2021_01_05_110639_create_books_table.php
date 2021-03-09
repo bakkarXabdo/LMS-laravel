@@ -23,7 +23,7 @@ class CreateBooksTable extends Migration
             $table->string('Author')->default('غير معروف');
             $table->string('Publisher')->default('غير معروف');
             $table->string('ReleaseYear', 4)->nullable();
-            $table->integer('NumberOfCopies')->default(0);
+            $table->string('Source')->default('غير معروف');
             $table->integer('Price')->default(0);
 
             $table->float('Popularity')->default(0);

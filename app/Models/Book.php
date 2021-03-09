@@ -57,6 +57,7 @@ class Book extends Model
     use HasFactory;
     public const TABLE = "books";
     public const KEY = "InventoryNumber";
+    public const TABLE_DOT_KEY = self::TABLE . "." . self::KEY;
     public const FOREIGN_KEY = "BookId";
     public const CREATED_AT = "DateAdded";
     public const UPDATED_AT = "UpdatedAt";
@@ -109,8 +110,9 @@ class Book extends Model
         return urlencode($this->getKey());
     }
 
-    public static function joinWithSelf(Builder $query,Model $with) : Builder
+    public static function joinWithSelf(Builder $query) : Builder
     {
+        $with = $query->getModel();
         return $query->join(self::TABLE, $with::TABLE . "." . self::FOREIGN_KEY, '=', self::TABLE . "." . self::KEY);
     }
 }

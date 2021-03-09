@@ -37,6 +37,8 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
     public const TABLE = "users";
     public const KEY = "Id";
+    public const TABLE_DOT_KEY = self::TABLE . "." . self::KEY;
+
     public const FOREIGN_KEY = "UserId";
     public const CREATED_AT = "CreatedAt";
     public const UPDATED_AT = "UpdatedAt";

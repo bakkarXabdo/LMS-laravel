@@ -23,9 +23,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-
-
-//dev();
 function test(){if (strpos(php_sapi_name(), 'cli') === false) { dev();exit;}}
 function dev(){
 //    $customers = \App\Models\Customer::all();
@@ -44,14 +41,15 @@ Route::get('/manage', function () {
 Route::get('/books/choose', [BooksController::class, 'choose'])->name('books.choose');
 Route::post('/books/table', [BooksController::class, 'table'])->name('books.table');
 Route::get('/books/importing', [BooksController::class, 'importing'])->name('books.importing');
+Route::post('/import', [BooksController::class, 'import'])->name('books.import');
 Route::get('/books/export', [BooksController::class, 'export'])->name('books.export');
-
 Route::resource('books', BooksController::class);
 
 Route::get('/bookcopies/index?bookId={book}&inventoryId={inventory}', [BookCopiesController::class, 'index'])->name('bookcopies.index');
 Route::post('/bookcopies/table', [BookCopiesController::class, 'table'])->name('bookcopies.table');
 Route::get('/bookcopies/choose', [BookCopiesController::class, 'choose'])->name('bookcopies.choose');
 Route::resource('bookcopies', BookCopiesController::class);
+Route::get('/bookcopies/typeahead', [BookCopiesController::class, 'typeahead'])->name('bookcopies.typeahead');
 
 Route::post('/rentals/table', [RentalsController::class, 'table'])->name('rentals.table');
 Route::get('/rentals/forbook/{book}', [RentalsController::class, 'forBook'])->name('rentals.forbook');
@@ -65,12 +63,13 @@ Route::resource('rentals', RentalsController::class);
 Route::post('/inventory/table', [InventoryController::class, 'table'])->name('inventory.table');
 Route::resource('inventory', InventoryController::class);
 
-Route::post('/student/password/{Student}', [StudentsController::class, 'changePassword'])->name('students.changePassword');
+Route::post('/students/password/{Student}', [StudentsController::class, 'changePassword'])->name('students.changePassword');
 Route::post('/students/table', [StudentsController::class, 'table'])->name('students.table');
 Route::get('/students/choose', [StudentsController::class, 'choose'])->name('students.choose');
+Route::get('/students/typeahead', [StudentsController::class, 'typeahead'])->name('students.typeahead');
 Route::resource('/students', StudentsController::class);
+
 Route::resource('/history', RentalHistoryController::class);
-Route::post('/import', [BooksController::class, 'import'])->name('books.import');
 
 Route::get('/test', [PagesController::class, 'test'])->name('pages.test');
 Route::get('/about', [PagesController::class, 'about'])->name('pages.about');

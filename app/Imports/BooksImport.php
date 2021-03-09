@@ -11,13 +11,11 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\ToCollection;
 
 class BooksImport implements ToCollection
 {
-    private $rowsDef;
-    private static $sheetNumber = 1;
-
     public function __construct()
     {
 
@@ -34,6 +32,9 @@ class BooksImport implements ToCollection
         $id_Price = (int)(request('pos.Price')) - 1;
         $id_Isbn = (int)(request('pos.Isbn')) - 1;
         $onlyUnique = (bool) request('unique');
+        $errors = [];
+        $warnings = [];
+        $responseView = view('errors.importError');
         if(!Cache::has("fileHash-".$GLOBALS["fileHash"])) {
             Cache::put("fileHash-".$GLOBALS["fileHash"], serialize($rows->all()), 5 * 60 * 60);
         }
@@ -41,8 +42,10 @@ class BooksImport implements ToCollection
         {
             $rows[$i]["line"] = $i+1;
         }
+        $headers = null;
         if(($dataOffset = request('startOffset')) > 0)
         {
+            $headers = $rows[0];
             if(!is_numeric($dataOffset))
             {
                 $this->error("بداية البيانات يجب أن يكون رقم (&) ليس رقم", [
@@ -52,10 +55,24 @@ class BooksImport implements ToCollection
             $dataOffset = (int)$dataOffset - 1;
             $rows = $rows->slice($dataOffset);
         }
-
-        $rows = $rows->filter(static function($book) use ($id_InventoryId, $id_Code, $id_Author, $id_Isbn, $id_Price, $id_Publisher, $id_ReleaseYear, $id_Title) {
-            if($book[$id_Code] === "شاغر" || $book[$id_Code] === "الشفرة"
-                || $book[$id_InventoryId] === "شاغر" || $book[$id_InventoryId] === "الجرد"
+        $rows = $rows->map(function($book) use ($id_Publisher, $id_Author, $id_Isbn, $id_Price, $id_InventoryId, $id_ReleaseYear, $id_Title, $rows, $id_Code){
+            // new parsed book
+            $nbook = ["line" => $book["line"]];
+            $nbook["ID"] = $this->safeGet($id_Code, $book);
+            $nbook["IN"] = $this->safeGet($id_InventoryId, $book);
+            $nbook["PU"] = $this->safeGet($id_Publisher, $book);
+            $nbook["AU"] = $this->safeGet($id_Author, $book);
+            $nbook["IS"] = $this->safeGet($id_Isbn, $book);
+            $nbook["TI"] = $this->safeGet($id_Title, $book);
+            $nbook["PR"] = $this->safeGet($id_Price, $book);
+            $nbook["RY"] = $this->safeGet($id_ReleaseYear, $book);
+            return $nbook;
+        });
+        $rows = $rows->filter(function($book){
+            $inventory = $book["IN"];
+            $id = $book["ID"];
+            if($id === "شاغر" || $id === "الشفرة"
+                || $inventory === "شاغر" || $inventory === "الجرد"
             )
             {
                 return false;
@@ -72,165 +89,234 @@ class BooksImport implements ToCollection
         // fix all errors in the copy code
         // eg: MF 14/49 becomes MF/14/49
         // eg: MF/ 14 49 becomes MF/14/49
-        $rows = $rows->map(function($book) use ($rows, $id_Code){
-            $v = $this->fixBookId($book[$id_Code]);
-            if($v === null)
-            {
-                $val = $book[$id_Code];
-                $col = $id_Code + 1;
-                $this->error("الشفرة غير صحيحة (&) , السطر & ,العمود &", [
-                    $val, $book["line"], $col
-                ]);
-            }
-            $book[$id_Code] = $v;
-            return $book;
-        });
-        if($onlyUnique)
-        {
-            $rows = $rows->unique($id_Code);
-        }else {
-            $duplicates = $rows->duplicates($id_Code);
-            $duplicates = $duplicates->unique();
-            if ($duplicates->count() > 0) {
-                $response = "<div dir='rtl'>";
-                $response .= "يوجد شفرات مكررة في الملف<br>";
-                $dups = Collection::make();
-                foreach ($duplicates as $duplicate) {
-                    $dups->add($rows->where($id_Code, $duplicate));
-                }
-                foreach ($dups as $dup) {
-                    $response .= AppHelper::ArabicFormat("الشفرة (؟) مكررة في السطور: ", [$dup->first()[$id_Code]]);
-                    foreach ($dup as $du) {
-                        $response .= $du["line"] . "  ";
-                    }
-                    $response .= "<br>";
-                }
-                echo $response . "</div>";
-                exit;
-            }
-        }
-        $rows = collect($rows->values());
-        // if we find an error in the data we exit the script with a message
-        foreach ($rows as $key => $book)
-        {
-            $line = $key + 1;
-            $id = trim($book[$id_Code]);
-            $title = $book[$id_Title];
-            $year = $this->safeGet($id_ReleaseYear, $book);
-            if(!$this->checkRawBookId($id))
-            {
-                $val = $id;
-                $col = $id_Code + 1;
-                $this->error("الشفرة غير صحيحة (&) , السطر & ,العمود &", [
-                    $val, $line, $col
-                ]);
-            }
-            if(empty(trim($title)))
-            {
-                $col = $id_Title + 1;
-                $this->error("عنوان الكتاب غير موجود , السطر & ,العمود &", [
-                    $line, $col
-                ]);
-            }
-            if(!empty($year) && (!is_int($year) || strlen($year) !== 4))
-            {
-                $val = $year;
-                $col = $id_ReleaseYear + 1;
-                $this->error("خطأ في سنة الاصدار (&) , السطر & ,العمود &", [
-                    $val, $line, $col
-                ]);
-            }
-        }
-        $rawBooks = collect($rows->all());
-        $bookGroups = $rawBooks->groupBy( function($book) use ($id_Code) {
-            return preg_replace('/[^0-9A-Za-z]\d+$/', '', $book[$id_Code]);
-        });
         $dbBooks = Book::query()->with('copies')->get();
         $dbBookCopies = BookCopy::all();
         $dbLanguages = BookLanguage::all();
         $dbCategories = Category::all();
-        $repetitions = 0;
+        $rows = $rows->map(function($book)  use ($id_ReleaseYear, $id_Title, $id_Code, $id_Price, $dbCategories, $dbLanguages, &$errors){
 
+            $line = $book["line"];
+            $year = $book["RY"];
+            if(isset($book["PR"]) && !is_numeric($book["PR"])) {
+                $warnings[] = [
+                    "message" => AppHelper::ArabicFormat("سعر الكتاب ليس رقم صحيحا, تم تجاهل القيمة (؟)",
+                        [
+                            $book["PR"]
+                        ]),
+                    "line" => $line,
+                    "column" => $id_Price + 1
+                ];
+                $book["PR"] = null;
+            }
+            $v = $this->fixBookId($book["ID"]);
+            if($v === null)
+            {
+                $val = $book["ID"];
+                $col = $id_Code + 1;
+                $errors[] = [
+                    "message" => AppHelper::ArabicFormat("الشفرة غير صحيحة (؟)",
+                        [
+                            $val
+                        ]),
+                    "line" => $line,
+                    "column" => $col
+                ];
+                $book["ID"] = "%error%" . Str::random();
+            }else {
+                $book["ID"] = $v;
+                preg_match('/^[A-Za-z]+/', $v, $match);
+                $bookCode = $match[0];
+                if (strlen($bookCode) < 2) {
+                    $errors[] = [
+                        "message" => AppHelper::ArabicFormat("اللغة أو الصنف غير موجود في الشفرة (؟)", $bookCode),
+                        "line" => $line,
+                        "column" => $id_Code + 1
+                    ];
+                }else {
+                    $bookRawLanguage = substr($bookCode, strlen($bookCode) - 1);
+                    $bookRawCategory = substr($bookCode, 0, -1);
+                    $bookLanguage = $dbLanguages->where('Code', $bookRawLanguage)->first();
+                    $bookCategory = $dbCategories->where('Code', $bookRawCategory)->first();
+                    if (!$bookLanguage) {
+                        $errors[] = [
+                            "message" => AppHelper::ArabicFormat("لغة الكتاب '؟' غير معروفة في الشفرة (؟) , الرجاء إدخال لغة جديدة في قاعدة البيانات بالرمز (؟)",
+                                [
+                                    $bookCode,
+                                    $bookRawLanguage,
+                                    $bookRawLanguage
+                                ]),
+                            "line" => $line,
+                            "column" => $id_Code + 1
+                        ];
+                    }
+                    if (!$bookCategory) {
+                        $errors[] = [
+                            "message" => AppHelper::ArabicFormat("صنف الكتاب '؟' غير مُعرف في الشفرة (؟) , الرجاء إدخال صنف جديد في قاعدة البيانات بالرمز (؟)",
+                                [
+                                    $bookCode,
+                                    $bookRawCategory,
+                                    $bookRawCategory
+                                ]),
+                            "line" => $line,
+                            "column" => $id_Code + 1
+                        ];
+                    }
+                    $book["LanguageId"] = $bookLanguage->getKey();
+                    $book["CategoryId"] = $bookCategory->getKey();
+                }
+            }
+            if(empty($book["TI"]))
+            {
+                $errors[] = [
+                    "message" => "عنوان الكتاب غير موجود",
+                    "line" => $line,
+                    "column" => $id_Title + 1
+                ];
+            }
+            if(isset($year) && (!is_int($year) || strlen($year) !== 4))
+            {
+                $errors[] = [
+                    "message" => AppHelper::ArabicFormat("خطأ في سنة الاصدار (؟)", $year),
+                    "line" => $line,
+                    "column" => $id_ReleaseYear + 1
+                ];
+            }
+            $book["%SI"] = !isset($book["IN"]) || $book["IN"] === "دون رقم جرد";
+            return $book;
+        });
+        $repetitions = 0;
+        if($onlyUnique)
+        {
+            $oldCount = $rows->count();
+            $rows = $rows->unique("ID");
+            $repetitions = $oldCount - $rows->count();
+        }else {
+            $duplicates = $rows->duplicates("ID");
+            $duplicates = $duplicates->unique();
+            if ($duplicates->count() > 0) {
+                // we sort so we can do binary search later
+                $id_sorted = collect($rows->sortBy("ID")->values());
+                $count = count($id_sorted);
+                foreach ($duplicates as $duplicate) {
+                    $lines = [];
+                    $index = AppHelper::binarySearch($id_sorted, 0, $count - 1, $duplicate, "ID");
+                    $lines[] = $id_sorted[$index]["line"];
+                    // check if we have more duplicates on the right
+                    for($i = $index+1; $i < $count; $i++)
+                    {
+                        if($id_sorted[$i]["ID"] === $duplicate)
+                        {
+                            $lines[] = $id_sorted[$i]["line"];
+                        }else{
+                            break;
+                        }
+                    }
+                    // if we have more on the left
+                    for($i = $index-1; $i >= 0; $i--)
+                    {
+                        if($id_sorted[$i]["ID"] === $duplicate)
+                        {
+                            $lines[] =$id_sorted[$i]["line"];
+                        }else{
+                            break;
+                        }
+                    }
+                    sort($lines);
+                    $errors[] = [
+                        "message" => AppHelper::ArabicFormat("الشفرة (؟) مكررة في الملف", $duplicate),
+                        "line" => implode(' و ', $lines),
+                        "column" => $id_Code + 1
+                    ];
+                }
+                $rows = $rows->unique($id_Code);
+            }
+        }
+        $inventorychecks = Collection::make();
+        $idchecks = Collection::make();
+        foreach ($rows as $book)
+        {
+            $Code = $book["ID"];
+            if(strpos('%error%', $Code) !== 0)
+            {
+                $idchecks[] = $Code;
+            }
+            $InventoryId = $book["IN"];
+            if (!$book["%SI"]) {
+                $inventorychecks[] = $InventoryId;
+            }
+        }
+        $idchecks_result = BookCopy::query()->whereIn(BookCopy::KEY, $idchecks)->select(BookCopy::KEY)->get();
+        $inventorychecks_result = BookCopy::query()->whereIn("InventoryId", $inventorychecks)->select(BookCopy::KEY)->get();
+        foreach ($idchecks_result as $error)
+        {
+            $id = $error->getKey();
+            $line = $rows->where("ID", $id)->first()["line"];
+            $errors[] = [
+                "message" => AppHelper::ArabicFormat("النسخة (؟) موجودة في قاعدة البيانات مسبقا", $id),
+                "line" => $line,
+                "column" => $id_Code + 1
+            ];
+        }
+        foreach ($inventorychecks_result as $error)
+        {
+            $inventory = $error->getKey();
+            $line = $rows->where("IN", $inventory)->first()["line"];
+            $errors[] = [
+                "message" => AppHelper::ArabicFormat("رقم الجرد (؟) موجود في قاعدة البيانات مسبقا", $inventory),
+                "line" => $line,
+                "column" => $id_InventoryId + 1
+            ];
+        }
+        if(count($errors) !== 0)
+        {
+            echo $responseView->with(["errors" => $errors, "warnings" => $warnings])->render();
+            exit;
+        }
+        $rows = collect($rows->values());
+        $bookGroups = $rows->groupBy( function($book) {
+            return preg_replace('/[^0-9A-Za-z]\d+$/', '', $book["ID"]);
+        });
         Db::beginTransaction();
         try {
             foreach ($bookGroups as $bookId => $copiesGroup) {
                 $rawBook = $copiesGroup[0];
                 $dbBook = $dbBooks->find($bookId);
-                preg_match('/^[A-Za-z]+/', $bookId, $match);
-                $bookCode = $match[0];
-                $line = $copiesGroup[0]["line"];
-                if (strlen($bookCode) < 2) {
-                    $val = $bookCode;
-                    $col = $id_Code + 1;
-                    $this->error("اللغة أو الصنف غير موجود في الشفرة (&) , السطر & ,العمود &", [
-                        $val, $line, $col
-                    ]);
-                }
-                $bookRawLanguage = substr($bookCode, strlen($bookCode) - 1);
-                $bookRawCategory = substr($bookCode, 0, -1);
-                $bookLanguage = $dbLanguages->where('Code', $bookRawLanguage)->first();
-                $bookCategory = $dbCategories->where('Code', $bookRawCategory)->first();
-                if (!$bookLanguage) {
-                    $val = $bookCode;
-                    $col = $id_Code + 1;
-                    $this->error("لغة الكتاب & غير معروفة في الشفرة (&) , السطر & ,العمود &, الرجاء إدخال لغة جديدة في قاعدة البيانات بالرمز (&)", [
-                        $bookRawLanguage, $val, $line, $col, $bookRawLanguage
-                    ]);
-                }
-                if (!$bookCategory) {
-                    $val = $bookCode;
-                    $col = $id_Code + 1;
-                    $this->error("صنف الكتاب & غير مُعرف في الشفرة (&) , السطر & ,العمود &, الرجاء إدخال صنف جديد في قاعدة البيانات بالرمز (&)", [
-                        $bookRawCategory, $val, $line, $col, $bookRawCategory
-                    ]);
-                }
                 if (!$dbBook) {
                     $outs = [
                         Book::KEY => $bookId,
-                        Category::FOREIGN_KEY => $bookCategory->getKey(),
-                        BookLanguage::FOREIGN_KEY => $bookLanguage->getKey()
+                        Category::FOREIGN_KEY => $rawBook["CategoryId"],
+                        BookLanguage::FOREIGN_KEY => $rawBook["LanguageId"]
                     ];
-                    if ($v = $this->safeGet($id_Title, $rawBook)) {
-                        $outs['Title'] = $v;
+                    if ($rawBook["TI"]) {
+                        $outs['Title'] = $rawBook["TI"];
                     }
-                    if ($v = $this->safeGet($id_Author, $rawBook)) {
-                        $outs['Author'] = $v;
+                    if($b = $copiesGroup->whereNotNull("AU")->first())
+                    {
+                        $outs['Author'] = $b["AU"];
                     }
-                    if ($v = $this->safeGet($id_Publisher, $rawBook)) {
-                        $outs['Publisher'] = $v;
+                    if($b = $copiesGroup->whereNotNull("PU")->first())
+                    {
+                        $outs['Publisher'] = $b["PU"];
                     }
-                    if ($v = $this->safeGet($id_ReleaseYear, $rawBook)) {
-                        $outs['ReleaseYear'] = $v;
+                    if($b = $copiesGroup->whereNotNull("RY")->first())
+                    {
+                        $outs['ReleaseYear'] = $b["RY"];
                     }
-                    if ($v = $this->safeGet($id_Price, $rawBook)) {
-                        $outs['Price'] = $v;
+                    if($b = $copiesGroup->whereNotNull("PR")->first())
+                    {
+                        $outs['Price'] = $b["PR"];
                     }
-                    if ($v = $this->safeGet($id_Isbn, $rawBook)) {
-                        $outs['Isbn'] = $v;
+                    if($b = $copiesGroup->whereNotNull("IS")->first())
+                    {
+                        $outs['Isbn'] = $b["IS"];
                     }
                     Book::create($outs);
                 }
-                $dbCopies = $dbBook ? $dbBook->copies : null;
                 foreach ($copiesGroup as $copy) {
-                    $line = $copy["line"];
-                    $Code = $copy[$id_Code];
-                    $InventoryId = trim($copy[$id_InventoryId]);
-                    if (!empty($InventoryId) && $dbBookCopies->where('InventoryId', $InventoryId)->isNotEmpty()) {
-                        $this->error("رقم الجرد (&) موجود في قاعدة البيانات مسبقا, السطر & ,العمود &", [
-                            $InventoryId, $line, $id_InventoryId
-                        ]);
-                    }
-                    if ($dbCopies && $dbCopies->find($Code)) {
-                        $this->error("النسخة (&) موجودة في قاعدة البيانات مسبقا, السطر & ,العمود &", [
-                            $Code, $line, $id_Code
-                        ]);
-                    }
-                    $_inventoryId = $copy[$id_InventoryId];
-                    $_inventoryId = $_inventoryId === "دون رقم جرد" ? null : $_inventoryId;
                     BookCopy::create([
-                        BookCopy::KEY => $Code,
+                        BookCopy::KEY => $copy["ID"],
                         Book::FOREIGN_KEY => $bookId,
-                        "InventoryId" => $_inventoryId
+                        "InventoryId" => $copy["%SI"] ? null : $copy["IN"]
                     ]);
                 }
             }
@@ -238,18 +324,29 @@ class BooksImport implements ToCollection
         }catch (\Exception $e)
         {
             Db::rollBack();
-            echo "حدث خطأ غير متوقع<br>";
-            echo $e->getMessage();
+            echo $responseView->with(["headMessage" => "حدث خطأ إدخال في قاعدة البيانات ,الخطأ التقني:",
+                "code" => $e->getMessage(),
+                "errors" => $errors,
+                "warnings" => $warnings
+            ])->render();
+            exit;
         }
-        echo "تم إدخال البيانات";
-        echo $rows->count();
-
+        echo $responseView->with(["headMessage" =>
+            AppHelper::ArabicFormat("تم إدخال ؟ نُسخة, ؟ كتاب , تجاهل ل ؟ نُسخة مكررة", [
+                $rows->count(),
+                $bookGroups->count(),
+                $repetitions
+            ]),
+            "errors" => $errors,
+            "warnings" => $warnings
+        ])->render();
         exit;
         // self::$sheetNumber++;
     }
     private function safeGet($key, $array)
     {
-        return $key >= 0 ? trim($array[$key]) : null;
+        $v = $key >= 0 ? trim($array[$key]) : null;
+        return empty($v) ? null : $v;
     }
     private function fixBookId($raw)
     {
@@ -263,6 +360,7 @@ class BooksImport implements ToCollection
             $fixed .= "/" . $m[0];
             $new = $fixed;
         }
+        $new = preg_replace('/\/0/', '/', $new);
         return $this->checkBookId($new) ? $new : null;
     }
     private function checkBookId($raw)

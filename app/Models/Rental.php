@@ -36,6 +36,8 @@ class Rental extends Model
     public const TABLE = "rentals";
     public const KEY = "Id";
     public const FOREIGN_KEY = "RentalId";
+    public const TABLE_DOT_KEY = self::TABLE . "." . self::KEY;
+
     public const CREATED_AT = "CreatedAt";
     public const UPDATED_AT = null;
 
@@ -65,8 +67,9 @@ class Rental extends Model
         return (int)$diff;
     }
 
-    public static function joinWithSelf(Builder $query,Model $with) : Builder
+    public static function joinWithSelf(Builder $query) : Builder
     {
+        $with = $query->getModel();
         return $query->join(self::TABLE, $with::TABLE . "." . self::FOREIGN_KEY, '=', self::TABLE . "." . self::KEY);
     }
 }

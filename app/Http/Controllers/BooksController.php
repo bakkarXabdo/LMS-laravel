@@ -193,7 +193,7 @@ class BooksController extends Controller
             {
                 $data->where("Title", 'Like', "%".substr($request->search->value, 6)."%");
             }else {
-                $data->where(Book::KEY, '=', $request->search->value);
+                $data->where(Book::KEY, 'LIKE', $request->search->value."%");
             }
         }
         if(isset($request->choosing))

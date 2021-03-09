@@ -21,11 +21,14 @@ class DatabaseSeeder extends Seeder
 //        $seed = file_get_contents('database/seeders/lms.sql');
 //        DB::unprepared($seed);
 
+        // db Users
         User::create([
             "username" => "admin@lms.com",
             "password" => Hash::make("12258"),
             "IsAdmin" => 1
         ]);
+
+        // Languages
         BookLanguage::create([
             "Code" => "F",
             "Name" => "Français"
@@ -35,6 +38,7 @@ class DatabaseSeeder extends Seeder
             "Name" => "عربية"
         ]);
 
+        // Categories
         Category::create([
             "Code" => "IN",
             "Name" => "إعلام آلي"
