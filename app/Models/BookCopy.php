@@ -32,14 +32,14 @@ class BookCopy extends Model
     public const TABLE = "bookcopies";
     public const KEY = "Id";
     public const FOREIGN_KEY = "BookCopyId";
-    public const CREATED_AT = null;
-    public const UPDATED_AT = "UpdatedAt";
+    public const CREATED_AT = "CreatedAt";
+    public const UPDATED_AT = null;
     public const TABLE_DOT_KEY = self::TABLE . "." . self::KEY;
 
     protected $table = self::TABLE;
     protected $primaryKey = self::KEY;
     protected $keyType = "string";
-
+    public $incrementing = false;
     protected $guarded = [];
 
     function book(){

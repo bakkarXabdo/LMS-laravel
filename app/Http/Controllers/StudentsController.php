@@ -86,31 +86,19 @@ class StudentsController extends Controller
         AppHelper::dieWithMessage("خطأ غير معروف, لا يمكن إدخال معلومات الطالب");
     }
 
-    public function changePassword($customerId)
+    public function changePassword(Student $student)
     {
-        $customer = Student::find($customerId);
-        if(!$customer)
-        {
-            AppHelper::dieWithMessage(AppHelper::ArabicFormat("الطالب {؟} غير موجود", $customerId));
-        }
         $pwd = strtolower(Str::random(4));
-        if($customer->user->update(["password" => Hash::make($pwd)]))
+        if($student->user->update(["password" => Hash::make($pwd)]))
         {
             Cache::put("student-password", $pwd);
-            return redirect(route('students.show', $customer->getKey()));
+            return redirect(route('students.show', $student->getKey()));
         }
         AppHelper::dieWithMessage("خطأ غير معروف, لا يمكن تحديث معلومات الطالب");
     }
-    public function show($Id)
+    public function show(Student $student)
     {
-        $student = Student::where(Student::KEY, $Id)->withCount(["rentals as RentalCount"])->first();
-        if(!$student)
-        {
-            abort(404, 'student not found');
-        }
-        return view('student.show', [
-            "student" => $student
-        ])->with($student->attributesToArray());
+        return view('student.show', compact('student'));
     }
     public function choose()
     {
@@ -119,34 +107,27 @@ class StudentsController extends Controller
             'copyId' => \request('copyId')
         ]);
     }
-    public function edit($customerId)
+    public function edit($studentId)
     {
-        $customer = Student::find($customerId);
-        if(!$customer || !$customer->getKey())
+        $student = Student::find($studentId);
+        if(!$student || !$student->getKey())
         {
-            AppHelper::dieWithMessage(AppHelper::ArabicFormat("الطالب {؟} غير موجود", \request($customerId)));
+            AppHelper::dieWithMessage(AppHelper::ArabicFormat("الطالب {؟} غير موجود", $studentId));
         }
-        return view('student.edit')->with($customer->attributesToArray());
+        return view('student.edit', compact('student'));
     }
 
-    public function update()
+    public function update(Request $request, Student $student)
     {
-        $customer = Student::find(\request(Student::KEY));
-        if(!$customer || !$customer->getKey())
-        {
-            AppHelper::dieWithMessage(AppHelper::ArabicFormat("الطالب {؟} غير موجود", \request(Student::KEY)));
-
-        }
-
-        $validated = \request()->validate([
+        $validated = request()->validate([
             Student::KEY => 'required',
             'Name' => 'required',
             'BirthDate' => 'required'
         ]);
 
-        if($customer->update($validated))
+        if($student->update($validated))
         {
-            return redirect(route('students.show', $customer->getKey()));
+            return redirect(route('students.show', $student->getKey()));
         }
 
         AppHelper::dieWithMessage("خطأ غير معروف, لا يمكن تحديث معلومات الطالب");
@@ -163,30 +144,30 @@ class StudentsController extends Controller
         return Response::json($matches);
     }
 
-    public function destroy($customerId)
+    public function destroy($studentId)
     {
-        $customer = Student::find($customerId);
-        if (isset($customer) && $customer->getKey()) {
-            $rentalsCount = $customer->rentals->count();
+        $student = Student::find($studentId);
+        if (isset($student) && $student->getKey()) {
+            $rentalsCount = $student->rentals->count();
             if($rentalsCount > 0) {
                 return Response::json((object) [
                     "success" => false,
                     "message" => AppHelper::ArabicFormat("هذا الطالب يملك {؟} إعارة, <a style='color:blue;text-decoration:underline' href='", $rentalsCount)
-                        . route('rentals.forcustomer', $customerId)
+                        . route('rentals.forstudent', $studentId)
                         . "'>إظهار</a>"
                 ], 200);
             }
 
-            if (DB::transaction(function () use ($customer) {
-                return $customer->delete();
+            if (DB::transaction(function () use ($student) {
+                return $student->delete();
             })) {
-                return Response::json((object) ["success" => true, "message" => AppHelper::ArabicFormat("تم حذف الطالب {؟}", $customerId)], 200);
+                return Response::json((object) ["success" => true, "message" => AppHelper::ArabicFormat("تم حذف الطالب {؟}", $studentId)], 200);
             }
 
             return Response::json((object) ["success" => false, "message" => "خطأ غير معروف, لا يمكن حذف الطالب"], 200);
         }
 
-        return Response::json((object) ["success" => false, "message" => AppHelper::ArabicFormat("الطالب {؟} غير موجود", $customerId)], 200);
+        return Response::json((object) ["success" => false, "message" => AppHelper::ArabicFormat("الطالب {؟} غير موجود", $studentId)], 200);
     }
 
     public function table()

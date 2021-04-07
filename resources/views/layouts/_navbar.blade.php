@@ -9,16 +9,13 @@
                     {{ Auth::user()->name }}
                 </button>
                 <div class="dropdown-menu">
-                    <form action="{{ route('logout') }}" method="post">@csrf<button type="submit" class="dropdown-item">Logout</button></form>
+                    <form action="{{ route('logout') }}" method="post">@csrf<button type="submit" class="dropdown-item">خروج</button></form>
                     <a class="dropdown-item" href="{{ route('dashboard') }}">Dashboard</a>
                     <a class="dropdown-item" href="{{ route('settings') }}">Settings</a>
                 </div>
             @else
                 <a href="{{ route('login') }}" class="btn btn-transparent mr-1">
-                    Login
-                </a>
-                <a href="{{ route('register') }}" class="btn btn-transparent">
-                    Register
+                    دخول
                 </a>
             @endauth
         </div>

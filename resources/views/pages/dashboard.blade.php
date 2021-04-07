@@ -1,10 +1,8 @@
 @extends('layouts.master')
 @section('PageTitle') DashBoard @endsection
 @section('content')
-    <div class="jumbotron">
-        <h1>Library Managment System</h1>
-        <p class="lead">Manage your library more easily with LMS, now it's time to ditch the old excel!</p>
-    </div>
+    <h1 class="jumbotron text-center">{{config('app.name')}}</h1>
+
     <div id="chart" style="height: 300px;"></div>
     <div class="row">
         <h4>Latest Statistics</h4>

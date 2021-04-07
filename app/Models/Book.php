@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $CategoryId
  * @property int $LanguageId
  * @property int $TotalRentals
+ * @property string $EncodedKey
  * @property string $Isbn
  * @property \Illuminate\Support\Carbon $DateAdded
  * @property \Illuminate\Support\Carbon $UpdatedAt
@@ -66,6 +67,7 @@ class Book extends Model
     protected $primaryKey = self::KEY;
 
     protected $keyType = "string";
+    public $incrementing = false;
     protected $guarded = [];
 
 
@@ -73,7 +75,7 @@ class Book extends Model
     /**-- Attributes --*/
 
     function getPathAttribute(){
-        return route('books.show', $this->attributes['Id']);
+        return route('books.show', $this->getKey());
     }
     function getRentalsCountAttribute(){
         return $this->rentals()->count();
@@ -104,7 +106,10 @@ class Book extends Model
     {
         return '^[A-Za-z]+\/\d+$';
     }
-
+    public static function getIncludedIdPattern(): string
+    {
+        return '^[A-Za-z]+\/\d+';
+    }
     public function getEncodedKeyAttribute() : string
     {
         return urlencode($this->getKey());

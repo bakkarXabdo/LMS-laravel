@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Book;
+use App\Models\BookCopy;
 use App\Models\RentalHistory;
 use App\Models\Student;
 use Illuminate\Database\Migrations\Migration;
@@ -20,7 +21,7 @@ class CreateRentalsHistoryTable extends Migration
             $table->id(RentalHistory::KEY);
             $table->string(Student::FOREIGN_KEY);
             $table->string('StudentName');
-            $table->string(Book::FOREIGN_KEY);
+            $table->string(BookCopy::FOREIGN_KEY);
             $table->string('BookTitle');
             $table->timestamp('RentalCreatedAt');
             $table->timestamp('RentalExpiresAt');

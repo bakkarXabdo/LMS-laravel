@@ -15,7 +15,7 @@
         @stack('src')
     </head>
     <body lang='ar'>
-        <div class="navbar navbar-inverse navbar-fixed-top">
+        <div  class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -25,15 +25,14 @@
                     </button>
                     <a href="/" class="navbar-brand">{{config('app.brandName')}}</a>
                 </div>
-                <div class="navbar-collapse collapse">
+                <div class="navbar-collapse collapse" >
                     <ul class="nav navbar-nav">
                         @if(Auth::user() && Auth::user()->IsAdmin)
                             <li><a href="{{ route('books.index') }}">الكُتب</a></li>
                             <li><a href="{{ route('students.index') }}">الطُلاب</a></li>
                             <li><a href="{{ route('rentals.index') }}">الإعارات</a></li>
-                            <li><a href="{{ route('inventory.index') }}">الإعدادات</a></li>
-                        @else
-
+                            <li><a href="{{ route('history.index') }}">التأريخ</a></li>
+{{--                            <li><a href="{{ route('settings') }}">الإعدادات</a></li>--}}
                         @endif
                     </ul>
                     @include('layouts._login')

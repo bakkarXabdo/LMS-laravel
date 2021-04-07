@@ -1,17 +1,17 @@
 @extends('layouts.master')
 
-@section('PageTitle') الطالب {{ $Name }} @endsection
+@section('PageTitle') الطالب {{ $student->Name }} @endsection
 
 
 @section('content')
-    <div class="container body-content">
-        <h2>{{ $Name }}</h2>
+    <div dir="rtl" class="container body-content">
+        <h2>{{ $student->Name }}</h2>
         <h4>معلومات الطالب</h4>
         <table class="table table-responsive table-bordered">
             <tbody>
                 <tr class="d-flex">
                     <th class="col-sm-2">الإسم</th>
-                    <td class="col-sm-10">{{ $Name }}</td>
+                    <td class="col-sm-10">{{ $student->Name }}</td>
                 </tr>
                 <tr>
                     <th>تاريخ الميلاد</th>
@@ -22,23 +22,23 @@
                     <td>{{ $student->getKey() }}</td>
                 </tr>
                 <tr>
-                    <th>إجمالي الكُتب المُعارة</th>
-                    <td>{{ $TotalRentals }}</td>
+                    <th>الكُتب المُعارة سابقا</th>
+                    <td>{{ $student->TotalRentals }}</td>
                 </tr>
                 <tr>
                     <th>الكُتب المُعارة</th>
                     <td>
-                        @if($RentalCount === 0 )
+                        @if($student->rentals->count() === 0 )
                             0
                         @else
-                            <a href="{{ route('rentals.forcustomer', $student->getKey()) }}">{{ $RentalCount }} كِتاب</a>
+                            <a href="{{ route('rentals.forstudent', $student->getKey()) }}">{{ $student->rentals->count() }} كِتاب</a>
                         @endif
                     </td>
                 </tr>
             @if(\Illuminate\Support\Facades\Cache::has("student-password"))
                 <tr style="background: rgb(212 189 107)">
                     <th>كلمة السر</th>
-                    <td>
+                    <td style="font: 1.5rem">
                         {{ \Illuminate\Support\Facades\Cache::pull("student-password") }}
                     </td>
                 </tr>
@@ -48,15 +48,15 @@
         <h4>الإجرائات</h4>
         <hr>
         <div class="row" style="margin-left:0">
-            <a class="btn btn-primary" href="{{ route('students.edit', $Id) }}">تعديل</a>
-            <a class="btn btn-primary" href="{{ route('rentals.create', ["studentId" => $Id]) }}">إعارة</a>
-            @if(!\Illuminate\Support\Facades\Cache::has("customer-password"))
-                <form style="display: inline-block;" method="post" action="{{ route('students.changePassword', $Id) }}">
+            <a class="btn btn-primary" href="{{ route('students.edit', $student->getKey()) }}">تعديل</a>
+            <a class="btn btn-primary" href="{{ route('rentals.create', ["studentId" => $student->getKey()]) }}">إعارة</a>
+            @if(!\Illuminate\Support\Facades\Cache::has("student-password"))
+                <form style="display: inline-block;" method="post" action="{{ route('students.changePassword', $student->getKey()) }}">
                     @csrf
                     <button type="submit" class="btn btn-primary">تغيير كلمة السر</button>
                 </form>
             @endif
-            <a id="delete-customer" href="#" class="btn btn-danger">حذف</a>
+            <a id="delete-student" href="#" class="btn btn-danger">حذف</a>
         </div>
     </div>
 @endsection
@@ -64,11 +64,11 @@
 
 @push('scripts')
     <script>
-        $("#delete-customer").on("click",  function () {
+        $("#delete-student").on("click",  function () {
             var button = $(this);
             bootbox.dialog({
                 title: "تأكيد العملية",
-                message: `<span> هل تريد فعلا حذف الطالب <strong>{{ $Name  }}</strong> ؟</span>`,
+                message: `<span> هل تريد فعلا حذف الطالب <strong>{{ $student->Name  }}</strong> ؟</span>`,
                 backdrop:true,
                 buttons: {
                     confirm: {
@@ -76,7 +76,7 @@
                         className: 'btn-danger',
                         callback: function () {
                             $.ajax({
-                                url: '{{ route('students.destroy', $Id) }}',
+                                url: '{{ route('students.destroy', $student->getKey()) }}',
                                 data:{
                                     _method: "DELETE"
                                 },

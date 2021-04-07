@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('PageTitle') {{ isset($errors) && count($errors) > 0 ? "إدخال ملف إكسل" : " نتيجة الإدخال" }} @endsection
+@section('PageTitle') {{ !isset($errors) || count($errors) === 0 ? "إدخال ملف إكسل" : " نتيجة الإدخال" }} @endsection
 
 @section('content')
 <div class="container" dir="rtl"  style="margin-top: 3rem">
@@ -19,7 +19,7 @@
         </div>
         <div class="">
             <input class="" id="unique"  type="checkbox" name="unique">
-            <label style="font-size: 1.5rem;font-weight: bold" for="unique">تجاهل النُسخ المُكررة في الملف</label>
+            <label style="font-size: 1.5rem;font-weight: bold" for="unique">تخطي النُسخ المُكررة في الملف</label>
         </div>
         <hr/>
         <h4 style="margin-top: 5px">موقع الأعمدة</h4>

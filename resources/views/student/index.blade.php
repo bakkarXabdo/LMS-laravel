@@ -12,14 +12,14 @@
             </div>
         </div>
     </div>
-    <table class="table table-bordered" id="js-customers-table"></table>
+    <table class="table table-bordered" id="js-students-table"></table>
 @endsection
 
 @push('scripts')
 <script>
     let table;
     let url;
-    let jst = $("#js-customers-table")
+    let jst = $("#js-students-table")
     $(document).ready(function () {
         table = jst.DataTable({
             dom:'lrtip',
@@ -63,7 +63,7 @@
                     orderable:true,
                     render: function (_, _, student) {
                         if (student.RentalsCount > 0) {
-                            url = '{{ route('rentals.forcustomer', ':id') }}'.replace(':id', student.{{ \App\Models\Student::KEY }});
+                            url = '{{ route('rentals.forstudent', ':id') }}'.replace(':id', student.{{ \App\Models\Student::KEY }});
                             return `<a href='${url}'>${student.RentalsCount} كتاب <a/>`;
                         }
                         return "0";
@@ -84,12 +84,12 @@
                     render: function (StudentId) {
                         let actions="";
                         @if(isset($renting) && $renting)
-                            url = '{{ route('rentals.create', ['copyId' => $copyId, 'customerId' => ':id']) }}'.replace(encodeURIComponent(':id'), StudentId)
+                            url = '{{ route('rentals.create', ['copyId' => $copyId, 'studentId' => ':id']) }}'.replace(encodeURIComponent(':id'), StudentId)
                             actions += `<a href="${url}" class="mx-1 btn btn-success"><i class="fa fa-check"></i> إختيار</a>`;
                         @else
                             url = '{{ route('students.edit', ':id') }}'.replace(':id', StudentId);
                         actions += `<a href="${url}" class="mx-1 btn btn-primary"><i class="fa fa-edit"></i>تعديل</a>`;
-                        actions += `<a href="#" data-student-id='${StudentId}' class='js-customer-delete mx-1 btn btn-danger'><i class="fa fa-trash"></i>حذف</a>`;
+                        actions += `<a href="#" data-student-id='${StudentId}' class='js-student-delete mx-1 btn btn-danger'><i class="fa fa-trash"></i>حذف</a>`;
                         @endif
                             return `<span style="display:flex">${actions}</span>`;
                     }
@@ -97,7 +97,7 @@
             ],
             order: [[1, "desc"]]
         });
-        jst.on("click", ".js-customer-delete", function () {
+        jst.on("click", ".js-student-delete", function () {
             var button = $(this);
             bootbox.dialog({
                 title: "تأكيد",

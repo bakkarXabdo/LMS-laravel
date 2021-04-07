@@ -60,8 +60,8 @@ class Rental extends Model
     }
     function getReturnDateAttribute()
     {
-        $diff =  Carbon::parse($this->attributes['Expires'])->diffInDays(Carbon::now());
-        if(Carbon::parse($this->attributes['Expires'])->lessThan(Carbon::now())){
+        $diff =  Carbon::parse($this->attributes['ExpiresAt'])->diffInDays(Carbon::now());
+        if(Carbon::parse($this->attributes['ExpiresAt'])->lessThan(Carbon::now())){
             $diff = -1 * $diff;
         }
         return (int)$diff;

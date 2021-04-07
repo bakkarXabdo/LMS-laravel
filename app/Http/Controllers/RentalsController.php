@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\AppHelper;
 use App\Models\Book;
 use App\Models\BookCopy;
 use App\Models\Student;
@@ -43,36 +44,32 @@ class RentalsController extends Controller
         }
         return view('rentals.index',[
             "book" => $book,
-            "customer" => null
+            "student" => null
         ]);
     }
-    public function forCustomer($customerId)
+    public function forStudent($studentId)
     {
-        $customer = Student::find($customerId);
-        if(!$customer || !$customer->getKey())
+        $student = Student::find($studentId);
+        if(!$student || !$student->getKey())
         {
-            abort(404, 'customer not found');
+            abort(404, 'student not found');
         }
         return view('rentals.index',[
             "book" => null,
-            "customer" => $customer
+            "student" => $student
         ]);
     }
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
     public function create()
     {
-        $c = BookCopy::find(\request(BookCopy::FOREIGN_KEY));
-        $s = Student::find(\request(Student::FOREIGN_KEY));
-        $co = $c && $s ? "true" : "false";
-        return view('rentals.create',[
-            "copy" => $c,
-            "customer" => $s,
-            "confirming" => \request('confirming') ? 'false' : $co
-        ]);
+        $copy = BookCopy::find(\request(BookCopy::FOREIGN_KEY));
+        $student = Student::find(\request(Student::FOREIGN_KEY));
+        $confirming = request('confirming') || ($copy && $student);
+        return view('rentals.create',compact('copy', 'student', 'confirming'));
     }
 
     public function store(Request $request)
@@ -81,31 +78,32 @@ class RentalsController extends Controller
         {
             return $this->create();
         }
-        $validated = $request->validate([
-            'studentId' => 'required',
-            'copyId' => 'required',
-            'duration' => 'required|integer'
-        ]);
-        $student = Student::find(request('customerId'));
-        $copy = BookCopy::find(\request('copyId'));
-        if(!$customer)
+        $student = Student::find(request(Student::FOREIGN_KEY));
+        $copy = BookCopy::find(request(BookCopy::FOREIGN_KEY));
+        if(!$student)
         {
-            return "Customer not found";
+            return "الطالب غير موجود";
         }
         if(!$copy)
         {
-            return "Copy not found";
+            return "النسخة غير موجودة";
         }
         if($copy->rental)
         {
-            return "Copy is already Rented (<a href='".route('rentals.show', $copy->rental->getKey())."'>View</a>)";
+            $show = "<a href='".route('rentals.show', $copy->rental->getKey())."'>" ."إضهار" ."</a>";
+            return "$show هذه النسخة معاره مسبقا, ";
         }
-        $rental = Rental::create([
-            "CustomerId" => $student->getKey(),
-            "BookCopyId" => $copy->getKey(),
-            "BookId" => $copy->book->getKey(),
-            "Expires" => Carbon::now()->addDays($validated['duration'])->toDateTimeString()
-        ]);
+        $rental = DB::transaction(function() use ($copy, $student) {
+            $student->increment('TotalRentals');
+            $copy->book->increment('TotalRentals');
+            $copy->book->increment('Popularity');
+            return Rental::create([
+                Student::FOREIGN_KEY => $student->getKey(),
+                BookCopy::FOREIGN_KEY => $copy->getKey(),
+                Book::FOREIGN_KEY => $copy->book->getKey(),
+                "ExpiresAt" => Carbon::now()->addDays(request()->get('duration'))->toDateTimeString()
+            ]);
+        });
         if($rental && $rental->getKey())
         {
             return redirect(route('rentals.show', $rental->getKey()));
@@ -127,23 +125,18 @@ class RentalsController extends Controller
         ]);
     }
 
-    public function returnRental($rentalId)
+    public function returnRental(Rental $rental)
     {
-        $rental = Rental::find($rentalId);
-        if(!$rental || !$rental->getKey())
-        {
-            return abort(404, "Rental $rentalId not found");
-        }
         $rentalHistory = Db::transaction(function() use ($rental) {
             $r = null;
             try {
                 $r = RentalHistory::create([
-                    "StudentId" => $rental->student->CardId,
+                    "StudentId" => $rental->student->getKey(),
                     "StudentName" => $rental->student->Name,
-                    "BookId" => $rental->book->getKey(),
+                    "BookCopyId" => $rental->copy->getKey(),
                     "BookTitle" => $rental->book->Title,
                     "RentalCreatedAt" => $rental->CreatedAt,
-                    "RentalExpiresAt" => $rental->Expires,
+                    "RentalExpiresAt" => $rental->ExpiresAt,
                 ]);
             }catch (Exception $e)
             {
@@ -204,11 +197,11 @@ class RentalsController extends Controller
             $col['Id'] = $rcol->search($col);
             return $col;
         });
-        $data = Rental::query();
-        $data = Book::joinWithSelf($data);
-        $data = Student::joinWithSelf($data);
-        $data = BookCopy::joinWithSelf($data);
-        $data->select([
+        $rentalsData = Rental::query();
+        $rentalsData = Book::joinWithSelf($rentalsData);
+        $rentalsData = Student::joinWithSelf($rentalsData);
+        $rentalsData = BookCopy::joinWithSelf($rentalsData);
+        $rentalsData->select([
             Rental::TABLE . '.*',
             Book::TABLE . '.Title as BookTitle',
             Student::TABLE . '.Name as StudentName',
@@ -217,13 +210,13 @@ class RentalsController extends Controller
         ]);
         foreach ($request->order as $order)
         {
-            $data->orderBy($rcol->where('Id', '=', $order->column)->first()['name'], $order->dir);
+            $rentalsData->orderBy($rcol->where('Id', '=', $order->column)->first()['name'], $order->dir);
         }
         foreach ($request->columns as $index => $column)
         {
             if($column->searchable && $column->search->value)
             {
-                $data->where($rcol->where('Id', '=', $index)->first()['name'], 'LIKE' ,'%'.$column->search->value.'%');
+                $rentalsData->where($rcol->where('Id', '=', $index)->first()['name'], 'LIKE' ,'%'.$column->search->value.'%');
             }
         }
         if(isset($request->bookId))
@@ -232,7 +225,7 @@ class RentalsController extends Controller
             {
                 return abort(404, 'الكتاب غير موجود');
             }
-            $data->where(Rental::TABLE . '.' . Book::FOREIGN_KEY,  $request->bookId);
+            $rentalsData->where(Rental::TABLE . '.' . Book::FOREIGN_KEY,  $request->bookId);
         }
         if(isset($request->studentId))
         {
@@ -240,20 +233,20 @@ class RentalsController extends Controller
             {
                 return abort(404, 'الطالب غير موجود');
             }
-            $data->where(Rental::TABLE . '.' . Student::FOREIGN_KEY , $request->studentId);
+            $rentalsData->where(Rental::TABLE . '.' . Student::FOREIGN_KEY , $request->studentId);
         }
-        $count = $data->count();
+        $count = $rentalsData->count();
         if($request->length > 0)
         {
-            $data->skip($request->start);
-            $data->take($request->length);
+            $rentalsData->skip($request->start);
+            $rentalsData->take($request->length);
         }
-        $data = $data->get();
+        $rentalsData = $rentalsData->get();
         $resp = new stdClass;
         $resp->draw = $request->draw;
-        $resp->recordsTotal = $data->count();
+        $resp->recordsTotal = $rentalsData->count();
         $resp->recordsFiltered = $count;
-        $resp->data = $data->values();
+        $resp->data = $rentalsData->values();
         return Response::json($resp);
     }
 }

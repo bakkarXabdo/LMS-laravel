@@ -1,38 +1,43 @@
 
 @extends('layouts.master')
 
-@section('PageTitle') Create Copy {{ $book->Title }} @endsection
+@section('PageTitle') Create Copy @endsection
 
 @section('content')
-    <h3>New Copy For <a href="{{ route('books.show', $book->Id) }}">{{ $book->Title }}</a></h3>
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            Please Fix These Errors-
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-    <form action="{{ route('bookcopies.create', ["bookId" => $book->getKey()]) }}" method="post" novalidate="novalidate">
+
+    <form dir="rtl" action="{{ route('bookcopies.store') }}" method="post" novalidate="novalidate">
+        <h3>نسخة جديدة</h3>
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                الرجاء مراجعة الأخطاء التالية
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         @csrf
         <div class="form-group">
-            <label for="Shelf">Shelf</label>
-            <input class="form-control" data-val="true" data-val-number="The field Shelf must be a number." data-val-required="The Shelf field is required." id="Shelf" name="Shelf" type="number" value="{{ old('Shelf') }}">
-            <span class="field-validation-valid text-danger" data-valmsg-for="Shelf" data-valmsg-replace="true"></span>
+            <label for="Id">الشفرة</label>
+            <input autofocus dir="ltr" class="form-control" id="Id" name="Id" type="text" value="{{ old('Code') ?? (request()->has('bookId') ? request('bookId')."/" : '') }}">
         </div>
         <div class="form-group">
-            <label for="Column">Column</label>
-            <input class="form-control" data-val="true" data-val-number="The field Column must be a number." data-val-required="The Column field is required." id="Column" name="Column" type="number" value="{{ old('Column') }}">
-            <span class="field-validation-valid text-danger" data-valmsg-for="Column" data-valmsg-replace="true"></span>
+            <label for="InventoryId">رقم الجرد</label>
+            <input class="form-control" id="InventoryId" type="number" name="Shelf" value="{{ old('InventoryId') }}">
         </div>
-        <div class="form-group">
-            <label for="Row">Row</label>
-            <input class="form-control" data-val="true" data-val-number="The field Row must be a number." data-val-required="The Row field is required." id="Row" name="Row" type="number" value="{{ old('Row') }}">
-            <span class="field-validation-valid text-danger" data-valmsg-for="Row" data-valmsg-replace="true"></span>
-        </div>
-        <input hidden name="BookId" value="{{ $book->getKey() }}">
-        <button type="submit" class="btn btn-primary">Add</button>
+        <input hidden name="BookId" value="{{ request()->get('bookId') }}"/>
+        <button type="submit" class="btn btn-primary">إضافة</button>
     </form>
+@endsection
+
+@section('scripts')
+    <script>
+        $(document).ready(function() {
+            const input = $("#Id");
+            const len = input.val().length;
+            input[0].focus();
+            input[0].setSelectionRange(len, len);
+        });
+    </script>
 @endsection

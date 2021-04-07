@@ -28,15 +28,15 @@
             </div>
             <div class="row">
                 <div class="col-sm-6">
-                    @if ($customer != null)
+                    @if ($student != null)
                     <table class="table table-condensed">
                         <tr>
                             <th>الرقم</th>
-                            <td>{{ $customer->CardId }}</td>
+                            <td>{{ $student->getKey() }}</td>
                         </tr>
                         <tr>
                             <th>الإسم</th>
-                            <td style="font-size: large; font-weight: bold">{{ $customer->Name }}</td>
+                            <td style="font-size: large; font-weight: bold">{{ $student->Name }}</td>
                         </tr>
                     </table>
                     @endif
@@ -58,19 +58,19 @@
             </div>
             <div class="row" dir="rtl">
                 <div class="col-sm-6">
-                    <input name="{{ \App\Models\Student::FOREIGN_KEY }}" class="form-control text-right" id="typeahead-student" placeholder="رقم الطالب">
+                    <input autocomplete="off" name="{{ \App\Models\Student::FOREIGN_KEY }}" class="form-control text-right" id="typeahead-student" placeholder="رقم الطالب" value="{{ request()->get('studentId') }}">
                 </div>
                 <div class="col-sm-6">
-                    <input name="{{ \App\Models\BookCopy::FOREIGN_KEY }}" class="form-control text-right typeahead" id="typeahead-copy" placeholder="الشفرة">
+                    <input autocomplete="off" name="{{ \App\Models\BookCopy::FOREIGN_KEY }}" class="form-control text-right typeahead" id="typeahead-copy" placeholder="الشفرة" value="{{ request()->get('copyId') }}">
                 </div>
             </div>
             <div class="row" dir="rtl">
 
                 <div class="col-sm-6">
-                    <a class="btn btn-primary my-2" href="{{ route('students.choose', ["copyId" => isset($copy) ? $copy->Id : 'false']) }}">{{ isset($customer) ? "تغيير" : "إختيار" }}</a>
+                    <a class="btn btn-primary my-2" href="{{ route('students.choose', ["copyId" => isset($copy) ? $copy->getKey() : 'false']) }}">{{ isset($student) ? "تغيير" : "إختيار" }}</a>
                 </div>
                 <div class="col-sm-6">
-                    <a class="btn btn-primary my-2" href="{{ route('books.choose', ["customerId" => isset($customer) ? $customer->Id : 'false']) }}">{{ isset($copy) ? "تغيير" : "إختيار" }}</a>
+                    <a class="btn btn-primary my-2" href="{{ route('books.choose', ["studentId" => isset($student) ? $student->getKey() : 'false']) }}">{{ isset($copy) ? "تغيير" : "إختيار" }}</a>
                 </div>
             </div>
             <hr />
@@ -87,10 +87,7 @@
 
 
 @push('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.2/bootstrap3-typeahead.min.js"></script>
     <script>
-
-
         $(document).ready(function() {
             $('#typeahead-copy').typeahead({
                 source: function (query, result) {

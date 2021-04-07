@@ -4,24 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\BookCopy;
-use App\Models\Inventory;
-use App\Models\Rental;
 use App\Models\Student;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\Str;
 use stdClass;
 
 class BookCopiesController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-        $this->middleware('admin');
-    }
-
     public function index()
     {
         $book = Book::find(request('bookId'));
@@ -52,40 +44,34 @@ class BookCopiesController extends Controller
 
     public function create(Request $request)
     {
-        $book = Book::find($request['bookId']);
-        if(!$book)
-        {
-            abort(404, "Book #" . $request['bookId'] . " Was not Found");
-        }
-        return view('bookcopies.create', [
-            "book" => $book
-        ]);
+        return view('bookcopies.create');
     }
 
     public function store(Request $request)
     {
-        $book = Book::find($request['BookId']);
+        $book = Book::find($request->get('BookId'));
+        if(!$book || !Str::startsWith($request->get('Id'), $request->get('BookId')))
+        {
+           preg_match('/'.Book::getIncludedIdPattern().'/', $request->get('Id'), $mactches);
+           $test = $mactches[0];
+           $book = Book::find($request->get($mactches[0]));
+        }
         if(!$book)
         {
-            abort(404, "Book #" . $request['bookId'] . " Was not Found");
+            return back()->withErrors(new MessageBag(["Id" => "الكتاب $test غير موجود"]));
         }
-        $validated = $request->validate([
-            "Shelf" => "required",
-            "Column" => "required",
-            "Row" => "required",
-            "BookId" => "required"
-        ]);
-        $inventory = Inventory::where('Shelf', $validated['Shelf'])
-            ->where('Column', $validated['Column'])
-            ->where('Row', $validated['Row'])
-            ->first();
-        if(!$inventory)
+        if(!preg_match('/'.BookCopy::getIdPattern().'/', $request->get('Id'), $macthes))
         {
-            abort(404, "Inventory $validated[Shelf]/$validated[Column]/$validated[Row] Not Found");
+            return back()->withErrors(new MessageBag(["Id" => "الشفرة غير صحيحه, يجب أن تكون من الشكل XXX/000/000"]));
+        }
+        if(BookCopy::find($request->get('Id')))
+        {
+            return back()->withErrors(new MessageBag(["Id" => "الشفرة موجوده مسبقا"]));
         }
         $copy = BookCopy::create([
-            "BookId" => $validated["BookId"],
-            "InventoryId" => $inventory->getKey()
+            'Id' => $request->Id,
+            "BookId" => $book->getKey(),
+            "InventoryId" => $request->get('InventoryId')
         ]);
         if(!$copy)
         {
@@ -96,6 +82,7 @@ class BookCopiesController extends Controller
 
     public function edit(BookCopy $bookcopy)
     {
+        abort(404, "Action not available");
         if(!$bookcopy)
         {
             return abort(404, "Copy Not Found");
@@ -108,30 +95,33 @@ class BookCopiesController extends Controller
 
     public function update(Request $request, BookCopy $bookcopy)
     {
-        return abort(404, "Action not available");
+        abort(404, "Action not available");
     }
 
 
     public function destroy($copyId)
     {
-        $copy = BookCopy::find($copyId);
-        if(!$copy || !$copy->getKey())
+        try {
+            $copy = BookCopy::find($copyId);
+            if (!$copy || !$copy->getKey()) {
+                throw new \Exception("النسخة غير موجودة");
+            }
+            $book = $copy->book;
+            if ($copy->rental) {
+                throw new \Exception("النسخة <a href='" . route('rentals.show', $copy->rental->getKey()) . "'>معارة</a>");
+            }
+            if (!Db::transaction(fn() => $copy->delete())) {
+                throw new \Exception("خطأ غير معروف");
+            }
+        }catch(\Exception $e)
         {
-            abort(404, "copy not found");
+            return request()->wantsJson() ?
+                        response()->json(["success" => false, "message" => $e->getMessage()])
+                        : abort(404, $e->getMessage());
         }
-        $book = $copy->book;
-        if($copy->rental)
-        {
-            return "Error: Copy is <a href='".route('rentals.show', $copy->rental->getKey())."'>Rented</a>";
-        }
-        if(Db::transaction(function() use ($copy) {
-            $copy->delete();
-        }))
-        {
-            return redirect(route('bookcopies.show', $book->getKey()));
-        }else{
-            abort(500, "Internal Server Error");
-        }
+        return request()->wantsJson() ?
+            response()->json(["success" => true, "message" => "تم حذف النسخة"])
+            : redirect(route('bookcopies.index', $book->getKey()));
     }
 
     public function ajaxDestroy($copyId)
@@ -176,7 +166,7 @@ class BookCopiesController extends Controller
             "inventory" => null,
             "renting" => true,
            "book" => $book,
-           "customerId" => \request('customerId') ?: 'false'
+           "studentId" => \request('studentId') ?: 'false'
         ]);
     }
     public function table()

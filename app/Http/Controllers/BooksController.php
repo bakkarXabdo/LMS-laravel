@@ -10,27 +10,25 @@ use App\Models\BookCopy;
 use App\Models\BookLanguage;
 use App\Models\Category;
 use App\Models\Rental;
-use Cache;
+use App\Rules\HasValidInventoryNumber;
+use App\Rules\InventoryNumberHasValidCategory;
+use App\Rules\InventoryNumberHasValidLanguage;
 use Carbon\Carbon;
-use DB;
-use Excel;
-use Response;
-use stdClass;
-use Validator;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Exceptions\NoTypeDetectedException;
+use Maatwebsite\Excel\Facades\Excel;
 
 class BooksController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-        $this->middleware('admin');
-    }
-
     public function index()
     {
         return view('books.index', [
             "choosing" => false,
-            "customerId" => \request('customerId') ?: false
+            "studentId" => \request('studentId') ?: false
         ]);
     }
     public function create()
@@ -43,6 +41,7 @@ class BooksController extends Controller
 
     public function import()
     {
+        PagesController::clearCachedResponses();
         ini_set('max_execution_time', 99999);
         if(request()->files->count() === 0)
         {
@@ -55,42 +54,36 @@ class BooksController extends Controller
         $hash = md5($content);
         $GLOBALS["fileHash"] = $hash;
         if(Cache::has('fileHash-'.$hash)) {
-            (new BooksImport())->collection(collect(unserialize(Cache::get('fileHash-'.$hash), ["allowedClasses" => true])));
+            (new BooksImport())->collection(collect(unserialize(Cache::get('fileHash-' . $hash), ["allowedClasses" => true])));
         }else {
-            Excel::import(new BooksImport(), $path);
+            try {
+                Excel::import(new BooksImport(), $path);
+            }catch(NoTypeDetectedException $e)
+            {
+                report($e);
+                echo "صيغة الملف غير مدعومة";
+                exit;
+            }
         }
     }
     public function export()
     {
         ini_set('max_execution_time', 600);
-        $name = "out";
+        $name = "BookCopies";
         $file = storage_path('app\public') . DIRECTORY_SEPARATOR . $name .'.xlsx';
         $oldLastUpdated = Carbon::parse(Cache::get('books-bookcopies-last-update'))->unix();
-        $lastUpdatedAt = Book::query()->select(Db::raw("unix_timestamp(max(UpdatedAt)) as t"))->union(BookCopy::query()->select(Db::raw("unix_timestamp(max(UpdatedAt))")))->get()->max('t');
+        $bcolumn = Book::UPDATED_AT ?? Book::CREATED_AT;
+        $bccolumn = BookCopy::UPDATED_AT ?? BookCopy::CREATED_AT;
+        $lastUpdatedAt = Book::query()->select(Db::raw("unix_timestamp(max($bcolumn)) as t"))->union(BookCopy::query()->select(Db::raw("unix_timestamp(max($bccolumn))")))->get()->max('t');
         $useOld = (int)$lastUpdatedAt === (int)$oldLastUpdated;
         if(!$useOld || !file_exists($file))
         {
             Excel::store(new BooksExport, "$name.xlsx", "public", \Maatwebsite\Excel\Excel::XLSX);
             Cache::put('books-bookcopies-last-update', $lastUpdatedAt);
         }
-        $this->DownloadFile($file);
+        AppHelper::DownloadFile($file);
     }
-    function DownloadFile($file) { // $file = include path
-        if(file_exists($file)) {
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename='. basename($file));
-            header('Content-Transfer-Encoding: binary');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize($file));
-            ob_clean();
-            flush();
-            readfile($file);
-            exit;
-        }
-    }
+
     public function importing()
     {
         return view('books.importing');
@@ -99,38 +92,26 @@ class BooksController extends Controller
     {
         return view('books.index', [
                 "choosing" => true,
-                "customerId" => \request('customerId')
+                "studentId" => \request('studentId')
             ]);
     }
     public function store()
     {
         $request = $this->validateRequest();
+
         $book = Book::create($request);
-        $book->save();
+        PagesController::clearCachedResponses();
         return redirect($book->path);
     }
 
-    public function show($bookId)
+    public function show(Book $book)
     {
-        $book = Book::find($bookId)->withCount(['copies as NumberInStock', 'rentals as RentalsCount'])->first();
-        if (!$book) {
-            echo "";
-        }
-        $book->NumberAvailable = $book->NumberInStock - $book->RentalsCount;
-        return view('books.show', ["book" => $book])->with($book->attributesToArray());
+        return view('books.show', compact('book'));
     }
 
-    public function edit($bookId)
+    public function edit(Book $book)
     {
-        $book = Book::find($bookId);
-        if (!$book) {
-            abort(404);
-        }
-        return view('books.edit', [
-            "book" => $book,
-            'categories' => Category::all(),
-            'languages' => BookLanguage::all()
-        ])->with($book->attributesToArray());
+        return view('books.edit', compact('book'));
     }
 
     public function update()
@@ -141,11 +122,13 @@ class BooksController extends Controller
             abort(404);
         }
         $book->update($request);
+        PagesController::clearCachedResponses();
         return redirect($book->path);
     }
 
     public function destroy($bookId)
     {
+        PagesController::clearCachedResponses();
         $book = Book::find($bookId);
         if (isset($book->{Book::KEY})) {
             $copiesCount = $book->copies->count();
@@ -211,13 +194,13 @@ class BooksController extends Controller
             $data = $data->take($request->length);
         }
         $data = $data->get();
-        $data->map(function ($book) {
+        $data->map(function (Book $book) {
             // don't remove
             $book->Category = $book->category;
             $book->EncodedKey = $book->EncodedKey;
             return $book;
         });
-        $resp = new stdClass;
+        $resp = new \stdClass;
         $resp->draw = $request->draw;
         $resp->recordsTotal = $data->count();
         $resp->recordsFiltered = $count;
@@ -227,18 +210,35 @@ class BooksController extends Controller
 
     public function validateRequest()
     {
-        return Validator::make(request()->all(), [
-            'Title' => 'required|max:255',
-            'Authors' => 'required|max:255',
-            'ClassCode' => 'required',
-            'LanguageId' => 'required',
-            'CategoryId' => 'required'
+        $validated = Validator::make(request()->all(), [
+            'Title' => 'required|max:255|min:3',
+            'Author' => 'max:255',
+            'InventoryNumber' => ['required', new HasValidInventoryNumber, new InventoryNumberHasValidCategory, new InventoryNumberHasValidLanguage],
+            'Isbn' => 'max:50',
+            'Source' => 'max:255',
+            'Price' => 'max:255',
+            'ReleaseYear' => 'max:4',
         ], [
-            'Title.required' => 'You must specify the title of the Book',
-            'Title.max' => 'The book title must be shorter than 255 characters',
+            'Title.required' => 'عنوان الكتاب مطلوب',
+            'Title.max' => 'العنوان يجب أن لا يتجاوز 255 حرف',
+            'Title.min' => 'العنوان يجب أن يكون أكبر من ثلاثة أحرف',
 
-            'Authors.required' => 'You must specify the author(s) of the Book',
-            'Authors.max' => 'The book authors field must be shorter than 255 characters',
+            'Author.max' => 'المؤلف يجب أن لا يتجاوز 255 حرف',
+            'InventoryNumber.required' => 'الشفره إجبارية',
+            'ReleaseYear.max' => 'سنة الإصدار يجب أن تكون 4 أرقام',
+            'Price.max' => 'السعر يجب أن لا يتجاوز 255 حرف',
         ])->validate();
+        return $this->addRelatedModels($validated);
+    }
+
+    public function addRelatedModels($attributes)
+    {
+        preg_match('/^[A-Za-z]+/', $attributes['InventoryNumber'], $match);
+        $id = $match[0];
+        $code = substr($id, 0, -1);
+        $attributes[Category::FOREIGN_KEY] = Category::where('code', $code)->first()->getKey();
+        $code = substr($id, strlen($id)-1);
+        $attributes[BookLanguage::FOREIGN_KEY] = BookLanguage::where('code', $code)->first()->getKey();
+        return $attributes;
     }
 }

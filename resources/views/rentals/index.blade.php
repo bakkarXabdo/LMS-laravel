@@ -17,7 +17,7 @@
             </div>
         </div>
     @elseif($student != null)
-        <h3>الإعارات الجارية للطالب {{ $student->Name }} (#<a href="{{ route('students.show', $student->getKey()) }}">{{ $student->CardId }}</a>)</h3>
+        <h3>الإعارات الجارية للطالب {{ $student->Name }} (#<a href="{{ route('students.show', $student->getKey()) }}">{{ $student->getKey() }}</a>)</h3>
         <div class="container">
             <div class="row mb-2">
                 <div class="col-sm-2 pl-0">

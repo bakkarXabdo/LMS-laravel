@@ -56,4 +56,45 @@ class AppHelper
         }
         return -1;
     }
+
+    public static function paginateCollection($collection, $perPage, $pageName = 'page', $fragment = null)
+    {
+        $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage($pageName);
+        $currentPageItems = $collection->slice(($currentPage - 1) * $perPage, $perPage);
+        parse_str(request()->getQueryString(), $query);
+        unset($query[$pageName]);
+        $paginator = new \Illuminate\Pagination\LengthAwarePaginator(
+            $currentPageItems,
+            $collection->count(),
+            $perPage,
+            $currentPage,
+            [
+                'pageName' => $pageName,
+                'path' => \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPath(),
+                'query' => $query,
+                'fragment' => $fragment
+            ]
+        );
+        return $paginator;
+    }
+
+    public static function DownloadFile($file, $exit=true) { // $file = include path
+        if(file_exists($file)) {
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename='. basename($file));
+            header('Content-Transfer-Encoding: binary');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($file));
+            ob_clean();
+            flush();
+            readfile($file);
+            if($exit)
+            {
+                exit;
+            }
+        }
+    }
 }

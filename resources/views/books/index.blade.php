@@ -1,9 +1,9 @@
 @extends('layouts.master')
 
-@section('PageTitle') Books @endsection
+@section('PageTitle') الكُتب @endsection
 
 @section('content')
-<h3>Available Books</h3>
+<h3>قائمة الكُتب</h3>
 <div class="container">
     <div class="row mb-2" style="margin-bottom: 4px;">
         <div style="display: inline-block">
@@ -11,6 +11,9 @@
         </div>
         <div style="display: inline-block">
             <a href="{{ route('books.importing') }}" class="btn btn-primary">إضافة جدول كُتب</a>
+        </div>
+        <div style="display: inline-block">
+            <a href="{{ route('books.export') }}" class="btn btn-primary">إستخراج الكتب</a>
         </div>
     </div>
 </div>
@@ -160,6 +163,7 @@
                 "searchPlaceholder": "ابحث ...",
                 processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><div class="text-black-50">تحميل...</div>'
             },
+            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "الكل"]],
             ajax: {
                 url: "{{ route('books.table') }}",
                 method: "POST",
@@ -170,7 +174,7 @@
                 }
                 @endif
             },
-            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "الكل"]],
+
             columns: [
                 {
                     title: "الشفرة",
@@ -195,7 +199,7 @@
                     searchable: false,
                     render: function (_, _, book) {
                         if (book.NumberInStock > 0) {
-                            let url = '{{ route('bookcopies.index', ["bookId" => ':id']) }}'.replace(encodeURIComponent(':id'), book.EncodedKey);
+                            let url = '{{ route('bookcopies.index', ["book" => ':id']) }}'.replace(encodeURIComponent(':id'), book.EncodedKey);
                             return `<a dir='rtl' title="view Copies" href="${url}">${book.NumberInStock + " "} نسخة  </a> `;
                         }else return `<span dir='rtl' class="text-danger">لا يوجد</span>`;
                     }
@@ -227,7 +231,7 @@
                             edit = `<a href="${url}" class="mx-1 btn btn-primary"><i class="fa fa-edit"></i>تعديل</a>`;
                             remove = `<a href="#" data-book-title="${book.Title}" data-book-id='${Id}' class='js-delete mx-1 btn btn-danger'><i class="fa fa-trash"></i>حذف</a>`;
                         @else
-                            url = '{{ route('bookcopies.choose', ['bookId'=>':id', 'customerId'=>$customerId]) }}'.replace( encodeURIComponent(':id'), Id);
+                            url = '{{ route('bookcopies.choose', ['bookId'=>':id', 'studentId'=>$studentId]) }}'.replace( encodeURIComponent(':id'), Id);
                             if(book.NumberAvailable > 0)
                                 choose = `<a href="${url}" class="mx-1 btn btn-success"><i class="fa fa-check"></i> إختيار</a>`;
                         @endif
