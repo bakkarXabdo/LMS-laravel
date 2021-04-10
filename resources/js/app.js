@@ -1,23 +1,23 @@
-window._ = require('lodash');
+// window._ = require('lodash');
 try {
-    window.Popper = require('popper.js').default;
+    // window.Popper = require('popper.js').default;
     window.$ = window.jQuery = require('jquery');
     require('bootstrap');
 } catch (e) {}
 
-window.axios = require('axios');
+// window.axios = require('axios');
 
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+// window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 require('./datatables.bootstrap.js');
 window.bootbox = require('bootbox');
-require('jquery-validation');
-require('./asp.validation.js');
+// require('jquery-validation');
+// require('./asp.validation.js');
 window.toastr = require('toastr');
-require('./charts.js');
+// require('./charts.js');
 require('./chartisan');
-require('./prettyFile');
+// require('./prettyFile');
 
 require('bootstrap-3-typeahead');
 
-window.Handlebars = require('handlebars');
+// window.Handlebars = require('handlebars');

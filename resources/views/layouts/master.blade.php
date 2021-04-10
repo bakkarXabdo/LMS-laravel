@@ -10,8 +10,8 @@
         <title> @yield('PageTitle') - {{ config('app.brandName') }} </title>
         <link rel="icon"  href="{{ asset('favicon.ico') }}?v=2" type="image/x-icon">
         <link rel="stylesheet" href="{{asset('css/app.css')}}" >
-        <link rel="preconnect" href="https://fonts.gstatic.com">
-        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+        {{-- <link rel="preconnect" href="https://fonts.gstatic.com"> --}}
+        {{-- <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet"> --}}
         @stack('src')
     </head>
     <body lang='ar'>
