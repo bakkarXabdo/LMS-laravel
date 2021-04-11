@@ -32,7 +32,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Rental extends Model
 {
-    use HasFactory;
+    use ModelTraits;
+
     public const TABLE = "rentals";
     public const KEY = "Id";
     public const FOREIGN_KEY = "RentalId";
@@ -65,11 +66,5 @@ class Rental extends Model
             $diff = -1 * $diff;
         }
         return (int)$diff;
-    }
-
-    public static function joinWithSelf(Builder $query) : Builder
-    {
-        $with = $query->getModel();
-        return $query->join(self::TABLE, $with::TABLE . "." . self::FOREIGN_KEY, '=', self::TABLE . "." . self::KEY);
     }
 }

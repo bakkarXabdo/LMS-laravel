@@ -3,38 +3,25 @@
 
 
 @section('PageTitle') الإعارات @endsection
-
-
-
 @section('content')
-    @if ($book != null)
-        <h3> الإعارات الجارية للكتاب {{ $book->Title }} (#<a href="{{ route('books.show', $book->getKey()) }}">{{ $book->getKey() }}</a>)</h3>
-        <div class="container">
-            <div class="row mb-2">
-                <div class="col-sm-2 pl-0">
-                    <a class="btn btn-primary" href="{{ route('bookcopies.choose', ["bookId" => $book->getKey()]) }}">إعارة جديدة</a>
-                </div>
+    <div dir="rtl">
+        @if ($book != null)
+            <h3> الإعارات الجارية للكتاب {{ $book->Title }} (#<a href="{{ route('books.show', $book->getKey()) }}">{{ $book->getKey() }}</a>)</h3>
+            <div class="container">
+                <a class="btn btn-primary" href="{{ route('bookcopies.choose', ["bookId" => $book->getKey()]) }}">إعارة جديدة</a>
             </div>
-        </div>
-    @elseif($student != null)
-        <h3>الإعارات الجارية للطالب {{ $student->Name }} (#<a href="{{ route('students.show', $student->getKey()) }}">{{ $student->getKey() }}</a>)</h3>
-        <div class="container">
-            <div class="row mb-2">
-                <div class="col-sm-2 pl-0">
-                    <a class="btn btn-primary" href="{{ route('rentals.create', ["studentId" => $student->getKey()]) }}">إعارة جديدة</a>
-                </div>
+        @elseif($student != null)
+            <h3>الإعارات الجارية للطالب {{ $student->Name }} (#<a href="{{ route('students.show', $student->getKey()) }}">{{ $student->getKey() }}</a>)</h3>
+            <div class="container">
+                <a class="btn btn-primary" href="{{ route('rentals.create', ["studentId" => $student->getKey()]) }}">إعارة جديدة</a>
             </div>
-        </div>
-    @else
-        <h3>الإعارات الجارية</h3>
-        <div class="container">
-            <div class="row mb-2">
-                <div class="col-sm-2 pl-0">
+        @else
+            <h3>الإعارات الجارية</h3>
+            <div class="container">
                     <a class="btn btn-primary" href="{{ route('rentals.create') }}">إعارة جديدة</a>
-                </div>
             </div>
-        </div>
-    @endif
+        @endif
+    </div>
     <table class="table table-bordered" id="js-rental-table"></table>
 @endsection
 

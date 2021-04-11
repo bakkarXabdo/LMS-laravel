@@ -7,7 +7,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="lang" content="">
-        <title> @yield('PageTitle') - {{ config('app.brandName') }} </title>
+        <title> @yield('PageTitle') - {{ config('app.name') }} </title>
         <link rel="icon"  href="{{ asset('favicon.ico') }}?v=2" type="image/x-icon">
         <link rel="stylesheet" href="{{asset('css/app.css')}}" >
         {{-- <link rel="preconnect" href="https://fonts.gstatic.com"> --}}
@@ -31,7 +31,9 @@
                             <li><a href="{{ route('books.index') }}">الكُتب</a></li>
                             <li><a href="{{ route('students.index') }}">الطُلاب</a></li>
                             <li><a href="{{ route('rentals.index') }}">الإعارات</a></li>
-                            <li><a href="{{ route('history.index') }}">التأريخ</a></li>
+                            <li><a href="{{ route('history.index') }}">الأرشيف</a></li>
+                            <li><a href="{{ route('languages.index') }}">اللغات</a></li>
+                            <li><a href="{{ route('categories.index') }}">الفئات</a></li>
 {{--                            <li><a href="{{ route('settings') }}">الإعدادات</a></li>--}}
                         @endif
                     </ul>
@@ -42,7 +44,7 @@
 
 
         <div style="min-height: 100vh"class="container body-content" id="wrapper" >
-            <div style="min-height: 90vh;">
+            <div style="min-height: 90vh;padding-top:20px">
                 @yield('content')
             </div>
 

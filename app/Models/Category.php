@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use PhpParser\Node\Expr\AssignOp\Mod;
+
 /**
  * App\Models\Category
  *
@@ -23,7 +25,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Category extends Model
 {
-    use HasFactory;
+    use ModelTraits;
+
     public const TABLE = "categories";
     public const KEY = "Id";
     public const TABLE_DOT_KEY = self::TABLE . "." . self::KEY;
@@ -39,11 +42,6 @@ class Category extends Model
     protected $guarded = [];
 
     function books(){
-        return $this->belongsToMany(Book::class,
-            self::FOREIGN_KEY,
-            Book::FOREIGN_KEY,
-            self::KEY,
-            Book::KEY,
-            Book::TABLE);
+        return $this->hasMany(Book::class);
     }
 }

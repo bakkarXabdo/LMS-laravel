@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class BookLanguage extends Model
 {
-    use HasFactory;
+    use ModelTraits;
     public const TABLE = "languages";
     public const KEY = "Id";
     public const TABLE_DOT_KEY = self::TABLE . "." . self::KEY;
@@ -33,7 +33,6 @@ class BookLanguage extends Model
     public const CREATED_AT = null;
     public const UPDATED_AT = null;
 
-
     /**-- DB RELATIONS --*/
 
     protected $table = self::TABLE;
@@ -41,11 +40,6 @@ class BookLanguage extends Model
     protected $guarded = [];
 
     function books(){
-        return $this->belongsToMany(Book::class,
-            self::FOREIGN_KEY,
-            Book::FOREIGN_KEY,
-            self::KEY,
-            Book::KEY,
-            Book::TABLE);
+        return $this->hasMany(Book::class);
     }
 }

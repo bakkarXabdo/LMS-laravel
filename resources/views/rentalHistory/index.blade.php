@@ -4,8 +4,8 @@
 
 
 @section('content')
-    <div dir="rtl" class="container body-content" style="padding-top: 2rem">
-        <h2>الأرشيف</h2>
+    <div dir="rtl" class="container body-content">
+        <h2>أرشيف الإعارات</h2>
         <hr/>
         <a class="btn btn-primary" href="{{ route('history.export') }}">إستخراج</a>
         <div style="margin-top: 2rem;">

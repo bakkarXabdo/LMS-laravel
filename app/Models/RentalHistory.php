@@ -31,7 +31,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class RentalHistory extends Model
 {
-    use HasFactory;
+    use ModelTraits;
 
     public const TABLE = "rentals_history";
     public const KEY = "Id";

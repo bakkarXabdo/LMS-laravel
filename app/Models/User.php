@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Auth\Authenticatable;
+use Illuminate\Foundation\Auth\Access\Authorizable;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
+use Illuminate\Database\Eloquent\Model;
+
 /**
  * App\Models\User
  *
@@ -32,9 +33,10 @@ use Illuminate\Notifications\Notifiable;
  * @method static Builder|User whereUpdatedAt($value)
  * @method static Builder|User whereUsername($value)
  */
-class User extends Authenticatable
+class User extends Model implements AuthenticatableContract, AuthorizableContract
 {
-    use HasFactory, Notifiable;
+    use Authenticatable, Authorizable, ModelTraits;
+
     public const TABLE = "users";
     public const KEY = "Id";
     public const TABLE_DOT_KEY = self::TABLE . "." . self::KEY;
@@ -79,5 +81,10 @@ class User extends Authenticatable
     public function getIsAdminAttribute()
     {
         return (bool)$this->attributes["IsAdmin"];
+    }
+
+    public function student()
+    {
+        return $this->hasOne(Student::class);
     }
 }

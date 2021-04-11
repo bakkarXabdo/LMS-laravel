@@ -55,7 +55,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Book extends Model
 {
-    use HasFactory;
+    use ModelTraits;
     public const TABLE = "books";
     public const KEY = "InventoryNumber";
     public const TABLE_DOT_KEY = self::TABLE . "." . self::KEY;
@@ -90,16 +90,16 @@ class Book extends Model
     /**-- DB RELATIONS --*/
 
     function language(){
-        return $this->hasOne(BookLanguage::class, BookLanguage::KEY, BookLanguage::FOREIGN_KEY);
+        return $this->belongsTo(BookLanguage::class);
     }
     function category(){
-        return $this->hasOne(Category::class, Category::KEY, Category::FOREIGN_KEY);
+        return $this->belongsTo(Category::class);
     }
     function copies(){
-        return $this->hasMany(BookCopy::class, Book::FOREIGN_KEY, Book::KEY);
+        return $this->hasMany(BookCopy::class);
     }
     function rentals(){
-        return $this->hasMany(Rental::class, Book::FOREIGN_KEY, Book::KEY);
+        return $this->hasMany(Rental::class);
     }
 
     public static function getIdPattern(): string
@@ -115,9 +115,5 @@ class Book extends Model
         return urlencode($this->getKey());
     }
 
-    public static function joinWithSelf(Builder $query) : Builder
-    {
-        $with = $query->getModel();
-        return $query->join(self::TABLE, $with::TABLE . "." . self::FOREIGN_KEY, '=', self::TABLE . "." . self::KEY);
-    }
+
 }

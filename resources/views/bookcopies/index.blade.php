@@ -5,13 +5,9 @@
 @endsection
 
 @section('content')
-    <h3>Stored Copies of book <a href="{{ route('books.show', $book->getKey()) }}">{{ $book->Title }}</a></h3>
-    <div class="container">
-        <div class="row mb-2">
-            <div class="col-sm-2 pl-0">
-                <a href="{{ route('bookcopies.create', $book->getKey()) }}" class="btn btn-primary">إضافة نسخة</a>
-            </div>
-        </div>
+    <div class="container" dir="rtl">
+        <h3> نسخ الكتاب  <a href="{{ route('books.show', $book->getKey()) }}">{{ $book->Title }}</a></h3>
+        <a href="{{ route('bookcopies.create', $book->getKey()) }}" class="btn btn-primary">إضافة نسخة</a>
     </div>
     <style>
         #js-copies-table tfoot tr {
@@ -122,7 +118,7 @@
                         className: 'btn-danger',
                         callback: function () {
                             $.ajax({
-                                url: '{{ route('bookcopies.ajaxDestroy', ':id') }}'.replace(':id', button.data("copy-id")) ,
+                                url: '{{ route('bookcopies.destroy', ':id') }}'.replace(':id', button.data("copy-id")) ,
                                 method: "POST",
                                 data:{
                                     _method: "DELETE"

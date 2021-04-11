@@ -32,7 +32,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Student extends Model
 {
-    use HasFactory;
+    use ModelTraits;
 
     public const TABLE = "students";
     public const KEY = "Id";
@@ -48,17 +48,11 @@ class Student extends Model
 
 
     function rentals(){
-        return $this->hasMany(Rental::class, self::FOREIGN_KEY, self::KEY);
+        return $this->hasMany(Rental::class);
     }
 
     function user()
     {
-        return $this->belongsTo(User::class, User::FOREIGN_KEY, User::KEY);
-    }
-
-    public static function joinWithSelf(Builder $query) : Builder
-    {
-        $with = $query->getModel();
-        return $query->join(self::TABLE, $with::TABLE . "." . self::FOREIGN_KEY, '=', self::TABLE . "." . self::KEY);
+        return $this->belongsTo(User::class);
     }
 }

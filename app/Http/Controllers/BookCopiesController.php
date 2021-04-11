@@ -14,10 +14,9 @@ use stdClass;
 
 class BookCopiesController extends Controller
 {
-    public function index()
+    public function index(Book $book)
     {
-        $book = Book::find(request('bookId'));
-        if(!$book)
+        if(!$book->exists())
         {
             echo request('bookId') . "الكتاب غير موجود ";
             exit;
@@ -99,18 +98,17 @@ class BookCopiesController extends Controller
     }
 
 
-    public function destroy($copyId)
+    public function destroy(BookCopy $bookcopy)
     {
         try {
-            $copy = BookCopy::find($copyId);
-            if (!$copy || !$copy->getKey()) {
+            if (!$bookcopy->exists) {
                 throw new \Exception("النسخة غير موجودة");
             }
-            $book = $copy->book;
-            if ($copy->rental) {
-                throw new \Exception("النسخة <a href='" . route('rentals.show', $copy->rental->getKey()) . "'>معارة</a>");
+            $book = $bookcopy->book;
+            if ($bookcopy->rental) {
+                throw new \Exception("النسخة <a href='" . route('rentals.show', $bookcopy->rental->getKey()) . "'>معارة</a>");
             }
-            if (!Db::transaction(fn() => $copy->delete())) {
+            if (!Db::transaction(fn() => $bookcopy->delete())) {
                 throw new \Exception("خطأ غير معروف");
             }
         }catch(\Exception $e)
@@ -123,28 +121,6 @@ class BookCopiesController extends Controller
             response()->json(["success" => true, "message" => "تم حذف النسخة"])
             : redirect(route('bookcopies.index', $book->getKey()));
     }
-
-    public function ajaxDestroy($copyId)
-    {
-        $copy = BookCopy::find($copyId);
-        if(!$copy || !$copy->getKey())
-        {
-            abort(404, "copy not found");
-        }
-        if($copy->rental)
-        {
-            return Response::json((object) ["success" => false, "message" => "Copy Is Rented"], 200);
-        }
-        if(Db::transaction(function() use ($copy) {
-            $copy->delete();
-        }))
-        {
-            return Response::json((object) ["success" => true, "message" => "BookCopy Was Removed"], 200);
-        }
-
-        return Response::json((object) ["success" => false, "message" => "Unknown Error"], 200);
-    }
-
     public function typeahead()
     {
         $query = \request('query');

@@ -4,13 +4,9 @@
 
 
 @section('content')
-    <h3>قائمة الطلبة</h3>
-    <div class="container">
-        <div class="row mb-2">
-            <div class="col-sm-2 pl-0">
-                <a href="{{ route('students.create') }}" class="btn btn-primary">إضافة طالب</a>
-            </div>
-        </div>
+    <div class="container" dir="rtl">
+        <h3>قائمة الطلبة</h3>
+        <a href="{{ route('students.create') }}" class="btn btn-primary">إضافة طالب</a>
     </div>
     <table class="table table-bordered" id="js-students-table"></table>
 @endsection
@@ -23,13 +19,6 @@
     $(document).ready(function () {
         table = jst.DataTable({
             dom:'lrtip',
-            serverSide: true,
-            autoWidth: true,
-            processing: true,
-            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
-            language: {
-                processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
-            },
             ajax: {
                 url: "{{ route('students.table') }}",
                 method: "POST",

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -27,7 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class BookCopy extends Model
 {
-    use HasFactory;
+    use ModelTraits;
 
     public const TABLE = "bookcopies";
     public const KEY = "Id";
@@ -43,11 +42,11 @@ class BookCopy extends Model
     protected $guarded = [];
 
     function book(){
-        return $this->belongsTo(Book::class, Book::FOREIGN_KEY, Book::KEY, Book::TABLE);
+        return $this->belongsTo(Book::class);
     }
 
     function rental(){
-        return $this->hasOne(Rental::class, self::FOREIGN_KEY, self::KEY);
+        return $this->hasOne(Rental::class);
     }
 
     public function getCopyNumberAttribute(): int
@@ -63,11 +62,5 @@ class BookCopy extends Model
     public function getEncodedKeyAttribute() : string
     {
         return urlencode($this->getKey());
-    }
-
-    public static function joinWithSelf(Builder $query) : Builder
-    {
-        $with = $query->getModel();
-        return $query->join(self::TABLE, $with::TABLE . "." . self::FOREIGN_KEY, '=', self::TABLE . "." . self::KEY);
     }
 }

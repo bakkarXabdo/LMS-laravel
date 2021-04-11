@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\BookCategoryController;
 use App\Http\Controllers\BookCopiesController;
+use App\Http\Controllers\BookLanguageController;
 use App\Http\Controllers\BooksController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StudentsController;
@@ -24,11 +27,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Auth::routes();
 
 
-
-
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::group([
     'middleware' => \App\Http\Middleware\IsAdmin::class
@@ -40,7 +43,7 @@ Route::group([
     Route::get('/books/choose', [BooksController::class, 'choose'])->name('books.choose');
     Route::get('/books/importing', [BooksController::class, 'importing'])->name('books.importing');
     Route::get('/books/export', [BooksController::class, 'export'])->name('books.export');
-    Route::get('/bookcopies/?bookId={book}', [BookCopiesController::class, 'index'])->name('bookcopies.index');
+    Route::get('/bookcopies/{book}', [BookCopiesController::class, 'index'])->name('bookcopies.index');
     Route::get('/bookcopies/choose', [BookCopiesController::class, 'choose'])->name('bookcopies.choose');
     Route::get('/bookcopies/typeahead', [BookCopiesController::class, 'typeahead'])->name('bookcopies.typeahead');
     Route::get('/rentals/forbook/{book}', [RentalsController::class, 'forBook'])->name('rentals.forbook');
@@ -63,10 +66,13 @@ Route::group([
 
     Route::resource('books', BooksController::class);
     Route::resource('settings', SettingsController::class);
-    Route::resource('bookcopies', BookCopiesController::class);
+    Route::resource('bookcopies', BookCopiesController::class, ["except" => ['index']]);
     Route::resource('rentals', RentalsController::class);
     Route::resource('students', StudentsController::class);
     Route::resource('history', RentalHistoryController::class);
+
+    Route::resource('categories', BookCategoryController::class, ["except" => ['update', 'show']]);
+    Route::resource('languages', BookLanguageController::class, ["except" => ['update', 'show']]);
 });
 
 

@@ -38,7 +38,7 @@
                 @if ($book->NumberInStock === 0)
                     <span class="text-danger">لا يوجد نُسخ</span>
                 @else
-                    <a href="{{ route('bookcopies.index', ["bookId" => $book->getKey()]) }}">
+                    <a href="{{ route('bookcopies.index', ["book" => $book->getKey()]) }}">
                         {{ $book->NumberInStock }}  نُسخة
                     </a>
                 @endif
@@ -99,7 +99,7 @@
                 title: "Confirm Your Action",
                 message: `
                         @if($book->NumberInStock > 1)
-                            <span>This Book Has <a href="{{ route('bookcopies.index', ["bookId" => $book->getKey()]) }}">{{ $book->NumberInStock }} Copies</a>, Are you sure You want To Delete Them All?</span>
+                            <span>This Book Has <a href="{{ route('bookcopies.index', ["book" => $book->getKey()]) }}">{{ $book->NumberInStock }} Copies</a>, Are you sure You want To Delete Them All?</span>
                         @else
                             <span>Delete <strong>{{ $book->Title }}</strong> ?</span>
                         @endif`,
