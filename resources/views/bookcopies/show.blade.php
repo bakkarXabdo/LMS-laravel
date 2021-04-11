@@ -73,7 +73,6 @@
                                 success: function (data) {
                                     if (data.success) {
                                         toastr.success(data.message);
-                                        location.href = document.referrer;
                                     } else {
                                         toastr.error(data.message);
                                     }

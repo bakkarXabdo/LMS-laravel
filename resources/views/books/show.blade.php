@@ -76,8 +76,7 @@
         @if ($book->NumberAvailable > 0)
             @if($book->NumberAvailable == 1)
                 @php
-                    $copy = \App\Models\BookCopy::where(\App\Models\BookCopy::KEY, $book->getKeyName())->whereDoesntHave('rental')->first();
-                    $url = route('rentals.create', ['copyId' => $copy->getKey()]);
+                    $url = route('rentals.create', ['copyId' => $book->firstAvailableCopy()->getKey()]);
                 @endphp
             @endif
             <a href="{{ $url }}" class="btn btn-primary">إعارة</a>

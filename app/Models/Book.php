@@ -115,5 +115,8 @@ class Book extends Model
         return urlencode($this->getKey());
     }
 
-
+    public function firstAvailableCopy()
+    {
+        return $this->copies()->whereDoesntHave('rental')->first();
+    }
 }
