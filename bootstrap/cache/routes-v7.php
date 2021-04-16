@@ -104,7 +104,7 @@ app('router')->setCompiledRoutes(
         array (
           0 => 
           array (
-            '_route' => 'generated::X2cxXX0em9uMPi9m',
+            '_route' => 'generated::BPqntala3pUoMPjv',
           ),
           1 => NULL,
           2 => 
@@ -141,7 +141,7 @@ app('router')->setCompiledRoutes(
         array (
           0 => 
           array (
-            '_route' => 'generated::uumQJRN6w46lKqDK',
+            '_route' => 'generated::qSYhBK1AiEKMpiZP',
           ),
           1 => NULL,
           2 => 
@@ -253,6 +253,26 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
+      '/bookcopies/export' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'bookcopies.export',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'GET' => 0,
+            'HEAD' => 1,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
       '/bookcopies/choose' => 
       array (
         0 => 
@@ -320,6 +340,26 @@ app('router')->setCompiledRoutes(
           0 => 
           array (
             '_route' => 'students.typeahead',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'GET' => 0,
+            'HEAD' => 1,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
+      '/students/spciality-type-ahead' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'students.specialityTypeAhead',
           ),
           1 => NULL,
           2 => 
@@ -579,6 +619,42 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
+      '/bookcopies' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'bookcopies.index',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'GET' => 0,
+            'HEAD' => 1,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+        1 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'bookcopies.store',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'POST' => 0,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
       '/bookcopies/create' => 
       array (
         0 => 
@@ -592,25 +668,6 @@ app('router')->setCompiledRoutes(
           array (
             'GET' => 0,
             'HEAD' => 1,
-          ),
-          3 => NULL,
-          4 => false,
-          5 => false,
-          6 => NULL,
-        ),
-      ),
-      '/bookcopies' => 
-      array (
-        0 => 
-        array (
-          0 => 
-          array (
-            '_route' => 'bookcopies.store',
-          ),
-          1 => NULL,
-          2 => 
-          array (
-            'POST' => 0,
           ),
           3 => NULL,
           4 => false,
@@ -941,7 +998,7 @@ app('router')->setCompiledRoutes(
     ),
     2 => 
     array (
-      0 => '{^(?|/_debugbar/(?|c(?|lockwork/([^/]++)(*:42)|ache/([^/]++)(?:/([^/]++))?(*:76))|telescope/([^/]++)(*:102))|/book(?|copies/(?|([A-Za-z]+\\/\\d+)(*:145)|([A-Za-z]+\\/\\d+\\/\\d+)(*:174)|([A-Za-z]+\\/\\d+\\/\\d+)/edit(*:208)|([A-Za-z]+\\/\\d+\\/\\d+)(?|(*:240)))|s/(?|([A-Za-z]+\\/\\d+)(*:271)|([A-Za-z]+\\/\\d+)/edit(*:300)|([A-Za-z]+\\/\\d+)(?|(*:327))))|/rentals/(?|for(?|book/([A-Za-z]+\\/\\d+)(*:377)|student/([^/]++)(*:401)|copy/([A-Za-z]+\\/\\d+\\/\\d+)(*:435))|return/([^/]++)(*:459)|ajaxreturn/([^/]++)(*:486)|([^/]++)(?|(*:505)|/edit(*:518)|(*:526)))|/s(?|tudents/(?|password/([^/]++)(*:569)|([^/]++)(?|(*:588)|/edit(*:601)|(*:609)))|ettings/([^/]++)(?|(*:638)|/edit(*:651)|(*:659)))|/history/([^/]++)(?|(*:689)|/edit(*:702)|(*:710))|/categories/([^/]++)(?|/edit(*:747)|(*:755))|/languages/([^/]++)(?|/edit(*:791)|(*:799)))/?$}sDu',
+      0 => '{^(?|/_debugbar/(?|c(?|lockwork/([^/]++)(*:42)|ache/([^/]++)(?:/([^/]++))?(*:76))|telescope/([^/]++)(*:102))|/book(?|copies/(?|forBook/([A-Za-z]+\\/\\d+)(*:153)|([A-Za-z]+\\/\\d+\\/\\d+)(*:182)|([A-Za-z]+\\/\\d+\\/\\d+)/edit(*:216)|([A-Za-z]+\\/\\d+\\/\\d+)(?|(*:248)))|s/(?|([A-Za-z]+\\/\\d+)(*:279)|([A-Za-z]+\\/\\d+)/edit(*:308)|([A-Za-z]+\\/\\d+)(?|(*:335))))|/rentals/(?|for(?|book/([A-Za-z]+\\/\\d+)(*:385)|student/([^/]++)(*:409)|copy/([A-Za-z]+\\/\\d+\\/\\d+)(*:443))|return/([^/]++)(*:467)|([^/]++)(?|(*:486)|/edit(*:499)|(*:507)))|/s(?|tudents/(?|password/([^/]++)(*:550)|([^/]++)(?|(*:569)|/edit(*:582)|(*:590)))|ettings/([^/]++)(?|(*:619)|/edit(*:632)|(*:640)))|/history/([^/]++)(?|(*:670)|/edit(*:683)|(*:691))|/categories/([^/]++)(?|/edit(*:728)|(*:736))|/languages/([^/]++)(?|/edit(*:772)|(*:780)))/?$}sDu',
     ),
     3 => 
     array (
@@ -1015,13 +1072,13 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      145 => 
+      153 => 
       array (
         0 => 
         array (
           0 => 
           array (
-            '_route' => 'bookcopies.index',
+            '_route' => 'bookcopies.forBook',
           ),
           1 => 
           array (
@@ -1038,7 +1095,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      174 => 
+      182 => 
       array (
         0 => 
         array (
@@ -1061,7 +1118,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      208 => 
+      216 => 
       array (
         0 => 
         array (
@@ -1084,7 +1141,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      240 => 
+      248 => 
       array (
         0 => 
         array (
@@ -1126,7 +1183,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      271 => 
+      279 => 
       array (
         0 => 
         array (
@@ -1149,7 +1206,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      300 => 
+      308 => 
       array (
         0 => 
         array (
@@ -1172,7 +1229,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      327 => 
+      335 => 
       array (
         0 => 
         array (
@@ -1214,7 +1271,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      377 => 
+      385 => 
       array (
         0 => 
         array (
@@ -1237,7 +1294,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      401 => 
+      409 => 
       array (
         0 => 
         array (
@@ -1260,7 +1317,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      435 => 
+      443 => 
       array (
         0 => 
         array (
@@ -1283,7 +1340,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      459 => 
+      467 => 
       array (
         0 => 
         array (
@@ -1311,28 +1368,6 @@ app('router')->setCompiledRoutes(
         array (
           0 => 
           array (
-            '_route' => 'rentals.ajaxreturn',
-          ),
-          1 => 
-          array (
-            0 => 'rental',
-          ),
-          2 => 
-          array (
-            'POST' => 0,
-          ),
-          3 => NULL,
-          4 => false,
-          5 => true,
-          6 => NULL,
-        ),
-      ),
-      505 => 
-      array (
-        0 => 
-        array (
-          0 => 
-          array (
             '_route' => 'rentals.show',
           ),
           1 => 
@@ -1350,7 +1385,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      518 => 
+      499 => 
       array (
         0 => 
         array (
@@ -1373,7 +1408,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      526 => 
+      507 => 
       array (
         0 => 
         array (
@@ -1415,7 +1450,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      569 => 
+      550 => 
       array (
         0 => 
         array (
@@ -1437,7 +1472,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      588 => 
+      569 => 
       array (
         0 => 
         array (
@@ -1460,7 +1495,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      601 => 
+      582 => 
       array (
         0 => 
         array (
@@ -1483,7 +1518,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      609 => 
+      590 => 
       array (
         0 => 
         array (
@@ -1525,7 +1560,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      638 => 
+      619 => 
       array (
         0 => 
         array (
@@ -1548,7 +1583,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      651 => 
+      632 => 
       array (
         0 => 
         array (
@@ -1571,7 +1606,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      659 => 
+      640 => 
       array (
         0 => 
         array (
@@ -1613,7 +1648,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      689 => 
+      670 => 
       array (
         0 => 
         array (
@@ -1636,7 +1671,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      702 => 
+      683 => 
       array (
         0 => 
         array (
@@ -1659,7 +1694,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      710 => 
+      691 => 
       array (
         0 => 
         array (
@@ -1701,7 +1736,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      747 => 
+      728 => 
       array (
         0 => 
         array (
@@ -1724,7 +1759,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      755 => 
+      736 => 
       array (
         0 => 
         array (
@@ -1746,7 +1781,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      791 => 
+      772 => 
       array (
         0 => 
         array (
@@ -1769,7 +1804,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      799 => 
+      780 => 
       array (
         0 => 
         array (
@@ -2063,7 +2098,7 @@ app('router')->setCompiledRoutes(
       'lockSeconds' => NULL,
       'waitSeconds' => NULL,
     ),
-    'generated::X2cxXX0em9uMPi9m' => 
+    'generated::BPqntala3pUoMPjv' => 
     array (
       'methods' => 
       array (
@@ -2078,15 +2113,15 @@ app('router')->setCompiledRoutes(
           0 => 'api',
           1 => 'auth:api',
         ),
-        'uses' => 'C:32:"Opis\\Closure\\SerializableClosure":245:{a:5:{s:3:"use";a:0:{}s:8:"function";s:79:"function (\\Illuminate\\Http\\Request $request) {
+        'uses' => 'C:32:"Opis\\Closure\\SerializableClosure":291:{@f8STAj6sNf0hPYoQVwsw7UK4qurKPRfJpZedtOAkXQM=.a:5:{s:3:"use";a:0:{}s:8:"function";s:79:"function (\\Illuminate\\Http\\Request $request) {
     return $request->user();
-}";s:5:"scope";s:37:"Illuminate\\Routing\\RouteFileRegistrar";s:4:"this";N;s:4:"self";s:32:"000000007b3f95d400000000215039c5";}}',
+}";s:5:"scope";s:37:"Illuminate\\Routing\\RouteFileRegistrar";s:4:"this";N;s:4:"self";s:32:"00000000515b2537000000000c43a04f";}}',
         'namespace' => NULL,
         'prefix' => 'api',
         'where' => 
         array (
         ),
-        'as' => 'generated::X2cxXX0em9uMPi9m',
+        'as' => 'generated::BPqntala3pUoMPjv',
       ),
       'fallback' => false,
       'defaults' => 
@@ -2145,7 +2180,7 @@ app('router')->setCompiledRoutes(
       'lockSeconds' => NULL,
       'waitSeconds' => NULL,
     ),
-    'generated::uumQJRN6w46lKqDK' => 
+    'generated::qSYhBK1AiEKMpiZP' => 
     array (
       'methods' => 
       array (
@@ -2165,7 +2200,7 @@ app('router')->setCompiledRoutes(
         'where' => 
         array (
         ),
-        'as' => 'generated::uumQJRN6w46lKqDK',
+        'as' => 'generated::qSYhBK1AiEKMpiZP',
       ),
       'fallback' => false,
       'defaults' => 
@@ -2387,14 +2422,14 @@ app('router')->setCompiledRoutes(
       'lockSeconds' => NULL,
       'waitSeconds' => NULL,
     ),
-    'bookcopies.index' => 
+    'bookcopies.export' => 
     array (
       'methods' => 
       array (
         0 => 'GET',
         1 => 'HEAD',
       ),
-      'uri' => 'bookcopies/{book}',
+      'uri' => 'bookcopies/export',
       'action' => 
       array (
         'middleware' => 
@@ -2402,14 +2437,55 @@ app('router')->setCompiledRoutes(
           0 => 'web',
           1 => 'App\\Http\\Middleware\\IsAdmin',
         ),
-        'uses' => 'App\\Http\\Controllers\\BookCopiesController@index',
-        'controller' => 'App\\Http\\Controllers\\BookCopiesController@index',
+        'uses' => 'App\\Http\\Controllers\\BookCopiesController@export',
+        'controller' => 'App\\Http\\Controllers\\BookCopiesController@export',
         'namespace' => NULL,
         'prefix' => NULL,
         'where' => 
         array (
         ),
-        'as' => 'bookcopies.index',
+        'as' => 'bookcopies.export',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+        'book' => '^[A-Za-z]+\\/\\d+$',
+        'bookcopy' => '^[A-Za-z]+\\/\\d+\\/\\d+$',
+        'bookId' => '^[A-Za-z]+\\/\\d+$',
+        'bookCopyId' => '^[A-Za-z]+\\/\\d+\\/\\d+$',
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+    ),
+    'bookcopies.forBook' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'GET',
+        1 => 'HEAD',
+      ),
+      'uri' => 'bookcopies/forBook/{book}',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'App\\Http\\Middleware\\IsAdmin',
+        ),
+        'uses' => 'App\\Http\\Controllers\\BookCopiesController@forBook',
+        'controller' => 'App\\Http\\Controllers\\BookCopiesController@forBook',
+        'namespace' => NULL,
+        'prefix' => NULL,
+        'where' => 
+        array (
+        ),
+        'as' => 'bookcopies.forBook',
       ),
       'fallback' => false,
       'defaults' => 
@@ -2566,8 +2642,8 @@ app('router')->setCompiledRoutes(
           0 => 'web',
           1 => 'App\\Http\\Middleware\\IsAdmin',
         ),
-        'uses' => 'App\\Http\\Controllers\\RentalsController@forCustomer',
-        'controller' => 'App\\Http\\Controllers\\RentalsController@forCustomer',
+        'uses' => 'App\\Http\\Controllers\\RentalsController@forStudent',
+        'controller' => 'App\\Http\\Controllers\\RentalsController@forStudent',
         'namespace' => NULL,
         'prefix' => NULL,
         'where' => 
@@ -2697,6 +2773,47 @@ app('router')->setCompiledRoutes(
         array (
         ),
         'as' => 'students.typeahead',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+        'book' => '^[A-Za-z]+\\/\\d+$',
+        'bookcopy' => '^[A-Za-z]+\\/\\d+\\/\\d+$',
+        'bookId' => '^[A-Za-z]+\\/\\d+$',
+        'bookCopyId' => '^[A-Za-z]+\\/\\d+\\/\\d+$',
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+    ),
+    'students.specialityTypeAhead' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'GET',
+        1 => 'HEAD',
+      ),
+      'uri' => 'students/spciality-type-ahead',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'App\\Http\\Middleware\\IsAdmin',
+        ),
+        'uses' => 'App\\Http\\Controllers\\StudentsController@specialityTypeAhead',
+        'controller' => 'App\\Http\\Controllers\\StudentsController@specialityTypeAhead',
+        'namespace' => NULL,
+        'prefix' => NULL,
+        'where' => 
+        array (
+        ),
+        'as' => 'students.specialityTypeAhead',
       ),
       'fallback' => false,
       'defaults' => 
@@ -2938,46 +3055,6 @@ app('router')->setCompiledRoutes(
         array (
         ),
         'as' => 'rentals.return',
-      ),
-      'fallback' => false,
-      'defaults' => 
-      array (
-      ),
-      'wheres' => 
-      array (
-        'book' => '^[A-Za-z]+\\/\\d+$',
-        'bookcopy' => '^[A-Za-z]+\\/\\d+\\/\\d+$',
-        'bookId' => '^[A-Za-z]+\\/\\d+$',
-        'bookCopyId' => '^[A-Za-z]+\\/\\d+\\/\\d+$',
-      ),
-      'bindingFields' => 
-      array (
-      ),
-      'lockSeconds' => NULL,
-      'waitSeconds' => NULL,
-    ),
-    'rentals.ajaxreturn' => 
-    array (
-      'methods' => 
-      array (
-        0 => 'POST',
-      ),
-      'uri' => 'rentals/ajaxreturn/{rental}',
-      'action' => 
-      array (
-        'middleware' => 
-        array (
-          0 => 'web',
-          1 => 'App\\Http\\Middleware\\IsAdmin',
-        ),
-        'uses' => 'App\\Http\\Controllers\\RentalsController@ajaxReturnRental',
-        'controller' => 'App\\Http\\Controllers\\RentalsController@ajaxReturnRental',
-        'namespace' => NULL,
-        'prefix' => NULL,
-        'where' => 
-        array (
-        ),
-        'as' => 'rentals.ajaxreturn',
       ),
       'fallback' => false,
       'defaults' => 
@@ -3663,6 +3740,47 @@ app('router')->setCompiledRoutes(
         'as' => 'settings.destroy',
         'uses' => 'App\\Http\\Controllers\\SettingsController@destroy',
         'controller' => 'App\\Http\\Controllers\\SettingsController@destroy',
+        'namespace' => NULL,
+        'prefix' => NULL,
+        'where' => 
+        array (
+        ),
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+        'book' => '^[A-Za-z]+\\/\\d+$',
+        'bookcopy' => '^[A-Za-z]+\\/\\d+\\/\\d+$',
+        'bookId' => '^[A-Za-z]+\\/\\d+$',
+        'bookCopyId' => '^[A-Za-z]+\\/\\d+\\/\\d+$',
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+    ),
+    'bookcopies.index' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'GET',
+        1 => 'HEAD',
+      ),
+      'uri' => 'bookcopies',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'App\\Http\\Middleware\\IsAdmin',
+        ),
+        'as' => 'bookcopies.index',
+        'uses' => 'App\\Http\\Controllers\\BookCopiesController@index',
+        'controller' => 'App\\Http\\Controllers\\BookCopiesController@index',
         'namespace' => NULL,
         'prefix' => NULL,
         'where' => 

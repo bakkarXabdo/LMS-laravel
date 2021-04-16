@@ -18,6 +18,7 @@ class CreateBookCopiesTable extends Migration
         Schema::create(BookCopy::TABLE, function (Blueprint $table){
             $table->string(BookCopy::KEY)->primary();
             $table->string('InventoryId')->nullable();
+            $table->integer('TotalRentals')->default(0)->nullable();
             $table->string(Book::FOREIGN_KEY);
 
             $table->foreign(Book::FOREIGN_KEY)->references(Book::KEY)->on(Book::TABLE)->cascadeOnUpdate()->cascadeOnDelete();

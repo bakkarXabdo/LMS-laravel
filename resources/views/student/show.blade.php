@@ -22,7 +22,7 @@
                     <td>{{ $student->getKey() }}</td>
                 </tr>
                 <tr>
-                    <th>الكُتب المُعارة سابقا</th>
+                    <th>عدد الإعارات الإجمالية</th>
                     <td>{{ $student->TotalRentals }}</td>
                 </tr>
                 <tr>

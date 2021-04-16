@@ -35,12 +35,6 @@
         $(document).ready(function () {
              table = jst.DataTable({
                 dom:'lrtip',
-                serverSide: true,
-                autoWidth: true,
-                processing: true,
-                language: {
-                    processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">تحميل...</span> '
-                },
                 ajax: {
                     url: "{{ route('rentals.table') }}",
                     method: "POST",
@@ -68,7 +62,7 @@
                     },
                     {
                         title: "الطالب",
-                        name: "StudentName",
+                        name: "Name",
                         orderable:false,
                         searchable:true,
                         render: function(_,_,rental){
@@ -120,7 +114,7 @@
                         data: "RemainingDays",
                         searchable: false,
                         orderable: true,
-                        render: (days) => `<span class="text-danger"> بعد ${days} يوم </span>`
+                        render: (days) => days <= 1 ? `<span class="text-danger"> بعد ${days} يوم </span>` : `<span> بعد ${days} يوم </span>`
                     },
                     {
                         title: "الإجرائات",
@@ -149,8 +143,9 @@
                             className: 'btn-warning',
                             callback: function () {
                                 $.ajax({
-                                    url: "{{ route('rentals.ajaxreturn', ':id') }}".replace(':id', button.data("rental-id")),
+                                    url: "{{ route('rentals.return', ':id') }}".replace(':id', button.data("rental-id")),
                                     method: "POST",
+                                    dataType: "json",
                                     success: function (data) {
                                         if (data.success) {
                                             table.row(button.parents('tr')).remove().draw();

@@ -5,7 +5,9 @@
 
 @section('content')
 
-
+<div style="display: inline-block">
+    <a href="{{ route('books.importing') }}" class="btn btn-primary">إدخال جدول كُتب</a>
+</div>
 <form dir="rtl" action="{{ route('books.store') }}" method="post" novalidate="novalidate">
     @if ($errors->any())
         <h4>الرجاء إصلاح الأخطاء التالية</h4>
@@ -20,14 +22,14 @@
         <h2>إدخال كتاب جديد</h2>
     @endif
     <div class="form-group">
-        <label for="Book_Title">العنوان</label>
-        <input class="form-control" data-val="true" data-val-length="العنوان يجب أن يكون بين 3 و 400 حروف" data-val-length-max="400" data-val-length-min="3" data-val-required="العنوان إجباري" id="Book_Title" name="Title" type="text" value="{{ old('Title') }}">
-        <span class="field-validation-valid text-danger" data-valmsg-for="Title" data-valmsg-replace="true"></span>
-    </div>
-    <div class="form-group">
         <label for="Book_InventoryNumber">الشفرة</label>
         <input class="form-control" data-val="true" data-val-required="الشفرة إجبارية." id="Book_InventoryNumber" name="InventoryNumber" type="text" value="{{ old('InventoryNumber') }}">
         <span class="field-validation-valid text-danger" data-valmsg-for="Book_InventoryNumber" data-valmsg-replace="true"></span>
+    </div>
+    <div class="form-group">
+        <label for="Book_Title">العنوان</label>
+        <input class="form-control" data-val="true" data-val-length="العنوان يجب أن يكون بين 3 و 400 حروف" data-val-length-max="400" data-val-length-min="3" data-val-required="العنوان إجباري" id="Book_Title" name="Title" type="text" value="{{ old('Title') }}">
+        <span class="field-validation-valid text-danger" data-valmsg-for="Title" data-valmsg-replace="true"></span>
     </div>
     <div class="form-group">
         <label for="Book_Authors">المُؤلف</label>
@@ -39,7 +41,7 @@
     </div>
     <div class="form-group">
         <label for="Book_Price">السعر</label>
-        <input class="form-control" id="Book_Price" name="Price" type="number" value="{{ old('Price') }}">
+        <input class="form-control" id="Book_Price" name="Price" value="{{ old('Price') }}">
     </div>
     <div class="form-group">
         <label for="Book_Publisher">الناشر</label>
@@ -47,7 +49,7 @@
     </div>
     <div class="form-group">
         <label for="Book_ReleaseYear">سنة الإصدار</label>
-        <input class="form-control" data-val="true" data-val-number="The field Year Released must be a number." id="Book_ReleaseYear" name="ReleaseYear" type="number" value="{{ old('ReleaseYear') }}">
+        <input class="form-control" data-val="true" min="1" data-val-number="The field Year Released must be a number." id="Book_ReleaseYear" name="ReleaseYear" type="number" value="{{ old('ReleaseYear') }}">
         <span class="field-validation-valid text-danger" data-valmsg-for="Book_ReleaseYear" data-valmsg-replace="true"></span>
     </div>
     <div class="form-group">

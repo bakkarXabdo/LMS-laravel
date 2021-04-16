@@ -8,13 +8,13 @@
     <h3>قائمة الكُتب</h3>
     <div class="row mb-2" style="margin-bottom: 4px;">
         <div style="display: inline-block">
-            <a href="{{ route('books.create') }}" class="btn btn-primary">أضف كتاب</a>
+            <a href="{{ route('books.create') }}" class="btn btn-primary">إضافة كِتاب </a>
         </div>
         <div style="display: inline-block">
-            <a href="{{ route('books.importing') }}" class="btn btn-primary">إضافة جدول كُتب</a>
+            <a href="{{ route('books.export') }}" class="btn btn-primary">إستخراج الكُتب</a>
         </div>
         <div style="display: inline-block">
-            <a href="{{ route('books.export') }}" class="btn btn-primary">إستخراج الكتب</a>
+            <a href="{{ route('bookcopies.export') }}" class="btn btn-primary">إستخراج النُسخ</a>
         </div>
     </div>
 </div>
@@ -56,7 +56,7 @@
                     name:"Title",
                     orderSequence: [ "desc", "asc" ],
                     render: function (_, _, book) {
-                        let url = '{{ route('books.show', ':Id') }}'.replace(':Id', book.EncodedKey);
+                        let url = '{{ route('books.show', ':Id') }}'.replace(':Id', book.InventoryNumber);
                         return `<a href='${url}' title='#${book.Id}'> ${book.Title} </a>`;
                     }
                 },
@@ -68,7 +68,7 @@
                     searchable: false,
                     render: function (_, _, book) {
                         if (book.NumberInStock > 0) {
-                            let url = '{{ route("bookcopies.index", ["book" => ":id"]) }}'.replace(':id', book.EncodedKey);
+                            let url = '{{ route("bookcopies.forBook", ":id") }}'.replace(':id', book.InventoryNumber);
                             return `<a dir='rtl' title="view Copies" href="${url}">${book.NumberInStock + " "} نسخة  </a> `;
                         }else return `<span dir='rtl' class="text-danger">لا يوجد</span>`;
                     }
@@ -81,14 +81,14 @@
                     searchable: false,
                     render: function (_, _, book) {
                         if (book.RentalsCount > 0) {
-                            let url = '{{ route('rentals.forbook', ':Id') }}'.replace(':Id', book.EncodedKey);
+                            let url = '{{ route('rentals.forbook', ':Id') }}'.replace(':Id', book.InventoryNumber);
                             return `<a dir="rtl" title="View Rented Books" href="${url}">${book.RentalsCount} <span class="v-only"> نسخة</span></a>`;
                         } else return 0;
                     }
                 },
                 {
                     title: "الإجرائات",
-                    data: "EncodedKey",
+                    data: "InventoryNumber",
                     orderable: false,
                     width: 1,
                     search:true,

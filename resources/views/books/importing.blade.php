@@ -10,8 +10,8 @@
           action="{{ route('books.import') }}" method="post" enctype="multipart/form-data">
         @csrf
         <div class="form-group">
-            <label style="font-size: 1.5rem; font-weight: bold" for="data">المِلف</label>
-            <input class="form-control" id="data" type="file" name="data">
+            <label style="font-size: 1.5rem; font-weight: bold" title="اختر ملف" class="btn btn-success" for="data">اختر ملف</label>
+            <input style="display: none" id="data" type="file" name="data" >
         </div>
         <div class="form-group">
             <label style="font-size: 1.5rem; font-weight: bold" for="startOffset">بداية البيانات</label>

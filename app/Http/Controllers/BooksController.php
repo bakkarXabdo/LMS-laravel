@@ -13,11 +13,15 @@ use App\Models\Rental;
 use App\Rules\HasValidInventoryNumber;
 use App\Rules\InventoryNumberHasValidCategory;
 use App\Rules\InventoryNumberHasValidLanguage;
+use App\Rules\UniqueBook;
 use Carbon\Carbon;
+use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Maatwebsite\Excel\Exceptions\NoTypeDetectedException;
 use Maatwebsite\Excel\Facades\Excel;
@@ -69,17 +73,16 @@ class BooksController extends Controller
     public function export()
     {
         ini_set('max_execution_time', 600);
-        $name = "BookCopies";
+        $name = "Books";
         $file = storage_path('app\public') . DIRECTORY_SEPARATOR . $name .'.xlsx';
-        $oldLastUpdated = Carbon::parse(Cache::get('books-bookcopies-last-update'))->unix();
+        $oldLastUpdated = Carbon::parse(Cache::get('books-last-update'))->unix();
         $bcolumn = Book::UPDATED_AT ?? Book::CREATED_AT;
-        $bccolumn = BookCopy::UPDATED_AT ?? BookCopy::CREATED_AT;
-        $lastUpdatedAt = Book::query()->select(Db::raw("unix_timestamp(max($bcolumn)) as t"))->union(BookCopy::query()->select(Db::raw("unix_timestamp(max($bccolumn))")))->get()->max('t');
+        $lastUpdatedAt = Book::query()->select(Db::raw("unix_timestamp(max($bcolumn)) as t"))->get()->max('t');
         $useOld = (int)$lastUpdatedAt === (int)$oldLastUpdated;
         if(!$useOld || !file_exists($file))
         {
             Excel::store(new BooksExport, "$name.xlsx", "public", \Maatwebsite\Excel\Excel::XLSX);
-            Cache::put('books-bookcopies-last-update', $lastUpdatedAt);
+            Cache::put('books-last-update', $lastUpdatedAt);
         }
         AppHelper::DownloadFile($file);
     }
@@ -114,14 +117,27 @@ class BooksController extends Controller
         return view('books.edit', compact('book'));
     }
 
-    public function update()
+    public function update(Request $request)
     {
-        $request = $this->validateRequest();
-        $book = Book::find(request()['Id']);
-        if (!$book) {
-            abort(404);
-        }
-        $book->update($request);
+        $book = Book::findOrFail($request->get('current_key'));
+        $newdata = $this->validateRequest();
+        DB::transaction(function () use($book, $newdata) {
+            $updated = $book->update($newdata);
+            if(strtoupper(request('current_key')) !== strtoupper(request(Book::KEY)))
+            {
+                foreach($book->copies as $copy)
+                {
+                    $updated = $updated && $copy->update([
+                        BookCopy::KEY => $book->getKey() .'/'.$copy->copyNumber
+                    ]);
+                }
+            }
+            if(!$updated)
+            {
+                throw new Exception('book not updated');
+            }
+            return $updated;
+        });
         PagesController::clearCachedResponses();
         return redirect($book->path);
     }
@@ -135,9 +151,9 @@ class BooksController extends Controller
             if ($book->rentals->count() > 0) {
                 return Response::json((object) [
                     "success" => false,
-                    "message" => "Book has active Rentals, <a href='"
+                    "message" => "الكتاب يملك نُسخة معارة, <a style='color: yellow; text-decoration:underline' href='"
                         . route('rentals.forbook', $bookId)
-                        . "'>View</a>"
+                        . "'>إضهار</a>"
                 ], 200);
             } else {
                 try {
@@ -197,7 +213,6 @@ class BooksController extends Controller
         $data->map(function (Book $book) {
             // don't remove
             $book->Category = $book->category;
-            $book->EncodedKey = $book->EncodedKey;
             return $book;
         });
         $resp = new \stdClass;
@@ -210,35 +225,33 @@ class BooksController extends Controller
 
     public function validateRequest()
     {
-        $validated = Validator::make(request()->all(), [
-            'Title' => 'required|max:255|min:3',
+        $id = request()->get('InventoryNumber');
+        $categoryValidator = new InventoryNumberHasValidCategory($id);
+        $languageValidator = new InventoryNumberHasValidLanguage($id);
+        $rules = [
+            'Title' => 'required|max:400|min:3',
             'Author' => 'max:255',
-            'InventoryNumber' => ['required', new HasValidInventoryNumber, new InventoryNumberHasValidCategory, new InventoryNumberHasValidLanguage],
+            'InventoryNumber' => ['required', new UniqueBook(request('current_key')), new HasValidInventoryNumber, $categoryValidator, $languageValidator],
             'Isbn' => 'max:50',
             'Source' => 'max:255',
             'Price' => 'max:255',
             'ReleaseYear' => 'max:4',
-        ], [
+        ];
+        $validated = Validator::make(request()->all(), $rules, [
             'Title.required' => 'عنوان الكتاب مطلوب',
             'Title.max' => 'العنوان يجب أن لا يتجاوز 255 حرف',
             'Title.min' => 'العنوان يجب أن يكون أكبر من ثلاثة أحرف',
 
             'Author.max' => 'المؤلف يجب أن لا يتجاوز 255 حرف',
+
             'InventoryNumber.required' => 'الشفره إجبارية',
+            'InventoryNumber.unique' => 'الشفره موجودة مسبقا',
+
             'ReleaseYear.max' => 'سنة الإصدار يجب أن تكون 4 أرقام',
             'Price.max' => 'السعر يجب أن لا يتجاوز 255 حرف',
         ])->validate();
-        return $this->addRelatedModels($validated);
-    }
-
-    public function addRelatedModels($attributes)
-    {
-        preg_match('/^[A-Za-z]+/', $attributes['InventoryNumber'], $match);
-        $id = $match[0];
-        $code = substr($id, 0, -1);
-        $attributes[Category::FOREIGN_KEY] = Category::where('code', $code)->first()->getKey();
-        $code = substr($id, strlen($id)-1);
-        $attributes[BookLanguage::FOREIGN_KEY] = BookLanguage::where('code', $code)->first()->getKey();
-        return $attributes;
+        $validated[Category::FOREIGN_KEY] = $categoryValidator->getCategory()->getKey();
+        $validated[BookLanguage::FOREIGN_KEY] = $languageValidator->getLanguage()->getKey();
+        return $validated;
     }
 }

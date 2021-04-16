@@ -48,6 +48,6 @@ class HasValidInventoryNumber implements Rule
      */
     public function message()
     {
-        return 'شفرة الكتاب (:input) غير صحية ,يجب أن تكون من الشكل: AAA/000';
+        return 'شفرة الكتاب (:input) غير صحيحة ,يجب أن تكون من الشكل: AAA/000';
     }
 }

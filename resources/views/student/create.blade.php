@@ -46,3 +46,21 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#Speciality').typeahead({
+                source: function (query, result) {
+                    $.ajax({
+                        url: "{{ route('students.specialityTypeAhead') }}",
+                        method: "GET",
+                        data: {query: query},
+                        dataType: "json",
+                        success: data => result(data)
+                    })
+                }
+            });
+        });
+    </script>
+@endpush

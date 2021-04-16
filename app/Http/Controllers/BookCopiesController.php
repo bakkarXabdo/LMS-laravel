@@ -2,99 +2,99 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\BookCopiesExport;
+use App\Helpers\AppHelper;
 use App\Models\Book;
 use App\Models\BookCopy;
 use App\Models\Student;
+use App\Rules\SameBook;
+use App\Rules\UniqueCopy;
+use App\Rules\ValidBookInCopyId;
+use App\Rules\ValidCopyId;
+use Cache;
+use Dotenv\Exception\ValidationException as ExceptionValidationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Facades\Excel;
 use stdClass;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class BookCopiesController extends Controller
 {
-    public function index(Book $book)
+    public function forBook(Book $book)
     {
-        if(!$book->exists())
-        {
-            echo request('bookId') . "الكتاب غير موجود ";
-            exit;
-        }
-        return view('bookcopies.index', [
+        return view('bookcopies.forBook', [
             "renting" => request('renting'),
             "studentId" => request('studentId'),
             "book" => $book,
         ]);
     }
-
-    public function show($copyId)
+    public function index()
     {
-        $copy= BookCopy::find($copyId);
-        if(!$copy)
+        return view('bookcopies.index');
+    }
+    public function export()
+    {
+        ini_set('max_execution_time', 600);
+        $name = "BookCopies";
+        $file = storage_path('app\public') . DIRECTORY_SEPARATOR . $name .'.xlsx';
+        $oldLastUpdated = Carbon::parse(Cache::get('copies-last-update'))->unix();
+        $bcolumn = BookCopy::UPDATED_AT ?? BookCopy::CREATED_AT;
+        $lastUpdatedAt = BookCopy::query()->select(Db::raw("unix_timestamp(max($bcolumn)) as t"))->get()->max('t');
+        $useOld = (int)$lastUpdatedAt === (int)$oldLastUpdated;
+        if(!$useOld || !file_exists($file))
         {
-            abort(404, "book copy $copyId not found");
+            Excel::store(new BookCopiesExport, "$name.xlsx", "public", \Maatwebsite\Excel\Excel::XLSX);
+            Cache::put('copies-last-update', $lastUpdatedAt);
         }
-        $copy->Rented = $copy->rental;
-        return view('bookcopies.show',[
-            "copy"=>$copy
-        ])->with($copy->attributesToArray());
+        AppHelper::DownloadFile($file);
     }
 
-    public function create(Request $request)
+    public function show(BookCopy $bookcopy)
+    {
+        return view('bookcopies.show',[
+            "copy"=>$bookcopy
+        ]);
+    }
+
+    public function create()
     {
         return view('bookcopies.create');
     }
 
-    public function store(Request $request)
+    public function store()
     {
-        $book = Book::find($request->get('BookId'));
-        if(!$book || !Str::startsWith($request->get('Id'), $request->get('BookId')))
+        $validated = $this->validateRequest();
+        $copy = BookCopy::create($validated);
+        if($copy)
         {
-           preg_match('/'.Book::getIncludedIdPattern().'/', $request->get('Id'), $mactches);
-           $test = $mactches[0];
-           $book = Book::find($request->get($mactches[0]));
+            return redirect(route('bookcopies.show', $copy->getKey()));
         }
-        if(!$book)
-        {
-            return back()->withErrors(new MessageBag(["Id" => "الكتاب $test غير موجود"]));
-        }
-        if(!preg_match('/'.BookCopy::getIdPattern().'/', $request->get('Id'), $macthes))
-        {
-            return back()->withErrors(new MessageBag(["Id" => "الشفرة غير صحيحه, يجب أن تكون من الشكل XXX/000/000"]));
-        }
-        if(BookCopy::find($request->get('Id')))
-        {
-            return back()->withErrors(new MessageBag(["Id" => "الشفرة موجوده مسبقا"]));
-        }
-        $copy = BookCopy::create([
-            'Id' => $request->Id,
-            "BookId" => $book->getKey(),
-            "InventoryId" => $request->get('InventoryId')
-        ]);
-        if(!$copy)
-        {
-            abort(501, "Internal Server Error");
-        }
-        return redirect(route('bookcopies.show', $copy->getKey()));
+        throw new HttpException(500, "لا يمكن إنشاء النسخة");
     }
 
     public function edit(BookCopy $bookcopy)
     {
-        abort(404, "Action not available");
-        if(!$bookcopy)
-        {
-            return abort(404, "Copy Not Found");
-        }
         return view('bookcopies.edit', [
             "copy" => $bookcopy
         ]);
     }
 
 
-    public function update(Request $request, BookCopy $bookcopy)
+    public function update(Request $request)
     {
-        abort(404, "Action not available");
+        $bookcopy = BookCopy::findOrFail($request->get('current_key'));
+        $validated = $this->validateRequest();
+        if ($bookcopy->update($validated)) {
+            return redirect($bookcopy->path);
+        }
+        throw new HttpException(500, "لا يمكن تعديل النسخة");
     }
 
 
@@ -119,7 +119,7 @@ class BookCopiesController extends Controller
         }
         return request()->wantsJson() ?
             response()->json(["success" => true, "message" => "تم حذف النسخة"])
-            : redirect(route('bookcopies.index', $book->getKey()));
+            : redirect(route('bookcopies.forBook', $book->getKey()));
     }
     public function typeahead()
     {
@@ -147,29 +147,46 @@ class BookCopiesController extends Controller
     }
     public function table()
     {
-        $request = json_decode(json_encode(request()->all()));
-        $copies = null;
+        $request = json_decode(json_encode(request()->all()), FALSE);
+        $rcol = collect(request('columns'));
+        $rcol = $rcol->map(function($col) use ($rcol) {
+            $col['Id'] = $rcol->search($col);
+            return $col;
+        });
         if(isset($request->bookId))
         {
             $book = Book::find($request->bookId);
             if(!$book)
             {
-                return abort(404, "Book not found");
+                throw new HttpException(404, "book not found");
             }
-            $copies = $book->copies;
+            $copies = $book->copies();
         }else{
-            abort(404, "Book not found");
+            $copies = BookCopy::query();
         }
+
+        foreach ($request->order as $order)
+        {
+            $copies->orderBy($rcol->where('Id', '=', $order->column)->first()['name'], $order->dir);
+        }
+        foreach ($request->columns as $index => $column)
+        {
+            if($column->searchable && $column->search->value)
+            {
+                $copies->where($rcol->where('Id', '=', $index)->first()['name'], 'LIKE' ,'%'.$column->search->value.'%');
+            }
+        }
+        $copies->select([BookCopy::TABLE.'.*', DB::raw("(select count(*) from rentals where rentals.BookCopyId = bookcopies.Id) as Rented")]);
         $count = $copies->count();
-        $copies = $copies->sortBy('Rented', SORT_REGULAR, $request->order[0]->dir == 'desc');
         if($request->length > 0)
         {
-            $copies = $copies->skip($request->start);
-            $copies = $copies->take($request->length);
+            $copies->skip($request->start);
+            $copies->take($request->length);
         }
+        $copies = $copies->get();
         $copies->map(function(BookCopy $copy){
             $copy->Rented = false;
-            $copy->EncodedKey = $copy->EncodedKey;
+            $copy->Id = $copy->getKey();
             if($copy->rental)
             {
                 // don't remove
@@ -187,5 +204,23 @@ class BookCopiesController extends Controller
         $resp->recordsFiltered = $count;
         $resp->data = $copies->values();
         return Response::json($resp);
+    }
+
+    public function validateRequest()
+    {
+        $keyName = BookCopy::KEY;
+        $bookValidator = new ValidBookInCopyId(request($keyName));
+        $idrules = ['required', new UniqueCopy(request('current_key'))];
+        if(strtoupper(request('current_key')) !== strtoupper(request(BookCopy::KEY))){
+            $idrules[] = new SameBook(request('current_key'), request($keyName));
+        }
+        $idrules[] = new ValidCopyId;
+        $idrules[] = $bookValidator;
+        $atts = Validator::make(request()->all(),[
+            $keyName => $idrules,
+            'InventoryId' => 'max:255'
+        ])->validate();
+        $atts[Book::FOREIGN_KEY] = $bookValidator->getBook()->getKey();
+        return $atts;
     }
 }

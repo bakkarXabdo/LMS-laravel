@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\AppHelper;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\MessageBag;
@@ -37,7 +38,7 @@ class BookCategoryController extends Controller
     {
         if($category->books()->count() !== 0)
         {
-            return "يوجد كُتب تحمل هذه الفئة" . " " . $category->Code;
+            return AppHelper::ArabicFormat("يوجد ؟ كتاب تحمل هذه الفئة: ؟", [$category->books()->count(), $category->Name]);
         }
         if($category->delete())
         {

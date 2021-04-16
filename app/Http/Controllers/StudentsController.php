@@ -3,16 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\AppHelper;
+use App\Helpers\CacheList;
 use App\Models\Book;
 use App\Models\BookCopy;
 use App\Models\Student;
 use App\Models\Rental;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -80,12 +81,16 @@ class StudentsController extends Controller
         });
         if($student && $student->getKey())
         {
-            Cache::put("student-password", $pwd);
+            CacheList::store('student-speciality', request()->get('Speciality'));
+            Cache::put("student-password", $pwd, now()->addMinutes(5));
             return redirect(route('students.show', $student->getKey()));
         }
         AppHelper::dieWithMessage("خطأ غير معروف, لا يمكن إدخال معلومات الطالب");
     }
-
+    public function specialityTypeAhead()
+    {
+        return response()->json(CacheList::getList('student-speciality'));
+    }
     public function changePassword(Student $student)
     {
         $pwd = strtolower(Str::random(4));
@@ -117,8 +122,9 @@ class StudentsController extends Controller
         return view('student.edit', compact('student'));
     }
 
-    public function update(Request $request, Student $student)
+    public function update(Request $request)
     {
+        $student = Student::findOrFail($request->get('current_key'));
         $validated = request()->validate([
             Student::KEY => 'required',
             'Name' => 'required',

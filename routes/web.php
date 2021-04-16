@@ -36,21 +36,20 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::group([
     'middleware' => \App\Http\Middleware\IsAdmin::class
 ], function(){
-
-
-
     Route::get('/home', [DashboardController::class, 'index'])->name('home');
     Route::get('/books/choose', [BooksController::class, 'choose'])->name('books.choose');
     Route::get('/books/importing', [BooksController::class, 'importing'])->name('books.importing');
     Route::get('/books/export', [BooksController::class, 'export'])->name('books.export');
-    Route::get('/bookcopies/{book}', [BookCopiesController::class, 'index'])->name('bookcopies.index');
+    Route::get('/bookcopies/export', [BookCopiesController::class, 'export'])->name('bookcopies.export');
+    Route::get('/bookcopies/forBook/{book}', [BookCopiesController::class, 'forBook'])->name('bookcopies.forBook');
     Route::get('/bookcopies/choose', [BookCopiesController::class, 'choose'])->name('bookcopies.choose');
     Route::get('/bookcopies/typeahead', [BookCopiesController::class, 'typeahead'])->name('bookcopies.typeahead');
     Route::get('/rentals/forbook/{book}', [RentalsController::class, 'forBook'])->name('rentals.forbook');
-    Route::get('/rentals/forstudent/{student}', [RentalsController::class, 'forCustomer'])->name('rentals.forstudent');
+    Route::get('/rentals/forstudent/{student}', [RentalsController::class, 'forStudent'])->name('rentals.forstudent');
     Route::get('/rentals/forcopy/{bookcopy}', [RentalsController::class, 'forCopy'])->name('rentals.forcopy');
     Route::get('/students/choose', [StudentsController::class, 'choose'])->name('students.choose');
     Route::get('/students/typeahead', [StudentsController::class, 'typeahead'])->name('students.typeahead');
+    Route::get('/students/spciality-type-ahead', [StudentsController::class, 'specialityTypeAhead'])->name('students.specialityTypeAhead');
     Route::get('/history/export', [RentalHistoryController::class, 'export'])->name('history.export');
 
     Route::post('/books/table', [BooksController::class, 'table'])->name('books.table');
@@ -58,7 +57,6 @@ Route::group([
     Route::post('/bookcopies/table', [BookCopiesController::class, 'table'])->name('bookcopies.table');
     Route::post('/rentals/table', [RentalsController::class, 'table'])->name('rentals.table');
     Route::post('/rentals/return/{rental}', [RentalsController::class, 'returnRental'])->name('rentals.return');
-    Route::post('/rentals/ajaxreturn/{rental}', [RentalsController::class, 'ajaxReturnRental'])->name('rentals.ajaxreturn');
     Route::post('/students/password/{student}', [StudentsController::class, 'changePassword'])->name('students.changePassword');
     Route::post('/students/table', [StudentsController::class, 'table'])->name('students.table');
     Route::post('/history/exporting', [RentalHistoryController::class, 'exporting'])->name('history.exporting');
@@ -66,11 +64,10 @@ Route::group([
 
     Route::resource('books', BooksController::class);
     Route::resource('settings', SettingsController::class);
-    Route::resource('bookcopies', BookCopiesController::class, ["except" => ['index']]);
+    Route::resource('bookcopies', BookCopiesController::class);
     Route::resource('rentals', RentalsController::class);
     Route::resource('students', StudentsController::class);
     Route::resource('history', RentalHistoryController::class);
-
     Route::resource('categories', BookCategoryController::class, ["except" => ['update', 'show']]);
     Route::resource('languages', BookLanguageController::class, ["except" => ['update', 'show']]);
 });

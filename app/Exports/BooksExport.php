@@ -14,35 +14,32 @@ class BooksExport implements FromCollection
     */
     public function collection()
     {
-        $books = Book::query()->with("copies")->get();
+        $books = Book::all();
         $exports = [[
-            "الرقم" => "الرقم",
-            "الجرد" => "الجرد",
-            "الشفرة" => "الشفرة",
-            "العنوان" => "العنوان",
-            "المؤلف" => "المؤلف",
-            "الناشر" => "الناشر",
-            "سنة النشر" => "سنة النشر",
-            "السعر" => "السعر",
-            "Isbn" => "Isbn",
+            "الرقم",
+            "الشفرة",
+            "العنوان",
+            "المؤلف",
+            "الناشر",
+            "سنة النشر",
+            "السعر",
+            "الإعارات الكلية",
+            "Isbn",
             ]
         ];
         $i = 1;
         foreach ($books as $book) {
-            foreach ($book->copies as $copy)
-            {
-                $exports[] = [
-                    "الرقم" => $i++,
-                    "الجرد" => $copy->InventoryId,
-                    "الشفرة" => $copy->{BookCopy::KEY},
-                    "العنوان" => $book->Title,
-                    "المؤلف" => $book->Author,
-                    "الناشر" => $book->Publisher,
-                    "سنة النشر" => $book->ReleaseYear,
-                    "السعر" => $book->Price,
-                    "Isbn" => $book->Isbn
-                ];
-            }
+            $exports[] = [
+                "الرقم" => $i++,
+                "الشفرة" => $book->getKey(),
+                "العنوان" => $book->Title,
+                "المؤلف" => $book->Author,
+                "الناشر" => $book->Publisher,
+                "سنة النشر" => $book->ReleaseYear,
+                "السعر" => $book->Price,
+                "الإعارات الكلية" => strval($book->TotalRentals),
+                "Isbn" => $book->Isbn
+            ];
         }
         return collect($exports);
     }

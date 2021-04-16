@@ -33,6 +33,7 @@
         <label for="Student_Id">الرقم</label>
         <input class="form-control" id="Student_Id" name="{{ Student::KEY }}" type="number" value="{{ $student->getKey() }}">
     </div>
+    @hiddenInput('current_key', $student->getKey())
     <button type="submit" class="btn btn-primary">حفظ</button>
     <br/>
     <br/>

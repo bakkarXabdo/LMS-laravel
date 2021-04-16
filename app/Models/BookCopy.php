@@ -22,7 +22,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|BookCopy whereId($value)
  * @method static Builder|BookCopy whereInventoryId($value)
  * @method static Builder|BookCopy whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @method static Builder|BookCopy offset($value)
+ * @method static BookCopy findOrFail($id)
+ * @method static Student first($columns = ['*'])
+ * @mixin Builder
  */
 class BookCopy extends Model
 {
@@ -41,6 +44,17 @@ class BookCopy extends Model
     public $incrementing = false;
     protected $guarded = [];
 
+
+    public static function booted()
+    {
+        self::creating(function($model){
+            $model->setAttribute($model->getKeyName(), strtoupper($model->getKey()));
+        });
+        self::updating(function($model){
+            $model->setAttribute($model->getKeyName(), strtoupper($model->getKey()));
+        });
+    }
+
     function book(){
         return $this->belongsTo(Book::class);
     }
@@ -58,9 +72,12 @@ class BookCopy extends Model
     {
         return '^[A-Za-z]+\/\d+\/\d+$';
     }
-
-    public function getEncodedKeyAttribute() : string
+    public function getPathAttribute()
     {
-        return urlencode($this->getKey());
+        return route('bookcopies.show', $this->getKey());
     }
+    // public function getEncodedKeyAttribute() : string
+    // {
+    //     return urlencode($this->getKey());
+    // }
 }

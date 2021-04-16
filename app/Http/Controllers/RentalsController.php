@@ -8,6 +8,8 @@ use App\Models\BookCopy;
 use App\Models\Student;
 use App\Models\Rental;
 use App\Models\RentalHistory;
+use Cache;
+use DateInterval;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -93,8 +95,10 @@ class RentalsController extends Controller
             $show = "<a href='".route('rentals.show', $copy->rental->getKey())."'>" ."إضهار" ."</a>";
             return "$show هذه النسخة معاره مسبقا, ";
         }
+        Cache::put('last-rental-duration',request()->get('duration'));
         $rental = DB::transaction(function() use ($copy, $student) {
             $student->increment('TotalRentals');
+            $copy->increment('TotalRentals');
             $copy->book->increment('TotalRentals');
             $copy->book->increment('Popularity');
             return Rental::create([
@@ -127,68 +131,39 @@ class RentalsController extends Controller
 
     public function returnRental(Rental $rental)
     {
-        $rentalHistory = Db::transaction(function() use ($rental) {
-            $r = null;
-            try {
-                $r = RentalHistory::create([
-                    "StudentId" => $rental->student->getKey(),
-                    "StudentName" => $rental->student->Name,
-                    "BookCopyId" => $rental->copy->getKey(),
-                    "BookTitle" => $rental->book->Title,
-                    "RentalCreatedAt" => $rental->CreatedAt,
-                    "RentalExpiresAt" => $rental->ExpiresAt,
-                ]);
-            }catch (Exception $e)
+        $history = null;
+        DB::beginTransaction();
+        try{
+            $history = RentalHistory::create([
+                "StudentId" => $rental->student->getKey(),
+                "StudentName" => $rental->student->Name,
+                "BookCopyId" => $rental->copy->getKey(),
+                "BookTitle" => $rental->book->Title,
+                "RentalCreatedAt" => $rental->CreatedAt,
+                "RentalExpiresAt" => $rental->ExpiresAt,
+            ]);
+            if(!$rental->delete())
             {
-                throw new Exception("لا يمكن إنشاء أرشيف للإعارة: " . $e->getMessage());
+                throw new Exception("Can't delete Rental: ". $rental->getKey());
             }
-            if($rental->delete()){
-                return $r;
-            }else{
-                throw new Exception("لا يمكن حذف الإعارة");
-            }
-        });
-        if($rentalHistory && $rentalHistory->getKey()){
-            return redirect(route('history.show', $rentalHistory->getKey()));
-        }
-
-        return abort(500, "Internal Server Error");
-    }
-    public function ajaxReturnRental($rentalId)
-    {
-        $rental = Rental::find($rentalId);
-        if(!$rental || !$rental->getKey())
+            DB::commit();
+        }catch(\Exception $e)
         {
-            abort(404, "Rental $rentalId not found");
-        }
-        $rentalHistory = Db::transaction(function() use ($rental) {
-            $r = null;
-            try {
-                $r = RentalHistory::create([
-                    "StudentId" => $rental->student->CardId,
-                    "StudentName" => $rental->student->Name,
-                    "BookId" => $rental->book->getKey(),
-                    "BookTitle" => $rental->book->Title,
-                    "RentalCreatedAt" => $rental->CreatedAt,
-                    "RentalExpiresAt" => $rental->Expires,
-                ]);
-            }catch (Exception $e)
+            DB::rollBack();
+        }finally{
+            if($history && $history->exists)
             {
-                throw new Exception("لا يمكن إنشاء أرشيف للإعارة: " . $e->getMessage());
-            }
-            if($rental->delete()){
-                return $r;
+                return request()->wantsJson()
+                       ? response()->json(["success" => true, "message" => "تم حذف الإعارة"], 200)
+                       : redirect(route('history.show', $history->getKey()));
             }else{
-                throw new Exception("لا يمكن حذف الإعارة");
+                return request()->wantsJson()
+                ? response()->json(["success" => false, "message" => "لا يمكن إنشاء أرشيف للإعارة"], 200)
+                : abort(500, "Internal Server Error");
             }
-        });
-
-        if($rentalHistory && $rentalHistory->getKey()){
-            return Response::json((object) ["success" => true, "message" => "تم حذف الإعارة"], 200);
         }
-
-        return Response::json((object) ["success" => false, "message" => "حدث خطأ غير معروف"], 200);
     }
+
     public function table()
     {
         $request = json_decode(json_encode(request()->all()));

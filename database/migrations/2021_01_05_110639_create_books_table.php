@@ -24,7 +24,7 @@ class CreateBooksTable extends Migration
             $table->string('Publisher')->default('غير معروف')->nullable();
             $table->string('ReleaseYear', 4)->nullable();
             $table->string('Source')->default('غير معروف')->nullable();
-            $table->integer('Price')->default(0)->nullable();
+            $table->string('Price')->default('0')->nullable();
 
             $table->float('Popularity')->default(0)->nullable();
             $table->foreignId(Category::FOREIGN_KEY);
@@ -32,8 +32,8 @@ class CreateBooksTable extends Migration
             $table->integer('TotalRentals')->default(0)->nullable();
             $table->string('Isbn')->default('')->nullable();
 
-            $table->foreign(Category::FOREIGN_KEY)->references(Category::KEY)->on(Category::TABLE)->cascadeOnUpdate();
-            $table->foreign(BookLanguage::FOREIGN_KEY)->references(BookLanguage::KEY)->on(BookLanguage::TABLE)->cascadeOnUpdate();
+            $table->foreign(Category::FOREIGN_KEY)->references(Category::KEY)->on(Category::TABLE)->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreign(BookLanguage::FOREIGN_KEY)->references(BookLanguage::KEY)->on(BookLanguage::TABLE)->cascadeOnUpdate()->restrictOnDelete();
 
             if(Book::CREATED_AT) {
                 $table->timestamp(Book::CREATED_AT)->default(Db::raw("CURRENT_TIMESTAMP()"));

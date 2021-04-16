@@ -273,10 +273,12 @@ class BooksImport implements ToCollection
             exit;
         }
         $rows = collect($rows->values());
+        $rowsCount = $rows->count();
         $bookGroups = $rows->groupBy( function($book) {
             return preg_replace('/[^0-9A-Za-z]\d+$/', '', $book["ID"]);
         });
-        Db::beginTransaction();
+        unset($rows);
+        DB::beginTransaction();
         try {
             foreach ($bookGroups as $bookId => $copiesGroup) {
                 $rawBook = $copiesGroup[0];
@@ -320,10 +322,10 @@ class BooksImport implements ToCollection
                     ]);
                 }
             }
-            Db::commit();
+            DB::commit();
         }catch (\Exception $e)
         {
-            Db::rollBack();
+            DB::rollBack();
             echo $responseView->with(["headMessage" => "حدث خطأ إدخال في قاعدة البيانات ,الخطأ التقني:",
                 "code" => $e->getMessage(),
                 "errors" => $errors,
@@ -333,7 +335,7 @@ class BooksImport implements ToCollection
         }
         echo $responseView->with(["headMessage" =>
             AppHelper::ArabicFormat("تم إدخال ؟ نُسخة, ؟ كتاب , تجاهل ل ؟ نُسخة مكررة", [
-                $rows->count(),
+                $rowsCount,
                 $bookGroups->count(),
                 $repetitions
             ]),

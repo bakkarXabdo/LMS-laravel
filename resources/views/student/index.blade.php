@@ -8,7 +8,9 @@
         <h3>قائمة الطلبة</h3>
         <a href="{{ route('students.create') }}" class="btn btn-primary">إضافة طالب</a>
     </div>
-    <table class="table table-bordered" id="js-students-table"></table>
+    <div class="container" dir="ltr">
+        <table class="table table-bordered" id="js-students-table"></table>
+    </div>
 @endsection
 
 @push('scripts')
@@ -39,6 +41,7 @@
                 },
                 {
                     title:"الطالب",
+                    searchable: true,
                     name: "Name",
                     render: function (_,_, student) {
                         url = '{{ route('students.show', ':id') }}'.replace(':id', student.{{ \App\Models\Student::KEY }});
@@ -48,7 +51,6 @@
                 {
                     title: "الإعارات الجارية",
                     name:"RentalsCount",
-                    searchable: false,
                     orderable:true,
                     render: function (_, _, student) {
                         if (student.RentalsCount > 0) {
@@ -128,12 +130,8 @@
             jst.find('tfoot').append(`<th></th>`);
         });
         jst.find('tfoot th').each(function (index) {
-            if(index == 0 || index == 2)
-            {
-                $(this).html(`<input data-col-indx=${index} type="text" style="width: 100%" class="form-control d-flex px-1 mt-2" placeholder="Search " />`);
-            }else{
-                $(this).html(`<input data-col-indx=${index} hidden />`);
-            }
+            if(index < 2)
+            $(this).html(`<input data-col-indx=${index} type="text" style="width: 100%" class="form-control d-flex px-1 mt-2" placeholder="Search " />`);
         });
         $('input', 'tfoot th').on( 'keyup', function () {
             let col = table.columns($(this).data('col-indx'));

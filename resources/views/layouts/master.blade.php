@@ -29,6 +29,7 @@
                     <ul class="nav navbar-nav">
                         @if(Auth::user() && Auth::user()->IsAdmin)
                             <li><a href="{{ route('books.index') }}">الكُتب</a></li>
+                            <li><a href="{{ route('bookcopies.index') }}">النُسخ</a></li>
                             <li><a href="{{ route('students.index') }}">الطُلاب</a></li>
                             <li><a href="{{ route('rentals.index') }}">الإعارات</a></li>
                             <li><a href="{{ route('history.index') }}">الأرشيف</a></li>
@@ -47,7 +48,6 @@
             <div style="min-height: 90vh;padding-top:20px">
                 @yield('content')
             </div>
-
             <hr />
             <footer class="text-center">
                 <div class="row">

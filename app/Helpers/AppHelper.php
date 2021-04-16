@@ -5,6 +5,7 @@ namespace App\Helpers;
 
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 class AppHelper
 {

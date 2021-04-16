@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use ConsoleTVs\Charts\Registrar as Charts;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\View\View;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,12 +23,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-
-        if ($this->app->isLocal()) {
-            $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
-        }
-
-
 
     }
 
@@ -54,6 +50,5 @@ class AppServiceProvider extends ServiceProvider
         {
             date_default_timezone_set("Africa/Algiers");
         }
-
     }
 }

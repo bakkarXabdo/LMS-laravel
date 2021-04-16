@@ -9,6 +9,8 @@
                 <tr>
                     <th style="width: 10%;" class="text-right">الإسم</th>
                     <th style="width: 10%;" class="text-right" dir="ltr">الرمز</th>
+                    <th style="width: 10%;" class="text-right" dir="ltr">عدد الكتب</th>
+                    <th style="width: 10%;" class="text-right" dir="ltr">عدد النسخ</th>
                     <th style="width: 40%;" class="text-right" dir="ltr">إجراءات</th>
                 </tr>
                 </thead>
@@ -17,6 +19,8 @@
                     <tr>
                         <td style="font-size: 1.6rem">{{ $category->Name }}</td>
                         <td style="font-size: 1.5rem">{{ $category->Code }}</td>
+                        <td style="font-size: 1.6rem">{{ $category->books()->count() }}</td>
+                        <td style="font-size: 1.5rem">{{ $category->copies()->count() }}</td>
                         <td style="font-size: 1.5rem">
                             <form method="POST" action="{{ route('categories.destroy', $category->getKey()) }}">
                                 @csrf
@@ -27,7 +31,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td class="text-center" colspan="999">لا توجد لغات</td>
+                        <td class="text-center" colspan="999">لا توجد فئات</td>
                     </tr>
                 @endforelse
                 </tbody>

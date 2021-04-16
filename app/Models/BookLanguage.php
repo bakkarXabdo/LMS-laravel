@@ -42,4 +42,8 @@ class BookLanguage extends Model
     function books(){
         return $this->hasMany(Book::class);
     }
+    public function copies()
+    {
+        return $this->hasManyThrough(BookCopy::class, Book::class);
+    }
 }

@@ -2,19 +2,52 @@
 
 namespace App\Rules;
 
+use App\Helpers\AppHelper;
 use App\Models\Category;
 use Illuminate\Contracts\Validation\Rule;
 
 class InventoryNumberHasValidCategory implements Rule
 {
+
+    /**
+     * stores the category part of the bookid
+     *
+     * @var string
+     */
+    private $categoryCode;
+
+
+    /**
+     * stores the caegory of the book
+     *
+     * @var Category
+     */
+    private $category;
+
+
+    /**
+     * stores the original bookid string
+     *
+     * @var string
+     */
+    private $bookId;
+
+
     /**
      * Create a new rule instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($bookId)
     {
-        //
+        $this->bookId = $bookId;
+        preg_match('/^[A-Za-z]+/', $bookId, $match);
+        if(!empty($match[0]) && !is_array($match[0]))
+        {
+            $this->categoryCode = substr($match[0], 0, -1);
+            $this->category = Category::where('code', $this->categoryCode)->first();
+        }
+
     }
 
     /**
@@ -26,14 +59,7 @@ class InventoryNumberHasValidCategory implements Rule
      */
     public function passes($attribute, $id)
     {
-        preg_match('/^[A-Za-z]+/', $id, $match);
-        $id = $match[0];
-        if(empty($id))
-        {
-            return false;
-        }
-        $code = substr($id, 0, -1);
-        return Category::where('code', $code)->count();
+        return $this->category && $this->category->exists;
     }
 
     /**
@@ -43,6 +69,15 @@ class InventoryNumberHasValidCategory implements Rule
      */
     public function message()
     {
-        return 'فئة الكتاب غير معروفة في الشفرة :input';
+        return AppHelper::ArabicFormat("فئة الكتاب ؟ غير معروفة في الشفرة ؟, الرجاء إدخال فئة جديدة بالرمز ؟",[
+            $this->categoryCode,
+            $this->bookId,
+            $this->categoryCode
+        ]);
+    }
+
+    public function getCategory()
+    {
+        return $this->category;
     }
 }

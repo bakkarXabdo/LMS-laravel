@@ -51,6 +51,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Book whereTitle($value)
  * @method static Builder|Book whereTotalRentals($value)
  * @method static Builder|Book whereUpdatedAt($value)
+ * @method static Book findOrFail($value)
  */
 
 class Book extends Model
@@ -70,7 +71,15 @@ class Book extends Model
     public $incrementing = false;
     protected $guarded = [];
 
-
+    public static function booted()
+    {
+        self::creating(function($model){
+            $model->setAttribute($model->getKeyName(), strtoupper($model->getKey()));
+        });
+        self::updating(function($model){
+            $model->setAttribute($model->getKeyName(), strtoupper($model->getKey()));
+        });
+    }
 
     /**-- Attributes --*/
 
@@ -110,13 +119,18 @@ class Book extends Model
     {
         return '^[A-Za-z]+\/\d+';
     }
-    public function getEncodedKeyAttribute() : string
-    {
-        return urlencode($this->getKey());
-    }
+    // public function getEncodedKeyAttribute() : string
+    // {
+    //     return urlencode($this->getKey());
+    // }
 
     public function firstAvailableCopy()
     {
         return $this->copies()->whereDoesntHave('rental')->first();
+    }
+
+    public static function fromCopyIdOrFail($copyId)
+    {
+        return Book::findOrFail(preg_replace('/[^0-9A-Za-z]\d+$/', '', $copyId));
     }
 }

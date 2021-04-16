@@ -1,83 +1,44 @@
-@extends('layouts.app')
+@extends('layouts.master')
 
 @section('content')
-<h1 class="text-center">{{ config('app.name', 'Laravel') }}</h1>
-
-<div style="height: 500px; padding: 100px 0px 0px 300px;" class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    Please Fix These Errors-
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-            <div style="border: 1px solid gainsboro; border-radius: 4px;" class="card">
-                <div style="padding: 15px; border-bottom: 1px solid gainsboro; background-color: whitesmoke" class="card-header">{{ __('Login') }}</div>
-
-                <div style="padding:30px 20px ; " class="card-body">
-                    <form method="POST" action="{{ route('login') }}">
-                        @csrf
-                        <div class="form-group row">
-                            <label for="username" class="col-md-4 col-form-label text-md-right">User Name</label>
-
-                            <div class="col-md-6">
-                                <input id="username" type="text" class="form-control @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" required autocomplete="username" autofocus>
-                                @error('username')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
+    <h1 class="text-center" style="margin-bottom: 100px">{{ config('app.name', 'Laravel') }}</h1>
+    <div class="container" dir="rtl">
+        <div class="row vertical-offset-100">
+            <div style="max-width: 350px;margin: 0 auto;">
+                <div class="panel panel-default">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
                         </div>
-
-                        <div class="form-group row">
-                            <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
-
-                                @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <div class="col-md-6 offset-md-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-
-                                    <label class="form-check-label" for="remember">
-                                        {{ __('Remember Me') }}
+                    @endif
+                    <div class="panel-heading">
+                        <h3 class="panel-title">تسجيل الدخول</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form accept-charset="UTF-8" role="form" method="POST" action="{{ route('login') }}">
+                            @csrf
+                            <fieldset>
+                                <div class="form-group">
+                                    <input style="margin: 0 auto" class="form-control" placeholder="المستخدم" name="username" type="text">
+                                </div>
+                                <div class="form-group">
+                                    <input style="margin: 0 auto" class="form-control" placeholder="كلمة السر" name="password" type="password" value="">
+                                </div>
+                                <div class="checkbox" style="margin-right: 10px">
+                                    <label>
+                                        <input class="mx-1" name="remember" type="checkbox" value="Remember Me"> <span style="margin: 0 20px">حفظ الدخول</span>
                                     </label>
                                 </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group row mb-0">
-                            <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Login') }}
-                                </button>
-
-                                @if (Route::has('password.request'))
-                                    <a class="btn btn-link" href="{{ route('password.request') }}">
-                                        {{ __('Forgot Your Password?') }}
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-                    </form>
+                                <input class="btn btn-lg btn-success btn-block" type="submit" value="دخول">
+                            </fieldset>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection

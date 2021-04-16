@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Student
  *
- * @mixin Builder
+ *
  * @property int $Id
  * @property int $UserId
  * @property string $Name
@@ -29,6 +29,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static Builder|Student whereSpeciality($value)
  * @method static Builder|Student whereTotalRentals($value)
  * @method static Builder|Student whereUserId($value)
+ * @method static Builder|Student offset($value)
+ * @method static Student first($columns = ['*'])
+ *
+ * @mixin Builder
  */
 class Student extends Model
 {

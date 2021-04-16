@@ -24,7 +24,7 @@
         </div>
         <div class="form-group">
             <label for="InventoryId">رقم الجرد</label>
-            <input class="form-control" id="InventoryId" type="number" name="Shelf" value="{{ old('InventoryId') }}">
+            <input class="form-control" id="InventoryId" name="InventoryId" value="{{ old('InventoryId') }}">
         </div>
         <input hidden name="BookId" value="{{ request()->get('bookId') }}"/>
         <button type="submit" class="btn btn-primary">إضافة</button>

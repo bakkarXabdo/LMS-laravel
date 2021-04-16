@@ -13,6 +13,10 @@
                         <a href="{{ route('books.show', $copy->book->getKey()) }}">{{ $copy->book->Title }}</a>
                     </td>
                 </tr>
+                <tr class="d-flex">
+                    <th class="col-sm-2">عدد الإعارات الإجمالية</th>
+                    <td class="col-sm-10">{{ $copy->TotalRentals }}</td>
+                </tr>
                 @isset($copy->InventoryId)
                     <tr class="d-flex">
                         <th class="col-sm-2">رقم الجرد</th>
@@ -38,6 +42,7 @@
         <h4>الإجرائات</h4>
         <hr>
         <div class="row" style="margin-left:0">
+            <a class="btn btn-primary" href="{{ route('bookcopies.edit', $copy->getKey()) }}">تعديل</a>
             @if(!$copy->rental)
                 <a class="btn btn-primary" href="{{ route('rentals.create', ["copyId" => $Id]) }}">إعارة</a>
                 <a class="btn btn-danger" id="copy-delete" href="#">حذف</a>

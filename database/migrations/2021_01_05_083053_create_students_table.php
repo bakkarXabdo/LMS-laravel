@@ -23,7 +23,7 @@ class CreateStudentsTable extends Migration
             $table->dateTime('BirthDate', 6);
             $table->integer('TotalRentals')->default(0);
 
-            $table->foreign('UserId')->references(User::KEY)->on(User::TABLE)->cascadeOnUpdate();
+            $table->foreign('UserId')->references(User::KEY)->on(User::TABLE)->cascadeOnUpdate()->cascadeOnDelete();
             if(Student::CREATED_AT) {
                 $table->timestamp(Student::CREATED_AT)->default(DB::raw("CURRENT_TIMESTAMP()"));
             }

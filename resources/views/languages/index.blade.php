@@ -9,6 +9,8 @@
                 <tr>
                     <th style="width: 10%;" class="text-right">الإسم</th>
                     <th style="width: 10%;" class="text-right" dir="ltr">الرمز</th>
+                    <th style="width: 10%;" class="text-right" dir="ltr">عدد الكتب</th>
+                    <th style="width: 10%;" class="text-right" dir="ltr">عدد النسخ</th>
                     <th style="width: 40%;" class="text-right" dir="ltr">إجراءات</th>
                 </tr>
                 </thead>
@@ -17,6 +19,8 @@
                     <tr>
                         <td style="font-size: 1.6rem">{{ $language->Name }}</td>
                         <td style="font-size: 1.5rem">{{ $language->Code }}</td>
+                        <td style="font-size: 1.6rem">{{ $language->books()->count() }}</td>
+                        <td style="font-size: 1.5rem">{{ $language->copies()->count() }}</td>
                         <td style="font-size: 1.5rem">
                             <form method="POST" action="{{ route('languages.destroy', $language->getKey()) }}">
                                 @csrf

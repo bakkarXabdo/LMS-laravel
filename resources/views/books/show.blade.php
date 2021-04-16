@@ -3,10 +3,13 @@
 @section('PageTitle') {{ $book->Title }} @endsection
 
 @section('content')
-
-    <br /><br />
-    <h4>تفاصيل الكتاب</h4>
+    <div dir="rtl">
+        <h4>تفاصيل الكتاب</h4>
     <table class="table table-responsive table-bordered">
+        <tr class="d-flex">
+            <th class="col-sm-2">الشفرة</th>
+            <td>{{ $book->getKey() }}</td>
+        </tr>
         <tr class="d-flex">
             <th class="col-sm-2">العُنوان</th>
             <td>{{ $book->Title }}</td>
@@ -16,12 +19,16 @@
             <td>{{ $book->Authors }}</td>
         </tr>
         <tr>
-            <th>الصِنف</th>
+            <th>الفئة</th>
             <td>{{ $book->category->Name }}</td>
         </tr>
         <tr>
             <th>اللغة</th>
             <td>{{ $book->language->Name }}</td>
+        </tr>
+        <tr>
+            <th>السعر</th>
+            <td>{{ $book->Price }}</td>
         </tr>
         <tr>
             <th>تاريخ الإصدار</th>
@@ -31,14 +38,17 @@
             <th>تاريخ الإضافة</th>
             <td>{{\Illuminate\Support\Carbon::parse($book->DateAdded)->format('d-m-Y H:i:s') }}</td>
         </tr>
-
+        <tr>
+            <th>الإعارات الكلية</th>
+            <td>{{ $book->TotalRentals }}</td>
+        </tr>
         <tr>
             <th>نُسخ الكتاب</th>
             <td>
                 @if ($book->NumberInStock === 0)
                     <span class="text-danger">لا يوجد نُسخ</span>
                 @else
-                    <a href="{{ route('bookcopies.index', ["book" => $book->getKey()]) }}">
+                    <a href="{{ route('bookcopies.forBook', ["book" => $book->getKey()]) }}">
                         {{ $book->NumberInStock }}  نُسخة
                     </a>
                 @endif
@@ -88,6 +98,7 @@
     <br />
     <a href="{{ route('books.index') }}">الرجوع إلى القائمة</a>
 
+    </div>
 @endsection
 
 @push('scripts')
@@ -98,14 +109,14 @@
                 title: "Confirm Your Action",
                 message: `
                         @if($book->NumberInStock > 1)
-                            <span>This Book Has <a href="{{ route('bookcopies.index', ["book" => $book->getKey()]) }}">{{ $book->NumberInStock }} Copies</a>, Are you sure You want To Delete Them All?</span>
+                            <span>يحتوي هذا الكتاب على <a href="{{ route('bookcopies.forBook', ["book" => $book->getKey()]) }}">{{ $book->NumberInStock }} نسخ </a> ، هل أنت متأكد أنك تريد حذفها جميعًا؟</span>
                         @else
-                            <span>Delete <strong>{{ $book->Title }}</strong> ?</span>
+                            <span>حذف <strong>{{ $book->Title }}</strong> ?</span>
                         @endif`,
                 backdrop:true,
                 buttons: {
                     confirm: {
-                        label: 'Delete',
+                        label: 'حذف',
                         className: 'btn-danger',
                         callback: function () {
                             $.ajax({
@@ -127,7 +138,7 @@
                         }
                     },
                     cancel: {
-                        label: 'Cancel',
+                        label: 'إلغاء',
                         className: 'btn-secondary'
                     }
 

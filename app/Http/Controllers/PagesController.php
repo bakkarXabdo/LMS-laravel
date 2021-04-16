@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\AppHelper;
+use App\Helpers\CacheList;
 use App\Models\Book;
 use App\Models\BookLanguage;
 use App\Models\Category;
@@ -73,12 +74,14 @@ class PagesController extends Controller
             $wordsSearch->where(function ($q) use ($searchTerm) {
                 $ignoreWords = collect([
                     "une",
-                    "un",
-                    "a",
+                    // "un",
+                    // "a",
                     "les",
-                    "la",
+                    // "la",
                     "des",
-                    "à",
+                    "d'un",
+                    "d'une",
+                    // "à",
                     'و',
                     'في',
                     'من',
@@ -121,22 +124,13 @@ class PagesController extends Controller
             $data['results'] = $normalSearch->paginate(50);
         }
         $response = view('pages.index')->with($data)->render();
-        if(!Cache::has($cache))
-        {
-            Cache::put($cache, $response, now()->addDay());
-            $cached = Cache::get('pages.index.view.cached', []);
-            $cached[] = $cache;
-            Cache::put('pages.index.view.cached', $cached);
-        }
+        $response = preg_replace('/\s+/S', " ", $response);
+        CacheList::add('pages.index.view.cached', $cache, $response);
         return $response;
     }
     public static function clearCachedResponses()
     {
-        $cached = Cache::get('pages.index.view.cached');
-        if (is_array($cached)) {
-            Cache::deleteMultiple($cached);
-            Cache::forget('pages.index.view.cached');
-        }
+        CacheList::forgetList('pages.index.view.cached');
     }
     public function about()
     {
