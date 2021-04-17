@@ -29,9 +29,5 @@ function is_arabic($str) {
         }
         $total_count++;
     }
-    if(($arabic_count/$total_count) > 0.6) {
-        // 60% arabic chars, its probably arabic
-        return true;
-    }
-    return false;
+    return $arabic_count/$total_count > .5;
 }
