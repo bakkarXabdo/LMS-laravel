@@ -53,12 +53,9 @@
                     {
                         title: "رقم الطالب",
                         name: "StudentId",
+                        data: 'StudentId',
                         orderable:false,
-                        searchable:true,
-                        render: function(_,_,rental){
-                            url = '{{ route('students.show', ':id') }}'.replace(':id', rental.StudentId);
-                            return `<a title="${rental.StudentName}" href="${url}">${rental.StudentId}</a`;
-                        }
+                        searchable:true
                     },
                     {
                         title: "الطالب",

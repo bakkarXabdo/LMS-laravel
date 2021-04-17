@@ -2,17 +2,13 @@
 
 namespace App\Providers;
 
-use App\Charts\ChartsController;
-use App\Models\BookCopy;
-use App\Models\Student;
+use App\Charts\BooksByCategoryChart;
+use App\Charts\BooksByLanguageChart;
+use App\Charts\MonthlyRentalsCountChart;
 use Illuminate\Pagination\AbstractPaginator;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 use ConsoleTVs\Charts\Registrar as Charts;
-use Illuminate\Support\Facades\Blade;
-use Illuminate\View\View;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,15 +29,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(Charts $charts)
     {
-        try {
-            DB::connection()->getPdo();
-        } catch (\Exception $e) {
-            die(" لا يمكن الإتصال بقاعدة البيانات" . "<br>" . $e ->getMessage() );
+        if(app()->isLocal())
+        {
+            try {
+                DB::connection()->getPdo();
+            } catch (\Exception $e) {
+                die(" لا يمكن الإتصال بقاعدة البيانات" . "<br>" . $e ->getMessage() );
+            }
         }
-
-
         $charts->register([
-            ChartsController::class
+            MonthlyRentalsCountChart::class,
+            BooksByCategoryChart::class,
+            BooksByLanguageChart::class,
         ]);
         AbstractPaginator::useBootstrapThree();
 

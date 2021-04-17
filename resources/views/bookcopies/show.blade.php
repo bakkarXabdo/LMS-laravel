@@ -44,7 +44,7 @@
         <div class="row" style="margin-left:0">
             <a class="btn btn-primary" href="{{ route('bookcopies.edit', $copy->getKey()) }}">تعديل</a>
             @if(!$copy->rental)
-                <a class="btn btn-primary" href="{{ route('rentals.create', ["copyId" => $Id]) }}">إعارة</a>
+                <a class="btn btn-primary" href="{{ route('rentals.create', ["copyId" => $copy->getKey()]) }}">إعارة</a>
                 <a class="btn btn-danger" id="copy-delete" href="#">حذف</a>
             @else
                 <form style="display: inline-block" action="{{ route('rentals.return', $copy->rental->getKey()) }}" method="post">

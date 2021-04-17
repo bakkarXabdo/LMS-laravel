@@ -1,6 +1,10 @@
 @extends('layouts.master')
 @section('PageTitle') {{ request('language') || request('category') || request('term') ? "بحث" : "الرئيسية"  }} @endsection
 @section('content')
+    @php
+        $dir = is_arabic(request('term')) ? 'rtl' : 'ltr';
+        $dir = empty(request('term')) ? 'rtl' : $dir;
+    @endphp
     <h1 class="jumbotron text-center">{{config('app.name')}}</h1>
     <div dir="rtl">
         <form action="{{ route('pages.index', ["language" => request('language') , "category" => request('category')]) }}" method="get">
@@ -79,15 +83,21 @@
                         إضهار {{ $results->count() }} من أصل {{ $results->total() }} نتيجة
                     </div>
                     <thead>
-                    <tr>
-                        <th style="width: 10%;" class="text-right" dir="ltr">الرقم</th>
-                        <th style="width: 50%;" class="text-right">العنوان</th>
-                        <th style="width: 20%;" class="text-right">المؤلف</th>
-                        <th style="width: 10%;" class="text-right">الصنف</th>
-                        <th style="width: 10%;" class="text-right">اللغة</th>
-                    </tr>
+                        @isset($noresult)
+                            <tr>
+                                <td colspan="99" class='text-center' style="background-color: rgb(245 245 245);">لا توجد نتائج, إضهار نتائج غير دقيقة</td>
+                            </tr>
+                        @endisset
+                        <tr>
+                            <th style="width: 10%;" class="text-right" dir="ltr">الرقم</th>
+                            <th style="width: 50%;" class="text-right">العنوان</th>
+                            <th style="width: 20%;" class="text-right">المؤلف</th>
+                            <th style="width: 10%;" class="text-right">الصنف</th>
+                            <th style="width: 10%;" class="text-right">اللغة</th>
+                        </tr>
                     </thead>
                     <tbody>
+
                     @forelse ($results as $key => $book)
                         @if($splits->contains($key + $results->firstItem() - 1))
                             <tr>
@@ -95,11 +105,11 @@
                             </tr>
                         @else
                             <tr>
-                                <td style="font-size: 1.5rem">{{$book->{\App\Models\Book::KEY} }}</td>
-                                <td style="font-size: 1.6rem">{{$book->Title}}</td>
-                                <td>{{$book->Author}}</td>
-                                <td>{{ $book->category->Name}}</td>
-                                <td>{{ $book->language->Name}}</td>
+                                <td dir="{{ $dir }}" style="font-size: 1.5rem">{{$book->{\App\Models\Book::KEY} }}</td>
+                                <td dir="{{ $dir }}" style="font-size: 1.6rem">{{$book->Title}}</td>
+                                <td dir="{{ $dir }}">{{$book->Author}}</td>
+                                <td dir="{{ $dir }}">{{ $book->category->Name}}</td>
+                                <td dir="{{ $dir }}">{{ $book->language->Name}}</td>
                             </tr>
                         @endif
                     @empty

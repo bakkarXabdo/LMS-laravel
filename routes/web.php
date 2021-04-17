@@ -68,8 +68,8 @@ Route::group([
     Route::resource('rentals', RentalsController::class);
     Route::resource('students', StudentsController::class);
     Route::resource('history', RentalHistoryController::class);
-    Route::resource('categories', BookCategoryController::class, ["except" => ['update', 'show']]);
-    Route::resource('languages', BookLanguageController::class, ["except" => ['update', 'show']]);
+    Route::resource('categories', BookCategoryController::class, ["except" => ['show']]);
+    Route::resource('languages', BookLanguageController::class, ["except" => ['show']]);
 });
 
 

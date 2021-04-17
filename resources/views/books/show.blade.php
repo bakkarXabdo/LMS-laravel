@@ -18,6 +18,7 @@
             <th>المؤلف</th>
             <td>{{ $book->Authors }}</td>
         </tr>
+
         <tr>
             <th>الفئة</th>
             <td>{{ $book->category->Name }}</td>
@@ -33,6 +34,14 @@
         <tr>
             <th>تاريخ الإصدار</th>
             <td>{{ $book->ReleaseYear }}</td>
+        </tr>
+        <tr>
+            <th>الناشر</th>
+            <td>{{ $book->Publisher }}</td>
+        </tr>
+        <tr>
+            <th>المصدر</th>
+            <td>{{ $book->Publisher }}</td>
         </tr>
         <tr>
             <th>تاريخ الإضافة</th>

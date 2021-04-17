@@ -48,4 +48,8 @@ class Category extends Model
     {
         return $this->hasManyThrough(BookCopy::class, Book::class);
     }
+    public function rentals()
+    {
+        return $this->hasManyThrough(Rental::class, Book::class);
+    }
 }

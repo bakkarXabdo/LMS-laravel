@@ -37,9 +37,6 @@ class PagesController extends Controller
             'splits' => collect()
         );
         $normalSearch = Book::query();
-        $advnacedSearch = Book::query();
-        $wordsSearch = Book::query();
-        $authorsSearch = Book::query();
 
         $searchTerm = request('term');
         if(\request('category'))
@@ -47,44 +44,35 @@ class PagesController extends Controller
             $cid = Book::TABLE . "." . Category::FOREIGN_KEY;
             $data["filterCategory"] = $categories->find(\request('category'));
             $normalSearch->where($cid , \request('category'));
-            $advnacedSearch->where($cid, \request('category'));
-            $wordsSearch->where($cid, \request('category'));
-            $authorsSearch->where($cid, \request('category'));
         }
         if(\request('language'))
         {
             $lid = Book::TABLE . "." . BookLanguage::FOREIGN_KEY;
             $data["filterLanguage"] = $languages->find(\request('language'));
             $normalSearch->where($lid, \request('language'));
-            $advnacedSearch->where($lid, \request('language'));
-            $wordsSearch->where($lid, \request('language'));
-            $authorsSearch->where($lid, \request('language'));
         }
         $normalSearch->orderByDesc('Popularity');
+
+        $advnacedSearch = $normalSearch->clone();
+        $wordsSearch = $normalSearch->clone();
+        $authorsSearch = $normalSearch->clone();
+        $similarSearch = $normalSearch->clone();
+
+
         if($searchTerm) {
-            $authorsSearch->Where('Author', 'LIKE', "%$searchTerm%");
-            $normalSearch->where(function ($query) use ($searchTerm) {
-                $query->where('Title', 'LIKE', "%$searchTerm%");
-            });
-            $advnacedSearch->where(function ($query) use ($searchTerm) {
-                $query->whereRaw("LOWER((REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(Title, '[,\-.()|:]', ''), 'ه', 'ة'), 'é', 'e'), 'ç', 'c'), 'ï', 'i'), '  ', ' '))) " .
-                    "like CONCAT('%', LOWER((REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(?, '[,\-.()|:]', ''), 'ه', 'ة'), 'é', 'e'), 'ç', 'c'), 'ï', 'i'), '  ', ' '))), '%')", [$searchTerm]);
-            });
+            $authorsSearch->where('Author', 'LIKE', "%$searchTerm%");
+            $normalSearch->where('Title', 'LIKE', "%$searchTerm%");
+            $advnacedSearch->whereRaw("LOWER((REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(Title, '[,\-.()|:]', ''), 'ه', 'ة'), 'é', 'e'), 'ç', 'c'), 'ï', 'i'), '  ', ' '))) " .
+            "like CONCAT('%', LOWER((REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(REGEXP_REPLACE(?, '[,\-.()|:]', ''), 'ه', 'ة'), 'é', 'e'), 'ç', 'c'), 'ï', 'i'), '  ', ' '))), '%')", [$searchTerm]);
 
             $wordsSearch->where(function ($q) use ($searchTerm) {
                 $ignoreWords = collect([
                     "une",
-                    // "un",
-                    // "a",
                     "les",
-                    // "la",
                     "des",
                     "d'un",
                     "d'une",
-                    // "à",
-                    'و',
-                    'في',
-                    'من',
+                    'dans',
                 ]);
                 foreach (collect(mb_split(' ', $searchTerm))->sort(fn($w1, $w2) => strlen($w1) < strlen($w2))
                          as $key => $word) {
@@ -103,12 +91,13 @@ class PagesController extends Controller
             $data['splits'] = collect($splits)->flatten();
             if (empty($splits))
             {
-                $books = Book::all();
-                $books->sort(function(Book $book1, Book $book2) use ($searchTerm) {
-                    similar_text($book1->Title, $searchTerm, $bs1);
-                    similar_text($book2->Title, $searchTerm, $bs2);
-                    return $bs1 - $bs2;
+                $books = $similarSearch->get();
+                $books = $books->sort(function(Book $book1, Book $book2) use ($searchTerm) {
+                    $m1 = similar_text($book1->Title, $searchTerm, $bs1);
+                    $m2 = similar_text($book2->Title, $searchTerm, $bs2);
+                    return ($m2-$m1)+($bs2 - $bs1);
                 });
+                $data['noresult'] = true;
                 $data['results'] = AppHelper::paginateCollection($books, 50);
             }else {
 //            dd($s = $splits);
@@ -125,7 +114,7 @@ class PagesController extends Controller
         }
         $response = view('pages.index')->with($data)->render();
         $response = preg_replace('/\s+/S', " ", $response);
-        CacheList::add('pages.index.view.cached', $cache, $response);
+        // CacheList::add('pages.index.view.cached', $cache, $response);
         return $response;
     }
     public static function clearCachedResponses()

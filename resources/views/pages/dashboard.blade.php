@@ -3,7 +3,9 @@
 @section('content')
     <h1 class="jumbotron text-center">{{config('app.name')}}</h1>
 
-    <div id="chart" style="height: 300px;"></div>
+    <div id="books_by_language_chart" style="height: 300px;"></div>
+    <div id="books_by_category_chart" style="height: 300px;"></div>
+    <div id="monthly_rentals_count_chart" style="height: 300px;"></div>
     <div dir="rtl">
         <div class="row">
             <h4>إحصائات</h4>
@@ -36,25 +38,70 @@
 
 @push('scripts')
     <script>
-        const chart = new Chartisan({
-            el: '#chart',
-            url: "@chart('charts')",
+        new Chartisan({
+            el: '#monthly_rentals_count_chart',
+            url: "@chart('monthly_rentals_count_chart')",
             hooks: new ChartisanHooks().colors()
                 .responsive()
                 .colors()
                 .beginAtZero()
-                .legend({labels:{
-                    fontColor: 'black',
+                .legend({
+                    position: 'bottom',
+                    labels:{
+                        fontColor: 'black',
                         fontFamily:'Tajawal',
                         fontSize : 16
-                }
+                    }
                 })
                 .borderColors()
                 .datasets([{
-                    type:'line',
-                    fill:false,
-                    fontFamily:'Tajawal'
-                }]),
+                        type:'line',
+                        fill:false,
+                        fontFamily:'Tajawal'
+                    }
+                ]),
+        });
+        new Chartisan({
+            el: '#books_by_category_chart',
+            url: "@chart('books_by_category_chart')",
+            hooks: new ChartisanHooks().colors()
+                .responsive()
+                .colors()
+                .beginAtZero()
+                .legend({
+                    position: 'bottom',
+                    labels:{
+                        fontColor: 'black',
+                        fontFamily:'Tajawal',
+                        fontSize : 16
+                    }
+                })
+                .borderColors()
+                .datasets([{
+                        fontFamily:'Tajawal'
+                    }
+                ]),
+        });
+        new Chartisan({
+            el: '#books_by_language_chart',
+            url: "@chart('books_by_language_chart')",
+            hooks: new ChartisanHooks().colors()
+                .responsive()
+                .colors()
+                .beginAtZero()
+                .legend({
+                    position: 'bottom',
+                    labels:{
+                        fontColor: 'black',
+                        fontFamily:'Tajawal',
+                        fontSize : 16
+                    }
+                })
+                .borderColors()
+                .datasets([{
+                        fontFamily:'Tajawal'
+                    }
+                ]),
         });
     </script>
 @endpush

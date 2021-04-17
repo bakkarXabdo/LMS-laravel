@@ -33,7 +33,7 @@
                                         <input class="mx-1" name="remember" type="checkbox" value="Remember Me"> <span style="margin: 0 20px">حفظ الدخول</span>
                                     </label>
                                 </div>
-                                <input class="btn btn-lg btn-success btn-block" type="submit" value="دخول">
+                                <input class="btn btn-lg btn-success btn-block" style="margin: 0 auto;" type="submit" value="دخول">
                             </fieldset>
                         </form>
                     </div>

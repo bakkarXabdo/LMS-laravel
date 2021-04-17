@@ -1,12 +1,12 @@
 @extends('layouts.master')
 
 @section('PageTitle')
-    تعديل لغة
+    تعديل فئة
 @endsection
 
 @section('content')
     <div dir="rtl">
-        <h2>تعديل لغة</h2>
+        <h2>تعديل فئة</h2>
         @if ($errors->any())
             <div class="alert alert-danger" style="border:none;background: linear-gradient(45deg, #ff684fc7, #ff0000)">
                 <div>
@@ -19,21 +19,20 @@
                 </ul>
             </div>
         @endif
-        <form onsubmit="submitted()" action="{{ route('languages.update', $language->getKey()) }}" method="post">
+        <form onsubmit="submitted()" action="{{ route('languages.update', $category->getKey()) }}" method="post">
             @method('PUT')
             @csrf
             <div class="form-group">
-                <label for="Code">رمز اللغة</label>
-                <input onfocus="warn()" class="form-control" id="Code" name="Code" value="{{ old('Code') ?? $language->Code }}">
+                <label for="Code">رمز الفئة</label>
+                <input onfocus="warn()" class="form-control" required id="Code" name="Code" value="{{ old('Code') ?? $category->Code }}">
             </div>
             <div class="form-group">
-                <label for="Name">إسم اللغة</label>
-                <input class="form-control" id="Name" name="Name" value="{{ old('Name') ?? $language->Name }}">
+                <label for="Name">إسم الفئة</label>
+                <input class="form-control" id="Name" required name="Name" value="{{ old('Name') ?? $category->Name }}">
             </div>
-            <input hidden type="hidden" disabled style="display: none" name="{{ App\Models\BookLanguage::KEY }}" value="{{ $language->getKey() }}" />
+            <input hidden type="hidden" disabled style="display: none" name="{{ Category::KEY }}" value="{{ $category->getKey() }}" />
             <button type="submit" class="btn btn-primary">حفظ</button>
         </form>
-        </div>
     </div>
 @endsection
 
@@ -46,7 +45,7 @@
             if(!warned)
             {
                 bootbox.alert({
-                    message: '({{ $language->books()->count() . ' نُسخة ' }})تحذير: تغيير رمز اللغة سيغير ايضا جميع شفرات النُسخ الخاصة بهذه اللغة',
+                    message: '({{ ' نُسخة ' . $language->books()->count() }})تحذير: تغيير رمز الفئة سيغير ايضا جميع شفرات النُسخ الخاصة بهذه الفئة',
                     'locale' : 'ar',
                     'backdrop': true
                 });

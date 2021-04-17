@@ -6,14 +6,12 @@ namespace App\Charts;
 
 use Carbon\Carbon;
 use Chartisan\PHP\Chartisan;
-use ConsoleTVs\Charts\BaseChart;
-use CreateRentalHistoryChartRoutine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class ChartsController extends BaseChart
+class MonthlyRentalsCountChart extends BaseChart
 {
-    public ?string $name = 'charts';
+
     /**
      * Handles the HTTP request for the given chart.
      * It must always return an instance of Chartisan

@@ -80,4 +80,21 @@ class BookCopy extends Model
     // {
     //     return urlencode($this->getKey());
     // }
+
+
+    public function getLanguageCodeAttribute()
+    {
+        preg_match('/^[A-Za-z]+/', $this->getKey(), $matches);
+        return substr($matches[0], strlen($matches[0])-1);
+    }
+    public function getCategoryCodeAttribute()
+    {
+        preg_match('/^[A-Za-z]+/', $this->getKey(), $matches);
+        return substr($matches[0], 0, -1);
+    }
+    public function getNumericIdAttribute()
+    {
+        preg_match('/\/\d+\/\d+$/', $this->getKey(), $matches);
+        return $matches[0];
+    }
 }

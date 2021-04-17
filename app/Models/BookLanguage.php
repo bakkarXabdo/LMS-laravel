@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -41,9 +40,13 @@ class BookLanguage extends Model
 
     function books(){
         return $this->hasMany(Book::class);
-    }
+        }
     public function copies()
     {
         return $this->hasManyThrough(BookCopy::class, Book::class);
+    }
+    public function rentals()
+    {
+        return $this->hasManyThrough(Rental::class, Book::class);
     }
 }

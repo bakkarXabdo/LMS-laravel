@@ -5,7 +5,7 @@
     'brandName' => 'LMS',
     'env' => 'local',
     'debug' => true,
-    'url' => 'http://localhost',
+    'url' => 'http://127.0.0.1:8000',
     'asset_url' => NULL,
     'timezone' => 'UTC',
     'locale' => 'ar',
@@ -193,7 +193,7 @@
       'file' => 
       array (
         'driver' => 'file',
-        'path' => 'C:\\Users\\me\\Desktop\\LMS\\storage\\framework/cache/data',
+        'path' => 'C:\\Users\\me\\Desktop\\all\\LMS\\storage\\framework/cache/data',
       ),
       'memcached' => 
       array (
@@ -461,7 +461,7 @@
     ),
     'temporary_files' => 
     array (
-      'local_path' => 'C:\\Users\\me\\Desktop\\LMS\\storage\\framework/laravel-excel',
+      'local_path' => 'C:\\Users\\me\\Desktop\\all\\LMS\\storage\\framework/laravel-excel',
       'remote_disk' => NULL,
       'remote_prefix' => NULL,
       'force_resync_remote' => NULL,
@@ -475,13 +475,13 @@
       'local' => 
       array (
         'driver' => 'local',
-        'root' => 'C:\\Users\\me\\Desktop\\LMS\\storage\\app',
+        'root' => 'C:\\Users\\me\\Desktop\\all\\LMS\\storage\\app',
       ),
       'public' => 
       array (
         'driver' => 'local',
-        'root' => 'C:\\Users\\me\\Desktop\\LMS\\storage\\app/public',
-        'url' => 'http://localhost/storage',
+        'root' => 'C:\\Users\\me\\Desktop\\all\\LMS\\storage\\app/public',
+        'url' => 'http://127.0.0.1:8000/storage',
         'visibility' => 'public',
       ),
       's3' => 
@@ -497,7 +497,7 @@
     ),
     'links' => 
     array (
-      'C:\\Users\\me\\Desktop\\LMS\\public\\storage' => 'C:\\Users\\me\\Desktop\\LMS\\storage\\app/public',
+      'C:\\Users\\me\\Desktop\\all\\LMS\\public\\storage' => 'C:\\Users\\me\\Desktop\\all\\LMS\\storage\\app/public',
     ),
   ),
   'hashing' => 
@@ -531,13 +531,13 @@
       'single' => 
       array (
         'driver' => 'single',
-        'path' => 'C:\\Users\\me\\Desktop\\LMS\\storage\\logs/laravel.log',
+        'path' => 'C:\\Users\\me\\Desktop\\all\\LMS\\storage\\logs/laravel.log',
         'level' => 'debug',
       ),
       'daily' => 
       array (
         'driver' => 'daily',
-        'path' => 'C:\\Users\\me\\Desktop\\LMS\\storage\\logs/laravel.log',
+        'path' => 'C:\\Users\\me\\Desktop\\all\\LMS\\storage\\logs/laravel.log',
         'level' => 'debug',
         'days' => 14,
       ),
@@ -587,7 +587,7 @@
       ),
       'emergency' => 
       array (
-        'path' => 'C:\\Users\\me\\Desktop\\LMS\\storage\\logs/laravel.log',
+        'path' => 'C:\\Users\\me\\Desktop\\all\\LMS\\storage\\logs/laravel.log',
       ),
     ),
   ),
@@ -644,7 +644,7 @@
       'theme' => 'default',
       'paths' => 
       array (
-        0 => 'C:\\Users\\me\\Desktop\\LMS\\resources\\views/vendor/mail',
+        0 => 'C:\\Users\\me\\Desktop\\all\\LMS\\resources\\views/vendor/mail',
       ),
     ),
   ),
@@ -723,7 +723,7 @@
     'lifetime' => '120',
     'expire_on_close' => false,
     'encrypt' => false,
-    'files' => 'C:\\Users\\me\\Desktop\\LMS\\storage\\framework/sessions',
+    'files' => 'C:\\Users\\me\\Desktop\\all\\LMS\\storage\\framework/sessions',
     'connection' => NULL,
     'table' => 'sessions',
     'store' => NULL,
@@ -743,9 +743,9 @@
   array (
     'paths' => 
     array (
-      0 => 'C:\\Users\\me\\Desktop\\LMS\\resources\\views',
+      0 => 'C:\\Users\\me\\Desktop\\all\\LMS\\resources\\views',
     ),
-    'compiled' => 'C:\\Users\\me\\Desktop\\LMS\\storage\\framework\\views',
+    'compiled' => 'C:\\Users\\me\\Desktop\\all\\LMS\\storage\\framework\\views',
   ),
   'debugbar' => 
   array (
@@ -759,7 +759,7 @@
     array (
       'enabled' => true,
       'driver' => 'file',
-      'path' => 'C:\\Users\\me\\Desktop\\LMS\\storage\\debugbar',
+      'path' => 'C:\\Users\\me\\Desktop\\all\\LMS\\storage\\debugbar',
       'connection' => NULL,
       'provider' => '',
       'hostname' => '127.0.0.1',
@@ -905,7 +905,7 @@
     'include_helpers' => false,
     'helper_files' => 
     array (
-      0 => 'C:\\Users\\me\\Desktop\\LMS/vendor/laravel/framework/src/Illuminate/Support/helpers.php',
+      0 => 'C:\\Users\\me\\Desktop\\all\\LMS/vendor/laravel/framework/src/Illuminate/Support/helpers.php',
     ),
     'model_locations' => 
     array (
