@@ -29,7 +29,7 @@ class BookLanguageController extends Controller
     }
     public function update(Request $request, BookLanguage $language)
     {
-        $validated = $this->validated();
+        $validated = $this->validated($request);
         if(DB::transaction(function ()use($validated, $language) {
             $oldCode = $language->Code;
             $language->update($validated);
@@ -53,7 +53,7 @@ class BookLanguageController extends Controller
     }
     public function store(Request $request)
     {
-        $validated = $this->validated();
+        $validated = $this->validated($request);
         if(BookLanguage::create($validated))
         {
             return redirect(route('languages.index'));
@@ -79,9 +79,9 @@ class BookLanguageController extends Controller
             : "لا يمكن حذف الفئة";
     }
 
-    public function validated()
+    public function validated($request)
     {
-        $validated = Validator::make(request()->all(), $this->rules(), $this->messages())->validate();
+        $validated = Validator::make($request->all(), $this->rules(), $this->messages(), $this->attributeNames())->validate();
         $validated['Code'] = strtoupper($validated['Code']);
         return $validated;
     }
@@ -93,18 +93,21 @@ class BookLanguageController extends Controller
             $unique->ignore(request()->route('language'), BookLanguage::KEY);
         }
         return [
-            'Code' => ['required','max:1','min:1', $unique],
+            'Code' => ['required', 'alpha', 'max:1','min:1', $unique],
             'Name' => 'required'
         ];
     }
     public function messages()
     {
         return [
-            'Code.required' => 'رمز اللغة إجباري',
-            'Code.max' => 'رمز اللغة يجب أن يكون حرف واحد',
-            'Code.unique' => 'هذه اللغة موجودة',
-            'Code.min' => 'رمز اللغة يجب أن يكون حرف واحد',
-            'Name.required' => 'اسم اللغة إجباري'
+            'Code.max' => ':attribute يجب أن يكون حرف واحد'
+        ];
+    }
+    public function attributeNames()
+    {
+        return [
+            'Code' => 'رمز اللغة',
+            'Name' => 'إسم اللغة'
         ];
     }
 }

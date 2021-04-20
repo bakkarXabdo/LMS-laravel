@@ -25,7 +25,7 @@ class BookCategoryController extends Controller
     }
     public function store(Request $request)
     {
-        $validated = $this->validated();
+        $validated = $this->validated($request);
         if(Category::create($validated))
         {
             return redirect(route('categories.index'));
@@ -40,7 +40,7 @@ class BookCategoryController extends Controller
     }
     public function update(Request $request, Category $category)
     {
-        $validated = $this->validated();
+        $validated = $this->validated($request);
         if(DB::transaction(function () use ($validated, $category) {
             $oldCode = $category->Code;
             $category->update($validated);
@@ -84,9 +84,9 @@ class BookCategoryController extends Controller
             : "لا يمكن حذف الفئة";
     }
 
-    public function validated()
+    public function validated($request)
     {
-        $validated = Validator::make(request()->all(), $this->rules(), $this->messages())->validate();
+        $validated = Validator::make($request->all(), $this->rules(), $this->messages(), $this->attributeNames())->validate();
         $validated['Code'] = strtoupper($validated['Code']);
         return $validated;
     }
@@ -98,16 +98,21 @@ class BookCategoryController extends Controller
             $unique->ignore(request()->route('category'), Category::KEY);
         }
         return [
-            'Code' => ['required','max:1','min:1', $unique],
+            'Code' => ['required', 'alpha', $unique],
             'Name' => 'required'
         ];
     }
     public function messages()
     {
         return [
-            'Code.required' => 'رمز الفئة إجباري',
-            'Code.unique' => 'هذه الفئة موجودة',
-            'Name.required' => 'اسم الفئة إجباري'
+        ];
+    }
+
+    public function attributeNames()
+    {
+        return [
+            'Code' => 'رمز الفئة',
+            'Name' => 'إسم الفئة'
         ];
     }
 }

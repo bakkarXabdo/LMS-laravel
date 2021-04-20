@@ -5,7 +5,7 @@ return [
     'active_url'           => ':attribute لا يُمثّل رابطًا صحيحًا.',
     'after'                => 'يجب على :attribute أن يكون تاريخًا لاحقًا للتاريخ :date.',
     'after_or_equal'       => ':attribute يجب أن يكون تاريخاً لاحقاً أو مطابقاً للتاريخ :date.',
-    'alpha'                => 'يجب أن لا يحتوي :attribute سوى على حروف.',
+    'alpha'                => ':attribute يجب أن يحتوي حروفا فقط',
     'alpha_dash'           => 'يجب أن لا يحتوي :attribute سوى على حروف، أرقام ومطّات.',
     'alpha_num'            => 'يجب أن يحتوي :attribute على حروفٍ وأرقامٍ فقط.',
     'array'                => 'يجب أن يكون :attribute ًمصفوفة.',
