@@ -7,12 +7,8 @@ use App\Helpers\CacheList;
 use App\Models\Book;
 use App\Models\BookLanguage;
 use App\Models\Category;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use PhpParser\Builder\Property;
 
 
 class PagesController extends Controller
@@ -75,9 +71,9 @@ class PagesController extends Controller
                     'dans',
                 ]);
                 foreach (collect(mb_split(' ', $searchTerm))->sort(fn($w1, $w2) => strlen($w1) < strlen($w2))
-                         as $key => $word) {
-                    $word = preg_replace('/[?.,\\\:()\-+]/', "", $word);
-                    if (empty($word) || is_numeric($word) || strlen($word) < 3 || $ignoreWords->contains(strtolower($word))) {
+                         as $word) {
+                    $word = preg_replace('/[?.,\\\:()\-+]/', '', $word);
+                    if (empty($word) || is_numeric($word) || strlen($word) <= (is_arabic($word)?4:2) || $ignoreWords->contains(strtolower($word))) {
                         continue;
                     }
                     if (strpos($word, 'ال') === 0) {
@@ -85,8 +81,11 @@ class PagesController extends Controller
                     }
                     $q->orWhere('Title', 'LIKE', "%$word%");
                 }
+                // dd($dds);
             });
+            // dd($wordsSearch);
             $splits = [$normalSearch->count(), $advnacedSearch->count(), $wordsSearch->count(), $authorsSearch->count()];
+
             $splits = array_filter($splits, fn($v) => $v);
             $data['splits'] = collect($splits)->flatten();
             if (empty($splits))
@@ -101,9 +100,6 @@ class PagesController extends Controller
                 $data['results'] = AppHelper::paginateCollection($books, 50);
             }else {
 //            dd($s = $splits);
-                $authorsSearch->orderByDesc('Popularity');
-                $advnacedSearch->orderByDesc('Popularity');
-                $wordsSearch->orderByDesc('Popularity');
                 $normalSearch->union($advnacedSearch);
                 $normalSearch->union($wordsSearch);
                 $normalSearch->union($authorsSearch);
@@ -114,7 +110,7 @@ class PagesController extends Controller
         }
         $response = view('pages.index')->with($data)->render();
         $response = preg_replace('/\s+/S', " ", $response);
-        // CacheList::add('pages.index.view.cached', $cache, $response);
+        CacheList::add('pages.index.view.cached', $cache, $response);
         return $response;
     }
     public static function clearCachedResponses()

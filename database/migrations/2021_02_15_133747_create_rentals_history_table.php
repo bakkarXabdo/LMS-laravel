@@ -26,6 +26,9 @@ class CreateRentalsHistoryTable extends Migration
             $table->timestamp('RentalCreatedAt');
             $table->timestamp('RentalExpiresAt');
 
+            $table->string('CreatedBy')->nullable()->default('غير معروف');
+            $table->string('ReturnedBy')->nullable()->default('غير معروف');
+
             if(RentalHistory::CREATED_AT) {
                 $table->timestamp(RentalHistory::CREATED_AT)->default(DB::raw("CURRENT_TIMESTAMP()"));
             }

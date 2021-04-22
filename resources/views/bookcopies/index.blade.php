@@ -5,9 +5,12 @@
 @endsection
 
 @section('content')
-    <div class="container" dir="rtl">
+    <div class="container my-2" dir="rtl">
         <h3> النُسخ </h3>
         <a href="{{ route('bookcopies.create') }}" class="btn btn-primary">إضافة نسخة</a>
+        <div style="display: inline-block">
+            <a href="{{ route('bookcopies.export') }}" class="btn btn-primary">إستخراج النُسخ</a>
+        </div>
     </div>
     <style>
         #js-copies-table tfoot tr {

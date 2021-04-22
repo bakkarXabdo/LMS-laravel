@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin Builder
  * @property int $Id
  * @property int $IsAdmin
+ * @property string Name
  * @property string $username
  * @property string $password
  * @property string|null $remember_token

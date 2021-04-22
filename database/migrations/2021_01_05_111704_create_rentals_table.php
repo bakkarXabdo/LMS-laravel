@@ -22,6 +22,7 @@ class CreateRentalsTable extends Migration
             $table->foreignId(Student::FOREIGN_KEY);
             $table->string(Book::FOREIGN_KEY);
             $table->string(BookCopy::FOREIGN_KEY)->unique();
+            $table->string('CreatedBy')->nullable()->default('غير معروف');
 
             $table->foreign(Student::FOREIGN_KEY)->references(Student::KEY)->on(Student::TABLE)->cascadeOnUpdate()->restrictOnDelete();
             $table->foreign(Book::FOREIGN_KEY)->references(Book::KEY)->on(Book::TABLE)->cascadeOnUpdate()->restrictOnDelete();

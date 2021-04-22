@@ -5,7 +5,7 @@
 
 @section('content')
     <div dir="rtl" class="container body-content">
-        <h2>الإعارة #{{ $history->getKey() }}</h2>
+        <h2>الأرشيف #{{ $history->getKey() }}</h2>
         <h4>تفاصيل الإعارة</h4>
         <table class="table table-responsive table-bordered">
             <tbody>
@@ -18,7 +18,7 @@
                 <td class="col-sm-10">{{ $history->StudentName }}</td>
             </tr>
             <tr>
-                <th>شفرة النسخة</th>
+                <th>شفرة النُسخة</th>
                 <td>{{ $history->BookCopyId }}</td>
             </tr>
             <tr>

@@ -14,7 +14,7 @@
             </div>
             <div class="form-group">
                 <label for="start">إلى غاية</label>
-                <input class="form-control" id="start" type="date" name="end" value="{{ now()->addDay()->format('Y-m-d') }}"/>
+                <input class="form-control" id="start" type="date" name="end" value="{{ \Carbon\Carbon::parse($ending)->format('Y-m-d') }}"/>
             </div>
             <button type="submit" class="btn btn-primary">إستخراج</button>
         </form>

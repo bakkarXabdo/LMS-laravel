@@ -42,18 +42,7 @@ class BookCopiesController extends Controller
     public function export()
     {
         ini_set('max_execution_time', 600);
-        $name = "BookCopies";
-        $file = storage_path('app\public') . DIRECTORY_SEPARATOR . $name .'.xlsx';
-        $oldLastUpdated = Carbon::parse(Cache::get('copies-last-update'))->unix();
-        $bcolumn = BookCopy::UPDATED_AT ?? BookCopy::CREATED_AT;
-        $lastUpdatedAt = BookCopy::query()->select(Db::raw("unix_timestamp(max($bcolumn)) as t"))->get()->max('t');
-        $useOld = (int)$lastUpdatedAt === (int)$oldLastUpdated;
-        if(!$useOld || !file_exists($file))
-        {
-            Excel::store(new BookCopiesExport, "$name.xlsx", "public", \Maatwebsite\Excel\Excel::XLSX);
-            Cache::put('copies-last-update', $lastUpdatedAt);
-        }
-        AppHelper::DownloadFile($file);
+        return (new BookCopiesExport)->download("copies.xlsx", \Maatwebsite\Excel\Excel::XLSX);
     }
 
     public function show(BookCopy $bookcopy)
@@ -123,12 +112,13 @@ class BookCopiesController extends Controller
     }
     public function typeahead()
     {
-        $query = \request('query');
+        $query = request('query');
         $matches = BookCopy::where(BookCopy::KEY, 'LIKE', $query."%")
             ->select(BookCopy::KEY)
-            ->limit(4)->get()->map(function($result){
-                return $result->getKey();
-            });
+            ->whereDoesntHave('rental')
+            ->limit(4)
+            ->get()
+            ->map(fn($copy) => $copy->getKey());
         return Response::json($matches);
     }
     public function choose()

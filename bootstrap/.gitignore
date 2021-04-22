@@ -1,0 +1,7 @@
+*.php
+/cache
+/cache/*.php
+/cache/**
+**/cache
+**/cache/**
+**/cache/**.php

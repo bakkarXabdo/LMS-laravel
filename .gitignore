@@ -14,3 +14,4 @@ yarn-error.log
 .idea
 public/css/app.css
 public/js/app.js
+bootstrap/cache/config.php

@@ -15,13 +15,13 @@
                 </div>
                 <thead>
                     <tr>
-                        <th style="width: auto;" class="text-right" dir="ltr">الشفرة</th>
-                        <th style="width: auto;" class="text-right">العنوان</th>
-                        <th style="width: auto;" class="text-right">رقم الطالب</th>
-                        <th style="width: auto;" class="text-right">الطالب</th>
-                        <th style="width: auto;" class="text-right">تاريخ الإعارة</th>
-                        <th style="width: auto;" class="text-right">تاريخ إنتهاء الإعارة</th>
-                        <th style="width: auto;" class="text-right">تاريخ الإرجاع</th>
+                        <th style="width: 10%;" class="text-right" dir="ltr">الشفرة</th>
+                        <th style="width: 20%;" class="text-right">العنوان</th>
+                        <th style="width: 10%;" class="text-right">رقم الطالب</th>
+                        <th style="width: 10%;" class="text-right">الطالب</th>
+                        <th style="width: 10%;" class="text-right">تاريخ الإعارة</th>
+                        <th style="width: 10%;" class="text-right">تاريخ إنتهاء الإعارة</th>
+                        <th style="width: 10%;" class="text-right">تاريخ الإرجاع</th>
                     </tr>
                 </thead>
                 <tbody>

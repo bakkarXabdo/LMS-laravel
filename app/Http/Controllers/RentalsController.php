@@ -102,6 +102,7 @@ class RentalsController extends Controller
             $copy->book->increment('TotalRentals');
             $copy->book->increment('Popularity');
             return Rental::create([
+                'CreatedBy' => auth()->user()->Name,
                 Student::FOREIGN_KEY => $student->getKey(),
                 BookCopy::FOREIGN_KEY => $copy->getKey(),
                 Book::FOREIGN_KEY => $copy->book->getKey(),
@@ -135,16 +136,18 @@ class RentalsController extends Controller
         DB::beginTransaction();
         try{
             $history = RentalHistory::create([
-                "StudentId" => $rental->student->getKey(),
+                'CreatedBy' => $rental->CreatedBy,
+                'ReturnedBy' => auth()->user()->Name,
+                Student::FOREIGN_KEY => $rental->student->getKey(),
                 "StudentName" => $rental->student->Name,
-                "BookCopyId" => $rental->copy->getKey(),
+                BookCopy::FOREIGN_KEY => $rental->copy->getKey(),
                 "BookTitle" => $rental->book->Title,
                 "RentalCreatedAt" => $rental->CreatedAt,
                 "RentalExpiresAt" => $rental->ExpiresAt,
             ]);
             if(!$rental->delete())
             {
-                throw new Exception("Can't delete Rental: ". $rental->getKey());
+                throw new Exception("لا يمكن حدف الإعارة: ". $rental->getKey());
             }
             DB::commit();
         }catch(\Exception $e)

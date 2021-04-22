@@ -13,9 +13,6 @@
         <div style="display: inline-block">
             <a href="{{ route('books.export') }}" class="btn btn-primary">إستخراج الكُتب</a>
         </div>
-        <div style="display: inline-block">
-            <a href="{{ route('bookcopies.export') }}" class="btn btn-primary">إستخراج النُسخ</a>
-        </div>
     </div>
 </div>
 <style>

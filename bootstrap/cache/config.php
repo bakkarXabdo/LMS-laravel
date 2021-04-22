@@ -3,9 +3,9 @@
   array (
     'name' => 'مكتبة كلية الإعلام الآلي',
     'brandName' => 'LMS',
-    'env' => 'local',
-    'debug' => true,
-    'url' => 'http://127.0.0.1:8000',
+    'env' => 'production',
+    'debug' => false,
+    'url' => 'http://localhost',
     'asset_url' => NULL,
     'timezone' => 'UTC',
     'locale' => 'ar',
@@ -481,7 +481,7 @@
       array (
         'driver' => 'local',
         'root' => 'C:\\Users\\me\\Desktop\\all\\LMS\\storage\\app/public',
-        'url' => 'http://127.0.0.1:8000/storage',
+        'url' => 'http://localhost/storage',
         'visibility' => 'public',
       ),
       's3' => 

@@ -16789,29 +16789,29 @@ INSERT INTO `books` (`InventoryNumber`, `Title`, `Author`, `Publisher`, `Release
 /*!40000 ALTER TABLE `books` ENABLE KEYS */;
 
 -- Dumping data for table lms.categories: ~7 rows (approximately)
-/*!40000 ALTER TABLE `categories` DISABLE KEYS */;
-INSERT INTO `categories` (`Id`, `Code`, `Name`) VALUES
-	(1, 'IN', 'إعلام آلي'),
-	(2, 'CH', 'كيمياء'),
-	(3, 'M', 'رياضيات'),
-	(4, 'PH', 'فيزياء'),
-	(5, 'D', 'قاموس'),
-	(6, 'ME', 'ميكانيك'),
-	(7, 'L', 'مطالعة');
-/*!40000 ALTER TABLE `categories` ENABLE KEYS */;
+-- /*!40000 ALTER TABLE `categories` DISABLE KEYS */;
+-- INSERT INTO `categories` (`Id`, `Code`, `Name`) VALUES
+-- 	(1, 'IN', 'إعلام آلي'),
+-- 	(2, 'CH', 'كيمياء'),
+-- 	(3, 'M', 'رياضيات'),
+-- 	(4, 'PH', 'فيزياء'),
+-- 	(5, 'D', 'قاموس'),
+-- 	(6, 'ME', 'ميكانيك'),
+-- 	(7, 'L', 'مطالعة');
+-- /*!40000 ALTER TABLE `categories` ENABLE KEYS */;
 
 -- Dumping data for table lms.languages: ~2 rows (approximately)
-/*!40000 ALTER TABLE `languages` DISABLE KEYS */;
-INSERT INTO `languages` (`Id`, `Code`, `Name`) VALUES
-	(1, 'F', 'Français'),
-	(2, 'A', 'عربية');
-/*!40000 ALTER TABLE `languages` ENABLE KEYS */;
+-- /*!40000 ALTER TABLE `languages` DISABLE KEYS */;
+-- INSERT INTO `languages` (`Id`, `Code`, `Name`) VALUES
+-- 	(1, 'F', 'Français'),
+-- 	(2, 'A', 'عربية');
+-- /*!40000 ALTER TABLE `languages` ENABLE KEYS */;
 
 -- Dumping data for table lms.users: ~2 rows (approximately)
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` (`Id`, `IsAdmin`, `username`, `password`, `remember_token`, `CreatedAt`, `UpdatedAt`) VALUES
-	(1, 1, 'admin@lms.com', '$2y$10$w6dFIHUyPVfO1kHQu2DiTOqq1Ru2zrp5A11xnx/7d2m/aJBW0MhVq', NULL, '2021-04-13 18:22:25', '2021-04-13 18:22:25');
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+-- /*!40000 ALTER TABLE `users` DISABLE KEYS */;
+-- INSERT INTO `users` (`Id`, `IsAdmin`, `username`, `password`, `remember_token`, `CreatedAt`, `UpdatedAt`) VALUES
+-- 	(1, 1, 'admin@lms.com', '$2y$10$w6dFIHUyPVfO1kHQu2DiTOqq1Ru2zrp5A11xnx/7d2m/aJBW0MhVq', NULL, '2021-04-13 18:22:25', '2021-04-13 18:22:25');
+-- /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

@@ -36,23 +36,20 @@ class RentalHistoryController extends Controller
     public function export()
     {
         return view('rentalHistory.export', [
-            'starting' => RentalHistory::query()->select(Db::raw("unix_timestamp(max(".RentalHistory::CREATED_AT.")) as t"))->get()->min('t') ?? now()->unix()
+            'starting' => DB::table('rentals_history')->select(Db::raw("unix_timestamp(min(".RentalHistory::CREATED_AT.")) as v"))->first()->v ?? now()->subYear(),
+            'ending' => DB::table('rentals_history')->select(Db::raw("unix_timestamp(max(".RentalHistory::CREATED_AT.")) as v"))->first()->v ?? now()->addYear(),
         ]);
     }
 
     public function exporting(Request $request)
     {
-        ini_set('max_execution_time', 600);
-        $name = "History";
-        $file = storage_path('app\public') . DIRECTORY_SEPARATOR . $name .'.xlsx';
-        $oldLastUpdated = Carbon::parse(Cache::get('history-export-last-update'))->unix();
-        $lastUpdatedAt = RentalHistory::query()->select(Db::raw("unix_timestamp(max(".RentalHistory::CREATED_AT.")) as t"))->get()->max('t');
-        $useOld = (int)$lastUpdatedAt === (int)$oldLastUpdated;
-        if(!$useOld || !file_exists($file))
+        $start = $request->get('start');
+        $end = $request->get('end');
+        if(Carbon::parse($start)->greaterThan(Carbon::parse($end)))
         {
-            Excel::store(new HistoryExport($request->get('start'), $request->get('end')), "$name.xlsx", "public", \Maatwebsite\Excel\Excel::XLSX);
-            Cache::put('history-export-last-update', $lastUpdatedAt);
+            return "تاريخ النهاية يجب أن يكون أكبر من تاريخ النهاية";
         }
-        AppHelper::DownloadFile($file);
+        ini_set('max_execution_time', 600);
+        return (new HistoryExport($start, $end))->download("History.xls",  \Maatwebsite\Excel\Excel::XLSX);
     }
 }
