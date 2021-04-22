@@ -48,6 +48,10 @@ class Student extends Model
 
     protected $table = self::TABLE;
     protected $primaryKey = self::KEY;
+
+    protected $keyType = 'string';
+    public $incrementing = false;
+
     protected $guarded = [];
 
 

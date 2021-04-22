@@ -20,8 +20,10 @@ class CreateRentalsHistoryTable extends Migration
         Schema::create(RentalHistory::TABLE, function (Blueprint $table) {
             $table->id(RentalHistory::KEY);
             $table->string(Student::FOREIGN_KEY);
-            $table->string('StudentName');
             $table->string(BookCopy::FOREIGN_KEY);
+            $table->string(Book::FOREIGN_KEY);
+
+            $table->string('StudentName');
             $table->string('BookTitle');
             $table->timestamp('RentalCreatedAt');
             $table->timestamp('RentalExpiresAt');

@@ -141,6 +141,7 @@ class RentalsController extends Controller
                 Student::FOREIGN_KEY => $rental->student->getKey(),
                 "StudentName" => $rental->student->Name,
                 BookCopy::FOREIGN_KEY => $rental->copy->getKey(),
+                Book::FOREIGN_KEY => $rental->book->getKey(),
                 "BookTitle" => $rental->book->Title,
                 "RentalCreatedAt" => $rental->CreatedAt,
                 "RentalExpiresAt" => $rental->ExpiresAt,

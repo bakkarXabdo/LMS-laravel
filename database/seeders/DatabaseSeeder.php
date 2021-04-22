@@ -12,6 +12,7 @@ use App\Models\Student;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon as SupportCarbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -121,13 +122,11 @@ class DatabaseSeeder extends Seeder
             $rentals = collect([]);
             $copies = BookCopy::all()->all();
 
-            $bookCopiesCount = BookCopy::count();
             foreach(range(0, 1000) as $i)
             {
                 $usernames[] = random_int(16, 20).random_int(16, 20).$this->rand(2, 1, 48).$this->rand(6, 0, 999999);
             }
             $usernames = $usernames->unique();
-            $studentsCount = $usernames->count();
             foreach($usernames as $username)
             {
                 $user = User::create([
@@ -147,10 +146,6 @@ class DatabaseSeeder extends Seeder
             {
                 $i = array_rand($copies);
                 $copy = $copies[$i];
-                if($copy->rental)
-                {
-                    continue;
-                }
                 $student = $students[array_rand($students)];
                 $days = -1 * random_int(random_int(0, 49), random_int(random_int(50, 100), 365));
                 $rentals[] = $copy->rental()->create([
@@ -162,25 +157,24 @@ class DatabaseSeeder extends Seeder
                 ]);
                 unset($copies[$i]);
             }
-            $copies = BookCopy::all();
+            $copies = BookCopy::with('books')->get();
             foreach(range(0, 1000) as $i)
             {
                 $student = $students[array_rand($students)];
-                $days = -1 * random_int(random_int(0, 49), random_int(random_int(50, 100), 365));
                 $copy = $copies->random();
-                $createdAt = Carbon::now()->addDays(-1 * random_int(5, 60));
+                $createdAt = Carbon::now()->subDays(random_int(5, 60));
                 $expires = $createdAt->addDays(random_int(7, 15));
-                $late = random_int(0, 100) > 90;
                 RentalHistory::create([
                     'CreatedBy' => auth()->user()->Name,
                     'ReturnedBy' => auth()->user()->Name,
                     BookCopy::FOREIGN_KEY => $copy->getKey(),
+                    Book::FOREIGN_KEY => $copy->book->getKey(),
                     Student::FOREIGN_KEY => $student->getKey(),
                     'StudentName' => $student->Name,
                     'BookTitle' => $copy->book->Title,
                     'RentalCreatedAt' => $createdAt,
                     'RentalExpiresAt' => $expires,
-                    'RentalReturnedAt' => $late ? $expires->addDays(random_int(2, random_int(5, 10))) : $expires->addDays(-1 * random_int(2, 5))
+                    'RentalReturnedAt' => random_int(0, 100) > 90 ? $expires->addDays(random_int(2, random_int(5, 10))) : $expires->subDays(random_int(2, 5))
                 ]);
             }
             echo "commiting transaction\r\n";

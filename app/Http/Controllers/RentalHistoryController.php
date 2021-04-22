@@ -8,6 +8,7 @@ use App\Helpers\AppHelper;
 use App\Models\Book;
 use App\Models\BookCopy;
 use App\Models\RentalHistory;
+use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -28,9 +29,22 @@ class RentalHistoryController extends Controller
         ]);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        return view('rentalHistory.index', ["results" => RentalHistory::orderBy(RentalHistory::CREATED_AT)->paginate(500)]);
+        $query = RentalHistory::orderBy(RentalHistory::CREATED_AT);
+        if($request->has(Student::FOREIGN_KEY))
+        {
+            $query->where(Student::FOREIGN_KEY, $request->get(Student::FOREIGN_KEY));
+        }
+        if($request->has(BookCopy::FOREIGN_KEY))
+        {
+            $query->where(BookCopy::FOREIGN_KEY, $request->get(BookCopy::FOREIGN_KEY));
+        }
+        if($request->has(Book::FOREIGN_KEY))
+        {
+            $query->where(Book::FOREIGN_KEY, $request->get(Book::FOREIGN_KEY));
+        }
+        return view('rentalHistory.index', ["results" => $query->paginate(500)]);
     }
 
     public function export()

@@ -19,7 +19,7 @@ class CreateRentalsTable extends Migration
     {
         Schema::create(Rental::TABLE, function (Blueprint $table){
             $table->id(Rental::KEY);
-            $table->foreignId(Student::FOREIGN_KEY);
+            $table->string(Student::FOREIGN_KEY);
             $table->string(Book::FOREIGN_KEY);
             $table->string(BookCopy::FOREIGN_KEY)->unique();
             $table->string('CreatedBy')->nullable()->default('غير معروف');

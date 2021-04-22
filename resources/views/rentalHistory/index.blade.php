@@ -33,7 +33,7 @@
                         <td>{{ $history->StudentName }}</td>
                         <td>{{ $history->RentalCreatedAt }}</td>
                         <td>{{ $history->RentalExpiresAt }}</td>
-                        <td>{{ $history->RentalReturnedAt }}</td>
+                        <td @if($history->RentalReturnedAt->greaterThan($history->RentalExpiresAt)) style="color: red" @endif>{{ $history->RentalReturnedAt }}</td>
                     </tr>
                 @empty
                     <tr>
