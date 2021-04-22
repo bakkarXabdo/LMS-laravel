@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -44,4 +43,19 @@ class RentalHistory extends Model
     protected $table = self::TABLE;
     protected $primaryKey = self::KEY;
     protected $guarded = [];
+
+    public function book()
+    {
+        return $this->belongsTo(Book::class);
+    }
+    // Nullable
+    public function copy()
+    {
+        return $this->belongsTo(BookCopy::class);
+    }
+    // Nullable
+    public function student()
+    {
+        return $this->belongsTo(Student::class);
+    }
 }

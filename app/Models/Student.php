@@ -55,8 +55,13 @@ class Student extends Model
         return $this->hasMany(Rental::class);
     }
 
+    function rentalHistories()
+    {
+        return $this->hasMany(RentalHistory::class);
+    }
+
     function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasOne(User::class);
     }
 }

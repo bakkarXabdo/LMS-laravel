@@ -51,6 +51,11 @@
                 <div class="title">
                     @yield('message')
                 </div>
+                @if(Auth::user() && Auth::user()->IsAdmin && isset($exception))
+                    <div class='text-gray-600 text-center'>
+                        {{ $exception->getMessage() }}
+                    </div>
+                @endif
             </div>
         </div>
     </body>

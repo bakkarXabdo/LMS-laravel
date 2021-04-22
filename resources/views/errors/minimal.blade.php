@@ -32,7 +32,7 @@
                         @yield('message')
                     </div>
                 </div>
-                @if(Auth::user() && Auth::user()->IsAdmin)
+                @if(Auth::user() && Auth::user()->IsAdmin && isset($exception))
                     <div class='text-gray-600 text-center'>
                         {{ $exception->getMessage() }}
                     </div>

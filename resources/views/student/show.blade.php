@@ -15,7 +15,7 @@
                 </tr>
                 <tr>
                     <th>تاريخ الميلاد</th>
-                    <td>{{ \Carbon\Carbon::parse()->format('d-m-Y') }}</td>
+                    <td>{{ Carbon::parse()->format('d-m-Y') }}</td>
                 </tr>
                 <tr>
                     <th>الرقم</th>
@@ -35,11 +35,17 @@
                         @endif
                     </td>
                 </tr>
-            @if(\Illuminate\Support\Facades\Cache::has("student-password"))
+            @if(Cache::has("student-password"))
+                <tr style="background: rgb(212 189 107)">
+                    <th>إسم المستخدم</th>
+                    <td style="font: 1.5rem">
+                        {{ $student->user->username }}
+                    </td>
+                </tr>
                 <tr style="background: rgb(212 189 107)">
                     <th>كلمة السر</th>
                     <td style="font: 1.5rem">
-                        {{ \Illuminate\Support\Facades\Cache::pull("student-password") }}
+                        {{ Cache::pull("student-password") }}
                     </td>
                 </tr>
             @endif
@@ -50,7 +56,7 @@
         <div class="row" style="margin-left:0">
             <a class="btn btn-primary" href="{{ route('students.edit', $student->getKey()) }}">تعديل</a>
             <a class="btn btn-primary" href="{{ route('rentals.create', ["studentId" => $student->getKey()]) }}">إعارة</a>
-            @if(!\Illuminate\Support\Facades\Cache::has("student-password"))
+            @if(!Cache::has("student-password"))
                 <form style="display: inline-block;" method="post" action="{{ route('students.changePassword', $student->getKey()) }}">
                     @csrf
                     <button type="submit" class="btn btn-primary">تغيير كلمة السر</button>
