@@ -232,10 +232,13 @@ return [
         'Debugbar' => 'Barryvdh\Debugbar\Facade',
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'Carbon' => \Carbon\Carbon::class,
+
         'Book' => \App\Models\Book::class,
         'BookCopy' => \App\Models\BookCopy::class,
         'Rental' => \App\Models\Rental::class,
-        'Student' => \App\Models\Student::class
+        'Student' => \App\Models\Student::class,
+        'Category' => \App\Models\Category::class,
+        'BookLanguage' => \App\Models\BookLanguage::class,
     ],
 
 ];

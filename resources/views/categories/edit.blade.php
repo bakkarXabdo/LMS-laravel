@@ -19,7 +19,7 @@
                 </ul>
             </div>
         @endif
-        <form onsubmit="submitted()" action="{{ route('languages.update', $category->getKey()) }}" method="post">
+        <form onsubmit="submitted()" action="{{ route('categories.update', $category->getKey()) }}" method="post">
             @method('PUT')
             @csrf
             <div class="form-group">
@@ -38,14 +38,14 @@
 
 @push('scripts')
     <script>
-        var oldVal = '{{ $language->Code }}';
+        var oldVal = '{{ $category->Code }}';
         var warned = false;
         function warn()
         {
             if(!warned)
             {
                 bootbox.alert({
-                    message: '({{ ' نُسخة ' . $language->books()->count() }})تحذير: تغيير رمز الفئة سيغير ايضا جميع شفرات النُسخ الخاصة بهذه الفئة',
+                    message: '({{ ' نُسخة ' . $category->books()->count() }})تحذير: تغيير رمز الفئة سيغير ايضا جميع شفرات النُسخ الخاصة بهذه الفئة',
                     'locale' : 'ar',
                     'backdrop': true
                 });

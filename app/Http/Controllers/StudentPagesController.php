@@ -7,12 +7,18 @@ use App\Models\RentalHistory;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class StudentPagesController extends Controller
 {
     public function showActiveRentals()
     {
         $rentals = Rental::where(Student::FOREIGN_KEY, Auth::user()->student->getKey())
+                    ->select([
+                        Rental::TABLE.".*",
+                        DB::raw('timestampdiff(DAY , CURRENT_TIMESTAMP, ExpiresAt) as `RemainingDays`')
+                    ])
+                    ->orderBy('RemainingDays')
                     ->with(['book', 'copy'])
                     ->get();
         return view('student.active_rentals')->with(compact('rentals'));

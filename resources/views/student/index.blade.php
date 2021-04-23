@@ -131,7 +131,7 @@
         });
         jst.find('tfoot th').each(function (index) {
             if(index < 2)
-            $(this).html(`<input data-col-indx=${index} type="text" style="width: 100%" class="form-control d-flex px-1 mt-2" placeholder="Search " />`);
+            $(this).html(`<input data-col-indx=${index} type="text" style="width: 100%" class="form-control d-flex px-1 mt-2" placeholder="بحث" />`);
         });
         $('input', 'tfoot th').on( 'keyup', function () {
             let col = table.columns($(this).data('col-indx'));

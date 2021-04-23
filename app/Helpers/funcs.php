@@ -90,7 +90,28 @@ function day_plural_ar($count)
     }else if($count === 2)
     {
         return "يومين";
-    }else{
+    }else if($count <= 10){
+        return "$count أيام";
+    }else {
+        return "$count يوماً";
+    }
+}
+
+function ar_plural_days($count)
+{
+    $count = abs($count);
+    if($count === 0)
+    {
+        return "0 يوم";
+    }else if($count === 1)
+    {
+        return "يوم واحد";
+    }else if($count === 2)
+    {
+        return "يومين";
+    }else if($count <= 10){
+        return "$count أيام";
+    }else {
         return "$count يوماً";
     }
 }

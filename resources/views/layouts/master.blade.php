@@ -38,7 +38,8 @@
                                 <li><a href="{{ route('categories.index') }}">الفئات</a></li>
         {{--                            <li><a href="{{ route('settings') }}">الإعدادات</a></li>--}}
                             @else
-
+                                <li><a href="{{ route('studentPages.rentals') }}">الإعارات الجارية</a></li>
+                                <li><a href="{{ route('studentPages.history') }}">أرشيف الإعارات</a></li>
                             @endif
                         @endauth
                     </ul>

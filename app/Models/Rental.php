@@ -70,4 +70,46 @@ class Rental extends Model
         }
         return $diff;
     }
+    /*
+    let dayText;
+    let late = days < 0 ? " متأخر ب" : 'متبقي';
+    let dayClass = days <= 0 ? 'text-danger' : '';
+    days = Math.abs(days);
+    if(days === 0)
+    {
+        dayText = "ينتهي اليوم"
+    }else if(days === 1)
+    {
+        dayText = `${late} يوم واحد`;
+    }else if(days === 2){
+        dayText = `${late} يومين`;
+    }else if(days <= 10){
+        dayText = `${late} ${days} أيام`;
+    }else{
+        dayText = `${late} ${days} يوما`;
+    }
+    return `<span class='${dayClass}'>  ${dayText}</span>`;
+    */
+    function getRemainingDaysSpanAttribute()
+    {
+        $rem = $this->remainingDays;
+        $dayText = 0;
+        $late = $rem < 0 ? " متأخر ب" : 'متبقي';
+        $dayClass = $rem <= 0 ? 'text-danger' : '';
+        $rem = abs($rem);
+        if($rem === 0)
+        {
+            $dayText = "ينتهي اليوم";
+        }else if($rem === 1)
+        {
+            $dayText = "${late} يوم واحد";
+        }else if($rem === 2){
+            $dayText = "${late} يومين";
+        }else if($rem <= 10){
+            $dayText = "$late $rem أيام";
+        }else{
+            $dayText = "$late $rem يوما";
+        }
+        return "<span class='$dayClass'>$dayText</span>";
+    }
 }

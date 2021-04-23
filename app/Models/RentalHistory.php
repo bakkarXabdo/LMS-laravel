@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Traits\ModelTraits;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -13,8 +14,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $CustomerName
  * @property string $BookId
  * @property string $BookTitle
- * @property string $RentalCreatedAt
- * @property string $RentalExpiresAt
+ * @property Carbon $RentalCreatedAt
+ * @property Carbon $RentalExpiresAt
  * @property \Illuminate\Support\Carbon $RentalReturnedAt
  * @method static \Illuminate\Database\Eloquent\Builder|RentalHistory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|RentalHistory newQuery()
@@ -45,6 +46,11 @@ class RentalHistory extends Model
     protected $primaryKey = self::KEY;
     protected $guarded = [];
 
+    public $casts = [
+        'RentalCreatedAt' => 'datetime',
+        'RentalExpiresAt' => 'datetime',
+    ];
+
     public function book()
     {
         return $this->belongsTo(Book::class);
@@ -58,5 +64,10 @@ class RentalHistory extends Model
     public function student()
     {
         return $this->belongsTo(Student::class);
+    }
+
+    public function getRentalDurationAttribute()
+    {
+        return $this->RentalReturnedAt->diffInDays($this->RentalCreatedAt);
     }
 }

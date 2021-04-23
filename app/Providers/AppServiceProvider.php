@@ -5,10 +5,12 @@ namespace App\Providers;
 use App\Charts\BooksByCategoryChart;
 use App\Charts\BooksByLanguageChart;
 use App\Charts\MonthlyRentalsCountChart;
+use Carbon\Carbon;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use ConsoleTVs\Charts\Registrar as Charts;
+use Illuminate\Support\Carbon as SupportCarbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,7 +21,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-
+        //check if timezone is correct, it should be set on php.ini
+        if(strtolower(date_default_timezone_get()) !== "africa/algiers")
+        {
+            date_default_timezone_set("Africa/Algiers");
+        }
     }
 
     /**
@@ -29,6 +35,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(Charts $charts)
     {
+        $charts->register([
+            MonthlyRentalsCountChart::class,
+            BooksByCategoryChart::class,
+            BooksByLanguageChart::class,
+        ]);
         if(app()->isLocal())
         {
             try {
@@ -37,17 +48,28 @@ class AppServiceProvider extends ServiceProvider
                 die(" لا يمكن الإتصال بقاعدة البيانات" . "<br>" . $e ->getMessage() );
             }
         }
-        $charts->register([
-            MonthlyRentalsCountChart::class,
-            BooksByCategoryChart::class,
-            BooksByLanguageChart::class,
-        ]);
         AbstractPaginator::useBootstrapThree();
-
-        //check if timezone is correct, it should be set on php.ini
-        if(strtolower(date_default_timezone_get()) !== "africa/algiers")
-        {
-            date_default_timezone_set("Africa/Algiers");
-        }
+        Carbon::macro('getArabicMonths', function(){
+            return [
+                "جانفي",
+                "فيفري",
+                "مارس",
+                "أفريل",
+                "ماي",
+                "جوان",
+                "جويلية",
+                "أوت",
+                "سبتمير",
+                "أكتوبر",
+                "نوفمبر",
+                "ديسمبر"
+            ];
+        });
+        Carbon::macro('arabicDate', function(){
+            return $this->day ." ". $this->getArabicMonths()[$this->month-1] ." ". $this->year;
+        });
+        Carbon::macro('arabicDateWithTime', function(){
+            return $this->format('H:i | ') . $this->arabicDate();
+        });
     }
 }

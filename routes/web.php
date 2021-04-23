@@ -12,6 +12,7 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\RentalHistoryController;
 use App\Http\Controllers\RentalsController;
+use App\Http\Controllers\StudentPagesController;
 use App\Models\Book;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,14 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+
+Route::group([
+    'middleware' => 'auth'
+],function () {
+    Route::get('/students/space/rentals', [StudentPagesController::class, 'showActiveRentals'])->name('studentPages.rentals');
+    Route::get('/students/space/history', [StudentPagesController::class, 'showRentalHistory'])->name('studentPages.history');
+});
+
 Route::group([
     'middleware' => \App\Http\Middleware\IsAdmin::class
 ], function(){
@@ -51,6 +60,7 @@ Route::group([
     Route::get('/students/typeahead', [StudentsController::class, 'typeahead'])->name('students.typeahead');
     Route::get('/students/spciality-type-ahead', [StudentsController::class, 'specialityTypeAhead'])->name('students.specialityTypeAhead');
     Route::get('/history/export', [RentalHistoryController::class, 'export'])->name('history.export');
+
 
     Route::post('/books/table', [BooksController::class, 'table'])->name('books.table');
     Route::post('/books/import', [BooksController::class, 'import'])->name('books.import');

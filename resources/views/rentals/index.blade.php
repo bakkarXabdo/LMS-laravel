@@ -55,11 +55,13 @@
                         name: "StudentId",
                         data: 'StudentId',
                         orderable:false,
-                        searchable:true
+                        searchable:true,
+                        width: '90',
                     },
                     {
                         title: "الطالب",
                         name: "Name",
+                        width: 80,
                         orderable:false,
                         searchable:true,
                         render: function(_,_,rental){
@@ -73,6 +75,7 @@
                         data: "{{ \App\Models\BookCopy::FOREIGN_KEY }}",
                         searchable:true,
                         orderable: true,
+                        width: '50',
                         render:function(copyId,__,rental){
                             url = '{{ route('bookcopies.show', ':id') }}'.replace(':id', copyId);
                             return `<a title="إظهار النسخة" href="${url}">${copyId}</a>`;
@@ -81,6 +84,7 @@
                     {
                         title: "الكِتاب",
                         name: "BookTitle",
+                        width: '30%',
                         data: "{{ \App\Models\Book::FOREIGN_KEY }}",
                         searchable:true,
                         orderable: true,
@@ -92,26 +96,40 @@
                     {
                         title: "تاريخ الإعارة",
                         name: "{{ \App\Models\Rental::TABLE . "." . \App\Models\Rental::CREATED_AT}}",
-                        data: "{{ \App\Models\Rental::CREATED_AT }}",
+                        data: "ar_created_at",
                         orderable:true,
-                        render:function(time)
-                        {
-                            if(!time)
-                            {
-                                return "";
-                            }
-                            time = time.replace('T', ' ');
-                            time = time.substring(0, time.indexOf('.'));
-                            return time;
+                        width: 50,
+                        'createdCell':  function (td, cellData, rowData, row, col) {
+                            $(td).attr('dir', 'rtl');
                         }
                     },
                     {
-                        title: "تاريخ الإرجاع",
+                        title: "الأيام المتبقية",
                         name: "RemainingDays",
                         data: "RemainingDays",
+                        width: '70',
                         searchable: false,
                         orderable: true,
-                        render: (days) => days < 1 ? `<span class="text-danger"> قبل ${-days} يوم </span>` : `<span> بعد ${days} يوم </span>`
+                        render: function(days){
+                            let dayText;
+                            let late = days < 0 ? " متأخر ب" : 'متبقي';
+                            let dayClass = days <= 0 ? 'text-danger' : '';
+                            days = Math.abs(days);
+                            if(days === 0)
+                            {
+                                dayText = "ينتهي اليوم"
+                            }else if(days === 1)
+                            {
+                                dayText = `${late} يوم واحد`;
+                            }else if(days === 2){
+                                dayText = `${late} يومين`;
+                            }else if(days <= 10){
+                                dayText = `${late} ${days} أيام`;
+                            }else{
+                                dayText = `${late} ${days} يوما`;
+                            }
+                            return `<span class='${dayClass}'>  ${dayText}</span>`;
+                        }
                     },
                     {
                         title: "الإجرائات",
@@ -166,12 +184,12 @@
             });
             jst.append('<tfoot class="d-flex"></tfoot>');
             jst.find('thead th').each(function (index) {
-                if(index < 2) {
+                if(index < 3) {
                     jst.find('tfoot').append(`<th></th>`);
                 }
             });
             jst.find('tfoot th').each(function (index) {
-                $(this).html(`<input data-col-indx=${index} type="text" style="width: 100%" class="form-control d-flex px-1 mt-2" placeholder="Search " />`);
+                $(this).html(`<input data-col-indx=${index} type="text" style="width: 100%" class="form-control d-flex px-1 mt-2" placeholder="بحث " />`);
             });
             $('input', 'tfoot th').on( 'keyup', function () {
                 table.columns($(this).data('col-indx')).search($(this).val()).draw();

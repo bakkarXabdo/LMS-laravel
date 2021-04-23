@@ -1,50 +1,37 @@
 @extends('layouts.master')
 
-@section('PageTitle') الأرشيف @endsection
-
-
+@section('PageTitle') أرشيف الإعارات @endsection
 @section('content')
-    <div dir="rtl" class="container body-content">
-        <h2> أرشيف الإعارات الخاص بالطالب {{ $student->Name }}</h2>
-        <hr/>
-        <a class="btn btn-primary" href="{{ route('history.export') }}">إستخراج</a>
-        <div style="margin-top: 2rem;">
-            <table class="table table-bordered table-hover">
-                <div style="padding: 10px;"  class="text-right" dir="ltr">
-                    إضهار {{ $results->count() }} من أصل {{ $results->total() }} نتيجة
-                </div>
-                <thead>
+    <div dir="rtl">
+        <h3 >أرشيف الإعارات الخاص ب {{ Auth::user()->Name }}</h3>
+        <table style="margin-top: 2rem" class="table table-bordered" >
+            <thead>
+                <tr>
+                    <th class="text-right">الشفرة</th>
+                    <th class="text-right">الكتاب</th>
+                    <th class="text-right">مدة الإعارة</th>
+                    <th class="text-right">تاريخ الإعارة</th>
+                    <th class="text-right">تاريخ الإرجاع</th>
+                    <th class="text-right">تم إرجاعه</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($histories as $history)
                     <tr>
-                        <th style="width: 10%;" class="text-right" dir="ltr">الشفرة</th>
-                        <th style="width: 20%;" class="text-right">العنوان</th>
-                        <th style="width: 10%;" class="text-right">تاريخ الإعارة</th>
-                        <th style="width: 10%;" class="text-right">تاريخ إنتهاء الإعارة</th>
-                        <th style="width: 10%;" class="text-right">تاريخ الإرجاع</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @forelse ($results as $history)
-                    <tr>
-                        <td>{{ $history->BookCopyId }}</td>
-                        <td>{{ $history->BookTitle }}</td>
-                        <td>{{ $history->StudentId }}</td>
-                        <td>{{ $history->StudentName }}</td>
-                        <td>{{ $history->RentalCreatedAt }}</td>
-                        <td>{{ $history->RentalExpiresAt }}</td>
-                        <td>{{ $history->RentalReturnedAt }}</td>
+                        <td>{{ $history->book->getKey() ?? 'غير معروف' }}</td>
+                        <td>{{ $history->book->Title ?? 'غير معروف'}}</td>
+                        <td>{{ ar_plural_days($history->rentalDuration) }}</td>
+                        <td>{{ $history->RentalExpiresAt->arabicDateWithTime()}}</td>
+                        <td>{{ $history->RentalCreatedAt->arabicDateWithTime()}}</td>
+                        <td dir="rtl">{{ $history->created->arabicDateWithTime()}}</td>
+
                     </tr>
                 @empty
                     <tr>
-                        <td class="text-center" colspan="99">لا توجد نتائج</td>
+                        <td class="text-center" colspan="999">لا توجد إعارات جارية</td>
                     </tr>
                 @endforelse
-                </tbody>
-            </table>
-            <div>
-                <div style="padding: 10px;"  class="text-center" dir="ltr">
-                    {{$results->withQueryString()->links()}}
-                </div>
-            </div>
-        </div>
+            </tbody>
+        </table>
     </div>
 @endsection

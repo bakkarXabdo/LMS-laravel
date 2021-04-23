@@ -233,7 +233,10 @@ class RentalsController extends Controller
             $rentalsData->skip($request->start);
             $rentalsData->take($request->length);
         }
-        $rentalsData = $rentalsData->get();
+        $rentalsData = $rentalsData->get()->map(function($rental){
+            $rental->ar_created_at = $rental->created->arabicDate();
+            return $rental;
+        });
         $resp = new stdClass;
         $resp->draw = $request->draw;
         $resp->recordsTotal = $rentalsData->count();

@@ -27,10 +27,14 @@
             </tr>
             <tr>
                 <th>تاريخ الإعارة</th>
-                <td>{{ $rental->created->format('d-m-Y H:i:s') }}</td>
+                <td>{{ $rental->created->arabicDate() }}</td>
             </tr>
             <tr>
                 <th>تاريخ الإنتهاء</th>
+                <td>{{ $rental->ExpiresAt->arabicDate() }}</td>
+            </tr>
+            <tr>
+                <th>ينتهي</th>
                 <td>
                     @if($rental->remainingDays < 0)
                         <span class="text-danger"> قبل {{ day_plural_ar($rental->remainingDays) }}</span>

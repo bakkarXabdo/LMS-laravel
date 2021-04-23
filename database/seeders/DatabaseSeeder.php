@@ -148,13 +148,14 @@ class DatabaseSeeder extends Seeder
                 $copy = $copies[$i];
                 $student = $students[array_rand($students)];
                 $createdAt = Carbon::now()->subDays(random_int(10, 60));
-                $expired = random_int(0, 100) < 10;
                 $rentals[] = $copy->rental()->create([
                     'CreatedBy' => auth()->user()->Name,
                     Student::FOREIGN_KEY => $student->getkey(),
                     Book::FOREIGN_KEY => $copy->book->getKey(),
                     'CreatedAt' => $createdAt,
-                    'ExpiresAt' => $expired ? now()->addDays(random_int(1, random_int(2, random_int(2, 9)))) : now()->subDays(random_int(random_int(5, 10), 15)),
+                    'ExpiresAt' => random_int(0, 10000) === 100
+                                                        ? now()->subDays(random_int(random_int(5, 10), 15))
+                                                        : now()->addDays(random_int(1, random_int(2, random_int(2, 9)))),
                 ]);
                 unset($copies[$i]);
             }
@@ -163,8 +164,9 @@ class DatabaseSeeder extends Seeder
             {
                 $student = $students[array_rand($students)];
                 $copy = $copies->random();
-                $createdAt = Carbon::now()->subDays(random_int(5, 60));
-                $expires = $createdAt->addDays(random_int(7, 15));
+                $createdAt = Carbon::now()->subDays(random_int(16, 60));
+                $expires = $createdAt->addDays(random_int(10, 15));
+                $returned = random_int(0, 100) > 90 ? $expires->addDays(random_int(2, random_int(5, 10))) : $expires->subDays(random_int(2, 6));
                 RentalHistory::create([
                     'CreatedBy' => auth()->user()->Name,
                     'ReturnedBy' => auth()->user()->Name,
@@ -173,9 +175,9 @@ class DatabaseSeeder extends Seeder
                     Student::FOREIGN_KEY => $student->getKey(),
                     'StudentName' => $student->Name,
                     'BookTitle' => $copy->book->Title,
-                    'RentalExpiresAt' => $expires,
                     'RentalCreatedAt' => $createdAt,
-                    RentalHistory::CREATED_AT => random_int(0, 100) > 90 ? $expires->addDays(random_int(2, random_int(5, 10))) : $expires->subDays(random_int(2, 5)),
+                    'RentalExpiresAt' => $expires,
+                    RentalHistory::CREATED_AT => $returned,
                 ]);
             }
             echo "commiting transaction\r\n";
