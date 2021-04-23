@@ -81,17 +81,14 @@ class BookLanguageController extends Controller
 
     public function validated($request)
     {
-        $validated = Validator::make($request->all(), $this->rules(), $this->messages(), $this->attributeNames())->validate();
+        $validated = $request->validate($this->rules(), $this->messages(), $this->fieldNames());
         $validated['Code'] = strtoupper($validated['Code']);
         return $validated;
     }
     public function rules()
     {
-        $unique = Rule::unique(BookLanguage::class, 'Code');
-        if(request()->method() !== 'POST')
-        {
-            $unique->ignore(request()->route('language'), BookLanguage::KEY);
-        }
+        $unique = Rule::unique(BookLanguage::class, 'Code')
+                    ->ignore(request()->route('language'), BookLanguage::KEY);
         return [
             'Code' => ['required', 'alpha', 'max:1','min:1', $unique],
             'Name' => 'required'
@@ -103,7 +100,7 @@ class BookLanguageController extends Controller
             'Code.max' => ':attribute يجب أن يكون حرف واحد'
         ];
     }
-    public function attributeNames()
+    public function fieldNames()
     {
         return [
             'Code' => 'رمز اللغة',

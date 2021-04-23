@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasHistory;
+use App\Models\Traits\HasRentals;
+use App\Models\Traits\ModelTraits;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -56,7 +59,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Book extends Model
 {
-    use ModelTraits;
+    use ModelTraits, HasHistory, HasRentals;
     public const TABLE = "books";
     public const KEY = "InventoryNumber";
     public const TABLE_DOT_KEY = self::TABLE . "." . self::KEY;
@@ -106,9 +109,6 @@ class Book extends Model
     }
     function copies(){
         return $this->hasMany(BookCopy::class);
-    }
-    function rentals(){
-        return $this->hasMany(Rental::class);
     }
 
     public static function getIdPattern(): string

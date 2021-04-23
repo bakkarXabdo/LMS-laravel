@@ -86,7 +86,7 @@ class BookCategoryController extends Controller
 
     public function validated($request)
     {
-        $validated = Validator::make($request->all(), $this->rules(), $this->messages(), $this->attributeNames())->validate();
+        $validated = Validator::make($request->all(), $this->rules(), $this->messages(), $this->fieldNames())->validate();
         $validated['Code'] = strtoupper($validated['Code']);
         return $validated;
     }
@@ -108,7 +108,7 @@ class BookCategoryController extends Controller
         ];
     }
 
-    public function attributeNames()
+    public function fieldNames()
     {
         return [
             'Code' => 'رمز الفئة',

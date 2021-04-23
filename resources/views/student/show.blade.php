@@ -6,6 +6,15 @@
 @section('content')
     <div dir="rtl" class="container body-content">
         <h2>{{ $student->Name }}</h2>
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <h4>معلومات الطالب</h4>
         <table class="table table-responsive table-bordered">
             <tbody>
@@ -14,19 +23,24 @@
                     <td class="col-sm-10">{{ $student->Name }}</td>
                 </tr>
                 <tr>
-                    <th>تاريخ الميلاد</th>
-                    <td>{{ Carbon::parse()->format('d-m-Y') }}</td>
-                </tr>
-                <tr>
                     <th>الرقم</th>
                     <td>{{ $student->getKey() }}</td>
                 </tr>
+                <tr>
+                    <th>التخصص</th>
+                    <td>{{ $student->Speciality }}</td>
+                </tr>
+                <tr>
+                    <th>تاريخ الميلاد</th>
+                    <td>{{ Carbon::parse()->format('d-m-Y') }}</td>
+                </tr>
+
                 <tr>
                     <th>عدد الإعارات الإجمالية</th>
                     <td>{{ $student->TotalRentals }}</td>
                 </tr>
                 <tr>
-                    <th>الكُتب المُعارة</th>
+                    <th>الإعارات الجارية</th>
                     <td>
                         @if($student->rentals->count() === 0 )
                             0
@@ -54,8 +68,11 @@
         <h4>الإجرائات</h4>
         <hr>
         <div class="row" style="margin-left:0">
-            <a class="btn btn-primary" href="{{ route('students.edit', $student->getKey()) }}">تعديل</a>
             <a class="btn btn-primary" href="{{ route('rentals.create', ["studentId" => $student->getKey()]) }}">إعارة</a>
+            @if($student->rentalHistories()->count() > 0)
+                <a href="{{ route('history.index', [Student::FOREIGN_KEY => $student->getKey()]) }}" class="btn btn-primary">إضهار أرشيف الإعارات</a>
+            @endif
+            <a class="btn btn-primary" href="{{ route('students.edit', $student->getKey()) }}">تعديل</a>
             @if(!Cache::has("student-password"))
                 <form style="display: inline-block;" method="post" action="{{ route('students.changePassword', $student->getKey()) }}">
                     @csrf
@@ -63,6 +80,7 @@
                 </form>
             @endif
             <a id="delete-student" href="#" class="btn btn-danger">حذف</a>
+
         </div>
     </div>
 @endsection

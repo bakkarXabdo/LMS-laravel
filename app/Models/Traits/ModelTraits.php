@@ -1,12 +1,17 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Traits;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
 trait ModelTraits
 {
+
+    public function getCreatedAttribute()
+    {
+        return $this->{$this->getCreatedAtColumn()};
+    }
+
     public function getForeignKey()
     {
         return $this::FOREIGN_KEY;

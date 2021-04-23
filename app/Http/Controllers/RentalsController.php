@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\MessageBag;
 use stdClass;
 
 class RentalsController extends Controller
@@ -128,6 +129,18 @@ class RentalsController extends Controller
         return view('rentals.show',[
             "rental" => $rental
         ]);
+    }
+
+    public function destroy(Request $request, Rental $rental)
+    {
+        if ($rental->delete()) {
+            return $request->wantsJson()
+                ? response()->json(["success" => true, "message" => "تم إلغاء الإعارة"])
+                : route('rentals.index');
+        }
+        return $request->wantsJson()
+                ? response()->json(["success" => true, "message" => "لا يمكن حذف الإعارة"])
+                : back()->withErrors(new MessageBag(["exception" => "لا يمكن حذف الإعارة"]));
     }
 
     public function returnRental(Rental $rental)

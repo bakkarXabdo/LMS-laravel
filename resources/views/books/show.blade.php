@@ -102,6 +102,9 @@
         @endif
         <a href="{{ route('bookcopies.create', ["bookId" => $book->getKey()]) }}" class="btn btn-{{ $book->NumberAvailable > 0 ? "primary" : "success" }}">إضافة نُسخة</a>
         <a href="{{ route('books.edit', $book->getKey()) }}" class="btn btn-primary">تعديل</a>
+        @if($book->rentalHistories()->count() > 0)
+            <a href="{{ route('history.index', [Book::FOREIGN_KEY => $book->getKey()]) }}" class="btn btn-primary">إضهار أرشيف الإعارات</a>
+        @endif
         <a href="#" id="delete-book" class="btn btn-danger">حذف</a>
     </div>
     <br />

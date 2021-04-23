@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Traits\ModelTraits;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Rental
@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $StudentId
  * @property string $BookId
  * @property string $BookCopyId
- * @property string $ExpiresAt
+ * @property Carbon $ExpiresAt
  * @property \Illuminate\Support\Carbon $CreatedAt
  * @property-read \App\Models\Book $book
  * @property-read \App\Models\BookCopy $copy
@@ -41,7 +41,9 @@ class Rental extends Model
 
     public const CREATED_AT = "CreatedAt";
     public const UPDATED_AT = null;
-
+    public $casts = [
+        "ExpiresAt" => "datetime"
+    ];
     /**-- DB RELATIONS --*/
 
     protected $table = self::TABLE;
@@ -59,12 +61,13 @@ class Rental extends Model
     function copy(){
         return $this->belongsTo(BookCopy::class, BookCopy::FOREIGN_KEY, BookCopy::KEY);
     }
-    function getReturnDateAttribute()
+    function getRemainingDaysAttribute()
     {
-        $diff =  Carbon::parse($this->attributes['ExpiresAt'])->diffInDays(Carbon::now());
-        if(Carbon::parse($this->attributes['ExpiresAt'])->lessThan(Carbon::now())){
+        $now = Carbon::now();
+        $diff =  $this->ExpiresAt->diffInDays($now);
+        if($this->ExpiresAt->lessThan($now)){
             $diff = -1 * $diff;
         }
-        return (int)$diff;
+        return $diff;
     }
 }

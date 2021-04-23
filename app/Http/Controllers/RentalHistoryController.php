@@ -49,21 +49,52 @@ class RentalHistoryController extends Controller
 
     public function export()
     {
-        return view('rentalHistory.export', [
-            'starting' => DB::table('rentals_history')->select(Db::raw("unix_timestamp(min(".RentalHistory::CREATED_AT.")) as v"))->first()->v ?? now()->subYear(),
-            'ending' => DB::table('rentals_history')->select(Db::raw("unix_timestamp(max(".RentalHistory::CREATED_AT.")) as v"))->first()->v ?? now()->addYear(),
-        ]);
+        return view('rentalHistory.export', $this->getDefaultTimeRange());
     }
 
+    private function getDefaultTimeRange()
+    {
+        return [
+            'starting' => DB::table('rentals_history')->select(Db::raw("unix_timestamp(min(".RentalHistory::CREATED_AT.")) as v"))->first()->v ?? now()->subYear(),
+            'ending' => DB::table('rentals_history')->select(Db::raw("unix_timestamp(max(".RentalHistory::CREATED_AT.")) as v"))->first()->v ?? now()->addYear(),
+        ];
+    }
     public function exporting(Request $request)
     {
-        $start = $request->get('start');
-        $end = $request->get('end');
-        if(Carbon::parse($start)->greaterThan(Carbon::parse($end)))
+        $start = Carbon::parse($request->get('start'));
+        $end = Carbon::parse($request->get('end'));
+        if($start->greaterThan($end))
         {
             return "تاريخ النهاية يجب أن يكون أكبر من تاريخ النهاية";
         }
+        $name = "History";
+
+        $query = RentalHistory::query()->whereBetween(RentalHistory::CREATED_AT, [$start, $end]);
+        if($request->has(Student::FOREIGN_KEY))
+        {
+            $student = Student::findOrFail($request->get(Student::FOREIGN_KEY));
+            $query->where(Student::FOREIGN_KEY, $request->get(Student::FOREIGN_KEY));
+            $name .= "_for_student_" . filter_filename($student->Name);
+        }
+        if($request->has(BookCopy::FOREIGN_KEY))
+        {
+            $query->where(BookCopy::FOREIGN_KEY, $request->get(BookCopy::FOREIGN_KEY));
+            $name .= "_for_copy_" . filter_filename($request->get(BookCopy::FOREIGN_KEY));
+        }
+        if($request->has(Book::FOREIGN_KEY))
+        {
+            $query->where(Book::FOREIGN_KEY, $request->get(Book::FOREIGN_KEY));
+            $name .= "_for_book_" . filter_filename($request->get(Book::FOREIGN_KEY));
+        }
+        if($this->getDefaultTimeRange() !== [$start, $end])
+        {
+            $name .= "_from_".$start->format('d_m_Y')."_to_".$end->format('d_m_Y');
+        }else{
+            $name .= "_".$end->format('d_m_Y');
+        }
+
         ini_set('max_execution_time', 600);
-        return (new HistoryExport($start, $end))->download("History.xls",  \Maatwebsite\Excel\Excel::XLSX);
+        return (new HistoryExport($query->get()))
+            ->download($name.".xlxs",  \Maatwebsite\Excel\Excel::XLSX);
     }
 }

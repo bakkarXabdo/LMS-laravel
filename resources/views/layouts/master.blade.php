@@ -27,16 +27,20 @@
                 </div>
                 <div class="navbar-collapse collapse" >
                     <ul class="nav navbar-nav">
-                        @if(Auth::user() && Auth::user()->IsAdmin)
-                            <li><a href="{{ route('books.index') }}">الكُتب</a></li>
-                            <li><a href="{{ route('bookcopies.index') }}">النُسخ</a></li>
-                            <li><a href="{{ route('students.index') }}">الطُلاب</a></li>
-                            <li><a href="{{ route('rentals.index') }}">الإعارات</a></li>
-                            <li><a href="{{ route('history.index') }}">الأرشيف</a></li>
-                            <li><a href="{{ route('languages.index') }}">اللغات</a></li>
-                            <li><a href="{{ route('categories.index') }}">الفئات</a></li>
-{{--                            <li><a href="{{ route('settings') }}">الإعدادات</a></li>--}}
-                        @endif
+                        @auth
+                            @if(Auth::user()->IsAdmin)
+                                <li><a href="{{ route('books.index') }}">الكُتب</a></li>
+                                <li><a href="{{ route('bookcopies.index') }}">النُسخ</a></li>
+                                <li><a href="{{ route('students.index') }}">الطُلاب</a></li>
+                                <li><a href="{{ route('rentals.index') }}">الإعارات</a></li>
+                                <li><a href="{{ route('history.index') }}">الأرشيف</a></li>
+                                <li><a href="{{ route('languages.index') }}">اللغات</a></li>
+                                <li><a href="{{ route('categories.index') }}">الفئات</a></li>
+        {{--                            <li><a href="{{ route('settings') }}">الإعدادات</a></li>--}}
+                            @else
+
+                            @endif
+                        @endauth
                     </ul>
                     @include('layouts._login')
                 </div>
@@ -63,6 +67,7 @@
 
         <script src="{{ asset('js/app.js') }}"></script>
         <script>
+            $.fn.dataTable.ext.errMode = 'none';
             $.ajaxSetup({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

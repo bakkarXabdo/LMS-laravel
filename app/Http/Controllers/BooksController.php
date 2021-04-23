@@ -73,18 +73,9 @@ class BooksController extends Controller
     public function export()
     {
         ini_set('max_execution_time', 600);
-        $name = "Books";
-        $file = storage_path('app\public') . DIRECTORY_SEPARATOR . $name .'.xlsx';
-        $oldLastUpdated = Carbon::parse(Cache::get('books-last-update'))->unix();
-        $bcolumn = Book::UPDATED_AT ?? Book::CREATED_AT;
-        $lastUpdatedAt = Book::query()->select(Db::raw("unix_timestamp(max($bcolumn)) as t"))->get()->max('t');
-        $useOld = (int)$lastUpdatedAt === (int)$oldLastUpdated;
-        if(!$useOld || !file_exists($file))
-        {
-            Excel::store(new BooksExport, "$name.xlsx", "public", \Maatwebsite\Excel\Excel::XLSX);
-            Cache::put('books-last-update', $lastUpdatedAt);
-        }
-        AppHelper::DownloadFile($file);
+        $query = Book::query();
+        return (new BooksExport($query->get()))
+                ->download("books.xlsx", \Maatwebsite\Excel\Excel::XLSX);
     }
 
     public function importing()
@@ -100,9 +91,9 @@ class BooksController extends Controller
     }
     public function store()
     {
-        $request = $this->validateRequest();
+        $validated = $this->validateRequest();
 
-        $book = Book::create($request);
+        $book = Book::create($validated);
         PagesController::clearCachedResponses();
         return redirect($book->path);
     }
@@ -237,19 +228,13 @@ class BooksController extends Controller
             'Price' => 'max:255',
             'ReleaseYear' => 'max:4',
         ];
-        $validated = Validator::make(request()->all(), $rules, [
-            'Title.required' => 'عنوان الكتاب مطلوب',
-            'Title.max' => 'العنوان يجب أن لا يتجاوز 255 حرف',
-            'Title.min' => 'العنوان يجب أن يكون أكبر من ثلاثة أحرف',
-
-            'Author.max' => 'المؤلف يجب أن لا يتجاوز 255 حرف',
-
-            'InventoryNumber.required' => 'الشفره إجبارية',
-            'InventoryNumber.unique' => 'الشفره موجودة مسبقا',
-
-            'ReleaseYear.max' => 'سنة الإصدار يجب أن تكون 4 أرقام',
-            'Price.max' => 'السعر يجب أن لا يتجاوز 255 حرف',
-        ])->validate();
+        $validated = request()->validate($rules, null, [
+            "Title" => "العنوان",
+            "Author" => "المؤلف",
+            "InventoryNumber" => "الشفرة",
+            "Source" => "المصدر",
+            "ReleaseYear" => "سنة الإصدار",
+        ]);
         $validated[Category::FOREIGN_KEY] = $categoryValidator->getCategory()->getKey();
         $validated[BookLanguage::FOREIGN_KEY] = $languageValidator->getLanguage()->getKey();
         return $validated;

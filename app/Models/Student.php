@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasHistory;
+use App\Models\Traits\HasRentals;
+use App\Models\Traits\ModelTraits;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 /**
  * App\Models\Student
@@ -36,7 +38,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Student extends Model
 {
-    use ModelTraits;
+    use ModelTraits, HasHistory, HasRentals;
 
     public const TABLE = "students";
     public const KEY = "Id";
@@ -54,18 +56,8 @@ class Student extends Model
 
     protected $guarded = [];
 
-
-    function rentals(){
-        return $this->hasMany(Rental::class);
-    }
-
-    function rentalHistories()
-    {
-        return $this->hasMany(RentalHistory::class);
-    }
-
     function user()
     {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class);
     }
 }

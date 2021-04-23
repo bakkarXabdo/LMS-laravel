@@ -147,17 +147,18 @@ class DatabaseSeeder extends Seeder
                 $i = array_rand($copies);
                 $copy = $copies[$i];
                 $student = $students[array_rand($students)];
-                $days = -1 * random_int(random_int(0, 49), random_int(random_int(50, 100), 365));
+                $createdAt = Carbon::now()->subDays(random_int(10, 60));
+                $expired = random_int(0, 100) < 10;
                 $rentals[] = $copy->rental()->create([
                     'CreatedBy' => auth()->user()->Name,
                     Student::FOREIGN_KEY => $student->getkey(),
                     Book::FOREIGN_KEY => $copy->book->getKey(),
-                    'CreatedAt' => now()->addDays($days),
-                    'ExpiresAt' => now()->addDays(15)
+                    'CreatedAt' => $createdAt,
+                    'ExpiresAt' => $expired ? now()->addDays(random_int(1, random_int(2, random_int(2, 9)))) : now()->subDays(random_int(random_int(5, 10), 15)),
                 ]);
                 unset($copies[$i]);
             }
-            $copies = BookCopy::with('books')->get();
+            $copies = BookCopy::with('book')->get();
             foreach(range(0, 1000) as $i)
             {
                 $student = $students[array_rand($students)];
@@ -172,9 +173,9 @@ class DatabaseSeeder extends Seeder
                     Student::FOREIGN_KEY => $student->getKey(),
                     'StudentName' => $student->Name,
                     'BookTitle' => $copy->book->Title,
-                    'RentalCreatedAt' => $createdAt,
                     'RentalExpiresAt' => $expires,
-                    'RentalReturnedAt' => random_int(0, 100) > 90 ? $expires->addDays(random_int(2, random_int(5, 10))) : $expires->subDays(random_int(2, 5))
+                    'RentalCreatedAt' => $createdAt,
+                    RentalHistory::CREATED_AT => random_int(0, 100) > 90 ? $expires->addDays(random_int(2, random_int(5, 10))) : $expires->subDays(random_int(2, 5)),
                 ]);
             }
             echo "commiting transaction\r\n";

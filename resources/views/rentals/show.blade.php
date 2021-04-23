@@ -27,17 +27,17 @@
             </tr>
             <tr>
                 <th>تاريخ الإعارة</th>
-                <td>{{\Illuminate\Support\Carbon::parse($rental->DateAdded)->format('d-m-Y H:i:s') }}</td>
+                <td>{{ $rental->created->format('d-m-Y H:i:s') }}</td>
             </tr>
             <tr>
                 <th>تاريخ الإنتهاء</th>
                 <td>
-                    @if($rental->returnDate < 0)
-                        <span class="text-danger">إنتهى قبل {{ $rental->returnDate }} أيام</span>
-                    @elseif($rental->returnDate == 0)
-                        <span class="text-warning"> ينتهي اليوم </span>
+                    @if($rental->remainingDays < 0)
+                        <span class="text-danger"> قبل {{ day_plural_ar($rental->remainingDays) }}</span>
+                    @elseif($rental->remainingDays == 0)
+                        <span class="text-warning"> اليوم </span>
                     @else
-                        بعد {{ $rental->returnDate }} أيام
+                        بعد {{ day_plural_ar($rental->remainingDays) }}
                     @endif
                 </td>
             </tr>
@@ -46,10 +46,83 @@
         <h4>الإجرائات</h4>
         <hr>
         <div class="row" style="margin-left:0">
-            <form action="{{ route('rentals.return', $rental->getKey()) }}" method="post">
-                @csrf
-                <button type="submit" class="btn btn-success" href>إرجاع</button>
-            </form>
+            <a href="#" class="btn btn-success" onclick="returnRental()">إرجاع</a>
+            <a href="#" class="btn btn-warning" onclick="cancelRental()">إلغاء الإعارة</a>
         </div>
     </div>
 @endsection
+
+
+@push('scripts')
+    <script>
+        function returnRental()
+        {
+            bootbox.dialog({
+                title: "تأكيد الإجراء",
+                message: `<span>هل تريد فعلا إرجاع النسخة {{ $rental->copy->getKey() }} </span>`,
+                backdrop:true,
+                buttons: {
+                    confirm: {
+                        label: 'إرجاع',
+                        className: 'btn-warning',
+                        callback: function () {
+                            $.ajax({
+                                url: "{{ route('rentals.return', $rental->getKey()) }}",
+                                method: "POST",
+                                dataType: "json",
+                                success: function (data) {
+                                    if (data.success) {
+                                        toastr.success(data.message);
+                                        window.location.href = '{{ route('rentals.index') }}';
+                                    } else {
+                                        toastr.error(data.message);
+                                    }
+                                }
+                            })
+                        }
+                    },
+                    cancel: {
+                        label: 'إلغاء',
+                        className: 'btn-secondary'
+                    }
+                }
+            });
+        }
+        function cancelRental()
+        {
+            bootbox.dialog({
+                title: "تأكيد الإجراء",
+                message: `<span>هل تريد فعلا إلغاء الإعارة</span>`,
+                backdrop:true,
+                buttons: {
+                    confirm: {
+                        label: 'نعم',
+                        className: 'btn-danger',
+                        callback: function () {
+                            $.ajax({
+                                url: "{{ route('rentals.destroy', $rental->getKey()) }}",
+                                method: "POST",
+                                data:{
+                                    _method: "DELETE"
+                                },
+                                dataType: "json",
+                                success: function (data) {
+                                    if (data.success) {
+                                        toastr.success(data.message);
+                                        window.location.href = '{{ route('rentals.index') }}';
+                                    } else {
+                                        toastr.error(data.message);
+                                    }
+                                }
+                            })
+                        }
+                    },
+                    cancel: {
+                        label: 'إلغاء',
+                        className: 'btn-secondary'
+                    }
+                }
+            });
+        }
+    </script>
+@endpush

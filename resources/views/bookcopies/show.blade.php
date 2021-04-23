@@ -42,15 +42,20 @@
         <h4>الإجرائات</h4>
         <hr>
         <div class="row" style="margin-left:0">
-            <a class="btn btn-primary" href="{{ route('bookcopies.edit', $copy->getKey()) }}">تعديل</a>
-            @if(!$copy->rental)
+            @if(!$copy->rental()->exists())
                 <a class="btn btn-primary" href="{{ route('rentals.create', ["copyId" => $copy->getKey()]) }}">إعارة</a>
-                <a class="btn btn-danger" id="copy-delete" href="#">حذف</a>
             @else
                 <form style="display: inline-block" action="{{ route('rentals.return', $copy->rental->getKey()) }}" method="post">
                     @csrf
                     <button style="display: inline-block" class="btn btn-warning" type="submit">إرجاع</button>
                 </form>
+            @endif
+            <a class="btn btn-primary" href="{{ route('bookcopies.edit', $copy->getKey()) }}">تعديل</a>
+            @if(!$copy->rental()->exists())
+                <a class="btn btn-danger" id="copy-delete" href="#">حذف</a>
+            @endif
+            @if($copy->rentalHistories()->count() > 0)
+                <a href="{{ route('history.index', [BookCopy::FOREIGN_KEY => $copy->getKey()]) }}" class="btn btn-primary">إضهار أرشيف الإعارات</a>
             @endif
         </div>
     </div>

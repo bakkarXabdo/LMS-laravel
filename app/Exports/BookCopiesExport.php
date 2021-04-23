@@ -13,13 +13,19 @@ class BookCopiesExport implements FromCollection, WithHeadings
 {
     use Exportable;
 
+
+    public function __construct($copiesCollection)
+    {
+        $this->data = $copiesCollection;
+    }
+
     /**
     * @return \Illuminate\Support\Collection
     */
     public function collection()
     {
         $collection = Collection::make();
-        foreach (BookCopy::orderBy(Book::FOREIGN_KEY)->with('book')->get() as $key => $copy)
+        foreach ($this->copiesCollection as $key => $copy)
         {
             $collection->add([
                 "الرقم" => $key+1,
@@ -37,14 +43,24 @@ class BookCopiesExport implements FromCollection, WithHeadings
         return $collection;
     }
 
-    /**
-     * @return array
-     */
+    public function columnWidths(): array
+    {
+        return [
+            'A' => 10,
+            'B' => 15,
+            'C' => 15,
+            'D' => 35,
+            'E' => 15,
+            'F' => 10,
+            'G' => 10,
+            'H' => 10,
+            'I' => 15,
+        ];
+    }
     public function headings(): array
     {
         return [
             "الرقم",
-            "الجرد",
             "الشفرة",
             "العنوان",
             "المؤلف",
@@ -53,6 +69,12 @@ class BookCopiesExport implements FromCollection, WithHeadings
             "السعر",
             "الإعارات الكلية",
             "Isbn",
+        ];
+    }
+    public function columnFormats(): array
+    {
+        return [
+
         ];
     }
 }

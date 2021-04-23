@@ -42,7 +42,9 @@ class BookCopiesController extends Controller
     public function export()
     {
         ini_set('max_execution_time', 600);
-        return (new BookCopiesExport)->download("copies.xlsx", \Maatwebsite\Excel\Excel::XLSX);
+        $query = BookCopy::query();
+        return (new BookCopiesExport($query->get()))
+                ->download("copies.xlsx", \Maatwebsite\Excel\Excel::XLSX);
     }
 
     public function show(BookCopy $bookcopy)
@@ -61,11 +63,11 @@ class BookCopiesController extends Controller
     {
         $validated = $this->validateRequest();
         $copy = BookCopy::create($validated);
-        if($copy)
+        if($copy && $copy->exists)
         {
             return redirect(route('bookcopies.show', $copy->getKey()));
         }
-        throw new HttpException(500, "لا يمكن إنشاء النسخة");
+        return back()->withErrors(new MessageBag(["exception" => "لا يمكن إنشاء النسخة"]));
     }
 
     public function edit(BookCopy $bookcopy)

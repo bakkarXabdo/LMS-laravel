@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\ModelTraits;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -54,6 +55,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $fillable = [
+        'Name',
         'username',
         'password',
     ];
@@ -86,6 +88,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
 
     public function student()
     {
-        return $this->belongsTo(Student::class);
+        return $this->HasOne(Student::class);
     }
 }

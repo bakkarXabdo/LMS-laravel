@@ -2,20 +2,25 @@
 
 namespace App\Exports;
 
+use App\Models\Book;
+use App\Models\BookCopy;
 use App\Models\RentalHistory;
+use App\Models\Student;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
+use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
-class HistoryExport implements FromCollection, WithHeadings
+class HistoryExport implements FromCollection, WithHeadings, WithColumnFormatting, WithColumnWidths
 {
     use Exportable;
 
-    public function __construct($start, $end)
+    public function __construct($data)
     {
-        $this->start = $start;
-        $this->end = $end;
+        $this->data = $data;
     }
 
     /**
@@ -23,9 +28,8 @@ class HistoryExport implements FromCollection, WithHeadings
     */
     public function collection()
     {
-        $data = RentalHistory::query()->whereBetween(RentalHistory::CREATED_AT, [$this->start, $this->end])->get();
         $collection = collect([]);
-        foreach ($data as $history) {
+        foreach ($this->data as $history) {
             $collection->add([
                 "رقم العملية"          => $history->getKey(),
                 "إسم المُنشئ"           => $history->CreatedBy,
@@ -58,6 +62,27 @@ class HistoryExport implements FromCollection, WithHeadings
             "تاريخ الإعارة",
             "تاريخ إنتهاء الإعارة",
             "تاريخ الإرجاع",
+        ];
+    }
+    public function columnFormats(): array
+    {
+        return [
+            'F' => NumberFormat::FORMAT_NUMBER,
+        ];
+    }
+    public function columnWidths(): array
+    {
+        return [
+            'A' => 10,
+            'B' => 15,
+            'C' => 15,
+            'D' => 15,
+            'E' => 35,
+            'F' => 15,
+            'G' => 15,
+            'H' => 20,
+            'I' => 20,
+            'J' => 20,
         ];
     }
 }

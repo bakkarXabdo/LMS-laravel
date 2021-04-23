@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="container" dir="rtl"  style="margin-top: 3rem">
-        <form action="{{ route('history.exporting') }}" method="post">
+        <form action="{{ route('history.exporting', request()->all()) }}" method="post">
             @csrf
             <h2>إستخراج الأرشيف</h2>
             <hr/>

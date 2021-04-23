@@ -111,7 +111,7 @@
                         data: "RemainingDays",
                         searchable: false,
                         orderable: true,
-                        render: (days) => days <= 1 ? `<span class="text-danger"> بعد ${days} يوم </span>` : `<span> بعد ${days} يوم </span>`
+                        render: (days) => days < 1 ? `<span class="text-danger"> قبل ${-days} يوم </span>` : `<span> بعد ${days} يوم </span>`
                     },
                     {
                         title: "الإجرائات",
@@ -120,13 +120,14 @@
                         data:"{{ \App\Models\Rental::KEY }}",
                         width:1,
                         render: function (rentalId,_,rental) {
-                            var actions = "";
+                            let url = '{{ route('rentals.show', ":id") }}'.replace(':id', rentalId);
+                            actions = `<a href="${url}" class="mx-1 btn btn-success">إضهار</a>`;
                             actions += `<a href="#" data-rental-id="${rentalId}" data-bookcopy-id="${rental.{{ \App\Models\BookCopy::FOREIGN_KEY }}}" class="js-confirm mx-1 btn btn-primary">إرجاع</a>`;
                             return `<span style="display:flex;">${actions}</span>`;
                         }
                     }
                 ],
-                order:[[3, "asc"]]
+                order:[[5, "asc"]]
             });
             jst.on("click", ".js-confirm", function () {
                 var button = $(this);

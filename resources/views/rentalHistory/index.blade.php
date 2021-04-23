@@ -7,7 +7,7 @@
     <div dir="rtl" class="container body-content">
         <h2>أرشيف الإعارات</h2>
         <hr/>
-        <a class="btn btn-primary" href="{{ route('history.export') }}">إستخراج</a>
+        <a class="btn btn-primary" href="{{ route('history.export', request()->all()) }}">إستخراج</a>
         <div style="margin-top: 2rem;">
             <table class="table table-bordered table-hover">
                 <div style="padding: 10px;"  class="text-right" dir="ltr">

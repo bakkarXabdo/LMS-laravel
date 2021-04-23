@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasHistory;
+use App\Models\Traits\ModelTraits;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,7 +31,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class BookCopy extends Model
 {
-    use ModelTraits;
+    use ModelTraits, HasHistory;
 
     public const TABLE = "bookcopies";
     public const KEY = "Id";

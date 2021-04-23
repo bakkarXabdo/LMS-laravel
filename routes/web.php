@@ -61,7 +61,6 @@ Route::group([
     Route::post('/students/table', [StudentsController::class, 'table'])->name('students.table');
     Route::post('/history/exporting', [RentalHistoryController::class, 'exporting'])->name('history.exporting');
 
-
     Route::resource('books', BooksController::class);
     Route::resource('settings', SettingsController::class);
     Route::resource('bookcopies', BookCopiesController::class);
