@@ -87,4 +87,5 @@ Route::group([
 
 Route::get('/', [PagesController::class, 'index'])->name('pages.index');
 Route::get('/about', [PagesController::class, 'about'])->name('pages.about');
+Route::get('/terms', [PagesController::class, 'terms'])->name('pages.terms');
 
