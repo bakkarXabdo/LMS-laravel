@@ -112,17 +112,7 @@ class BookCopiesController extends Controller
             response()->json(["success" => true, "message" => "تم حذف النسخة"])
             : redirect(route('bookcopies.forBook', $book->getKey()));
     }
-    public function typeahead()
-    {
-        $query = request('query');
-        $matches = BookCopy::where(BookCopy::KEY, 'LIKE', $query."%")
-            ->select(BookCopy::KEY)
-            ->whereDoesntHave('rental')
-            ->limit(4)
-            ->get()
-            ->map(fn($copy) => $copy->getKey());
-        return Response::json($matches);
-    }
+
     public function choose()
     {
         $book = Book::find(request('bookId'));

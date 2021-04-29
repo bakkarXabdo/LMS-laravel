@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Cache;
 class CacheList
 {
     /**
+     * stores a cache item with the name $listName.$item
      * @param string $listName
      * @param mixed $item
      * @param Illuminate\Support\Carbon $timestamp
@@ -17,9 +18,10 @@ class CacheList
         return self::add($listName, $listName.$item, $item, $timestamp);
     }
     /**
+     * stores a cache item with a custom name
      * @param string $listName
      * @param mixed $item
-     * @param Illuminate\Support\Carbon $timestamp
+     * @param Illuminate\Support\Carbon $timestamp default now()->addMonth()
      * @return bool
      */
     public static function add($listName, $itemName, $item, $timestamp = null)
@@ -29,7 +31,7 @@ class CacheList
             $names = Cache::get($listName) ?? [];
             if(!in_array($itemName, $names, true))
             {
-                Cache::put($itemName, $item, $timestamp ?? now()->addMonths(3));
+                Cache::put($itemName, $item, $timestamp ?? now()->addMonth());
                 $names[] = $itemName;
                 Cache::put($listName, $names);
                 return true;

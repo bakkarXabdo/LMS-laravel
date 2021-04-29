@@ -14,8 +14,7 @@ class CreateUpdateBookPopularitySchedule extends Migration
     public const NAME = "UPDATE_BOOK_POPULARITY";
     public function up()
     {
-        DB::unprepared("
-CREATE EVENT ". self::NAME ." ON SCHEDULE
+        DB::unprepared("CREATE EVENT ". self::NAME ." ON SCHEDULE
 EVERY 1 MONTH STARTS NOW()
 ENABLE
 DO BEGIN

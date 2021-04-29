@@ -112,4 +112,6 @@ class Rental extends Model
         }
         return "<span class='$dayClass'>$dayText</span>";
     }
+
+
 }

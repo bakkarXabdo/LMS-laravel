@@ -7,7 +7,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRentalHistoryChartRoutine extends Migration
+class CreateRentalHistoryChartFunction extends Migration
 {
     /**
      * Run the migrations.
@@ -17,8 +17,7 @@ class CreateRentalHistoryChartRoutine extends Migration
     public const NAME = "GET_RENTAL_HISTORY_CHART";
     public function up()
     {
-        DB::unprepared("
-create procedure ". self::NAME ."()
+        DB::unprepared("create procedure ". self::NAME ."()
 BEGIN
         declare i int;
         declare diff timestamp;

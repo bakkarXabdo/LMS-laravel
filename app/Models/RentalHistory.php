@@ -70,4 +70,6 @@ class RentalHistory extends Model
     {
         return $this->RentalReturnedAt->diffInDays($this->RentalCreatedAt);
     }
+
+
 }

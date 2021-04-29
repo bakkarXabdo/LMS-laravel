@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\CacheList;
+use App\Models\BookCopy;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -20,6 +21,16 @@ class TypeAheadController extends Controller
             ->limit(4)
             ->get()
             ->map(fn($student)=>(string) $student->getKey());
-        return Response::json($matches);
+        return response()->json($matches);
+    }
+    public function copyId(Request $request)
+    {
+        $matches = BookCopy::where(BookCopy::KEY, 'LIKE', $request['query']."%")
+            ->select(BookCopy::KEY)
+            ->whereDoesntHave('rental')
+            ->limit(4)
+            ->get()
+            ->map(fn($copy) => $copy->getKey());
+        return response()->json($matches);
     }
 }

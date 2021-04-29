@@ -2,6 +2,7 @@
 
 namespace App\Models\Traits;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 
 trait ModelTraits
@@ -9,7 +10,7 @@ trait ModelTraits
 
     public function getCreatedAttribute()
     {
-        return $this->{$this->getCreatedAtColumn()};
+        return Carbon::parse($this->attributes[$this->getCreatedAtColumn()]);
     }
 
     public function getForeignKey()
@@ -38,5 +39,10 @@ trait ModelTraits
         return $this->newBelongsTo(
             $instance->newQuery(), $this, $foreignKey, $ownerKey, $relation
         );
+    }
+
+    public static function urlname()
+    {
+        return strtolower(class_basename(self::class));
     }
 }

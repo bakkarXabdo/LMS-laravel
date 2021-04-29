@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Traits\HasHistory;
 use App\Models\Traits\HasRentals;
 use App\Models\Traits\ModelTraits;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 /**
@@ -56,8 +57,17 @@ class Student extends Model
 
     protected $guarded = [];
 
+    // public $casts = [
+    //     "BirthDate" => 'datetime',
+    // ];
+
     function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    function getBirthDateAttribute()
+    {
+        return Carbon::parse($this->attributes['BirthDate']);
     }
 }

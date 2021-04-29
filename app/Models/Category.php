@@ -53,4 +53,6 @@ class Category extends Model
     {
         return $this->hasManyThrough(Rental::class, Book::class);
     }
+
+
 }

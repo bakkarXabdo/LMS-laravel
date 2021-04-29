@@ -16,7 +16,7 @@
                             <span class="input-group-btn" style="width: auto">
                                 <button class="btn btn-default" type="submit" style="margin-left: 4px">بحث</button>
                             </span>
-                            <input style="width: 250px;" type="text" class="form-control" required placeholder="إبحث عن مؤلف أو كتاب" name="term" id="term" value="{{ request('term') }}">
+                            <input style="width: 250px;" type="text" class="form-control" placeholder="إبحث عن مؤلف أو كتاب" name="term" id="term" value="{{ request('term') }}">
 
                             @if(request('language'))
                                 <input name="language" hidden value="{{ request('language') }}">
@@ -94,10 +94,10 @@
                             <th style="width: 20%;" class="text-right">المؤلف</th>
                             <th style="width: 10%;" class="text-right">الصنف</th>
                             <th style="width: 10%;" class="text-right">اللغة</th>
+                            {{-- <th style="width: 5%;" class="text-right">متاح</th> --}}
                         </tr>
                     </thead>
                     <tbody>
-
                     @forelse ($results as $key => $book)
                         @if($splits->contains($key + $results->firstItem() - 1))
                             <tr>
@@ -110,6 +110,7 @@
                                 <td dir="{{ $dir }}">{{$book->Author}}</td>
                                 <td dir="{{ $dir }}">{{ $book->category->Name}}</td>
                                 <td dir="{{ $dir }}">{{ $book->language->Name}}</td>
+                                {{-- <td dir="{{ $dir }}">{{ $book->NumberAvailable !== 0 ? 'نعم' : 'لا' }}</td> --}}
                             </tr>
                         @endif
                     @empty

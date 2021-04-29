@@ -15,8 +15,7 @@ class CreateBookIdCheckerOnInsertTrigger extends Migration
 
     public function up()
     {
-        DB::unprepared("
-CREATE TRIGGER ". self::NAME ."
+        DB::unprepared("CREATE TRIGGER ". self::NAME ."
 BEFORE INSERT
 ON `". Book::TABLE ."`
 FOR EACH ROW

@@ -99,4 +99,6 @@ class BookCopy extends Model
         preg_match('/\/\d+\/\d+$/', $this->getKey(), $matches);
         return $matches[0];
     }
+
+
 }

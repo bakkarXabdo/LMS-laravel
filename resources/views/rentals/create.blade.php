@@ -27,17 +27,17 @@
                     <h4>النُسخة</h4>
                 </div>
             </div>
-            {{-- <div class="row" dir="rtl">
+            <div class="row" dir="rtl">
                 <div class="col-sm-6">
                     @if ($student != null)
                     <table class="table table-condensed">
                         <tr>
-                            <th>الرقم</th>
+                            <th class="text-right">الرقم</th>
                             <td>{{ $student->getKey() }}</td>
                         </tr>
                         <tr>
-                            <th>الإسم</th>
-                            <td style="font-size: large; font-weight: bold">{{ $student->Name }}</td>
+                            <th class="text-right">الإسم</th>
+                            <td>{{ $student->Name }}</td>
                         </tr>
                     </table>
                     @endif
@@ -46,32 +46,62 @@
                     @if($copy != null)
                         <table class="table table-condensed">
                             <tr>
-                                <th>الشفرة</th>
+                                <th class="text-right">الشفرة</th>
                                 <td>{{ $copy->getKey() }}</td>
                             </tr>
                             <tr>
-                                <th>العُنوان</th>
-                                <td style="font-size: large; font-weight: bold">{{ $copy->book->Title }}</td>
+                                <th class="text-right">العُنوان</th>
+                                <td >{{ $copy->book->Title }}</td>
                             </tr>
                         </table>
                     @endif
                 </div>
-            </div> --}}
-            <div class="row" >
-                <div class="col-sm-6">
-                    <input autocomplete="off" name="{{ \App\Models\Student::FOREIGN_KEY }}" class="form-control text-right" id="typeahead-student" placeholder="رقم الطالب" value="{{ request()->get('studentId') ?? (isset($student->Id) ? $student->Id : '') }}">
-                </div>
-                <div class="col-sm-6">
-                    <input autocomplete="off" name="{{ \App\Models\BookCopy::FOREIGN_KEY }}" class="form-control text-right typeahead" id="typeahead-copy" placeholder="الشفرة" value="{{ request()->get('copyId') ?? (isset($copy->Id) ? $copy->Id : '')}}">
-                </div>
             </div>
-            <hr />
+            <div @if($confirming) hidden @endif>
+                <div class="row" >
+                    <div class="col-sm-6">
+                        @php
+                            $value = "";
+                            if(!empty(request(Student::urlname())))
+                            {
+                                $value = request(Student::urlname());
+                            }else if(!empty(old(Student::urlname())))
+                            {
+                                $value = old(Student::urlname());
+                            }else if($student && !empty($student->getKey()))
+                            {
+                                $value = $student->getKey();
+                            }
+                        @endphp
+                        <input autocomplete="off" name="{{ Student::urlname() }}" class="form-control text-right" id="typeahead-student"
+                         placeholder="رقم الطالب" value="{{ $value }}">
+                    </div>
+                    <div class="col-sm-6">
+                        @php
+                            $value = "";
+                            if(!empty(request(BookCopy::urlname())))
+                            {
+                                $value = request(BookCopy::urlname());
+                            }else if(!empty(old(BookCopy::urlname())))
+                            {
+                                $value = old(BookCopy::urlname());
+                            }else if($copy && !empty($copy->getKey()))
+                            {
+                                $value = $copy->getKey();
+                            }
+                        @endphp
+                        <input autocomplete="off" name="{{ BookCopy::urlname() }}" class="form-control text-right typeahead" id="typeahead-copy"
+                         placeholder="الشفرة" value="{{ $value }}">
+                    </div>
+                </div>
+                <hr />
+            </div>
             <div class="form-group">
                 <label class="h4">مدة الإعارة(أيام)</label>
-                <input type="number" min="1" class="form-control" name="duration" value="{{ Cache::get('last-rental-duration') ?? '15'  }}"/>
+                <input type="number" @if($confirming) readonly @endif  class="form-control" name="duration" value="{{ request()->get('duration') ?? (Cache::get('last-rental-duration') ?? '15')   }}"/>
             </div>
-            <input name="confirming" value="{{ $confirming ?? 'true' }}" hidden />
-            <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> تأكيد</button>
+            <input name="confirming" value="{{ $confirming }}" hidden />
+            <button type="submit" class="btn btn-success"><i class="fa fa-check"></i> {{ $confirming ? "تأكيد" : "متابعة" }}</button>
         </form>
     </div>
 
@@ -84,7 +114,7 @@
             $('#typeahead-copy').typeahead({
                 source: function (query, result) {
                     $.ajax({
-                        url: "{{ route('bookcopies.typeahead') }}",
+                        url: "{{ route('typeahead.copyId') }}",
                         method: "GET",
                         data: {query: query},
                         dataType: "json",
@@ -95,7 +125,7 @@
             $('#typeahead-student').typeahead({
                 source: function (query, result) {
                     $.ajax({
-                        url: "{{ route('students.typeahead') }}",
+                        url: "{{ route('typeahead.studentId') }}",
                         method: "GET",
                         data: {query: query},
                         dataType: "json",

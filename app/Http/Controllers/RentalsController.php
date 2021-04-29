@@ -69,32 +69,41 @@ class RentalsController extends Controller
      */
     public function create()
     {
-        $copy = BookCopy::find(\request(BookCopy::FOREIGN_KEY));
-        $student = Student::find(\request(Student::FOREIGN_KEY));
-        $confirming = request('confirming') || ($copy && $student);
-        return view('rentals.create',compact('copy', 'student', 'confirming'));
+        $copy = $student = null;
+        if(!empty(request(BookCopy::FOREIGN_KEY)))
+        {
+            $copy = BookCopy::find(request(BookCopy::FOREIGN_KEY));
+            if(!$copy)
+            {
+                return back()->withErrors(new MessageBag(["copy" => "النسخة غير موجودة"]));
+            }
+            if($copy->rental)
+            {
+                return back()->withErrors(new MessageBag(["copy" => "هذه النُسخة معارة"]));
+            }
+        }
+        if(!empty(request(Student::FOREIGN_KEY)))
+        {
+            $student = Student::find(request(Student::FOREIGN_KEY));
+            if(!$student)
+            {
+                return back()->withErrors(new MessageBag(["student" => "الطالب غير موجودة"]));
+            }
+        }
+        $confirming = $copy && $student;
+        return view('rentals.create', compact('copy', 'student', 'confirming'));
     }
-
     public function store(Request $request)
     {
-        if(request("confirming"))
+        if(!request("confirming"))
         {
             return $this->create();
         }
         $student = Student::find(request(Student::FOREIGN_KEY));
         $copy = BookCopy::find(request(BookCopy::FOREIGN_KEY));
-        if(!$student)
+        if(empty(request()->get('duration')))
         {
-            return "الطالب غير موجود";
-        }
-        if(!$copy)
-        {
-            return "النسخة غير موجودة";
-        }
-        if($copy->rental)
-        {
-            $show = "<a href='".route('rentals.show', $copy->rental->getKey())."'>" ."إضهار" ."</a>";
-            return "$show هذه النسخة معاره مسبقا, ";
+            return back()->withErrors(new MessageBag(["duration" => "يجب تحديد مدة الإعارة"]));
         }
         Cache::put('last-rental-duration',request()->get('duration'));
         $rental = DB::transaction(function() use ($copy, $student) {

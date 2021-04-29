@@ -2,7 +2,6 @@
 
 @section('PageTitle') الطالب {{ $student->Name }} @endsection
 
-
 @section('content')
     <div dir="rtl" class="container body-content">
         <h2>{{ $student->Name }}</h2>
@@ -23,7 +22,7 @@
                     <td class="col-sm-10">{{ $student->Name }}</td>
                 </tr>
                 <tr>
-                    <th>الرقم</th>
+                    <th>رقم البطاقة</th>
                     <td>{{ $student->getKey() }}</td>
                 </tr>
                 <tr>
@@ -32,9 +31,8 @@
                 </tr>
                 <tr>
                     <th>تاريخ الميلاد</th>
-                    <td>{{ Carbon::parse()->format('d-m-Y') }}</td>
+                    <td>{{ $student->BirthDate->format('d-m-Y') }}</td>
                 </tr>
-
                 <tr>
                     <th>عدد الإعارات الإجمالية</th>
                     <td>{{ $student->TotalRentals }}</td>
@@ -68,7 +66,7 @@
         <h4>الإجرائات</h4>
         <hr>
         <div class="row" style="margin-left:0">
-            <a class="btn btn-primary" href="{{ route('rentals.create', ["studentId" => $student->getKey()]) }}">إعارة</a>
+            <a class="btn btn-primary" href="{{ route('rentals.create', [Student::urlname() => $student->getKey()]) }}">إعارة</a>
             @if($student->rentalHistories()->count() > 0)
                 <a href="{{ route('history.index', [Student::FOREIGN_KEY => $student->getKey()]) }}" class="btn btn-primary">إضهار أرشيف الإعارات</a>
             @endif

@@ -150,4 +150,6 @@ class Book extends Model
         preg_match('/\/\d+$/', $this->getKey(), $matches);
         return $matches[0];
     }
+
+
 }

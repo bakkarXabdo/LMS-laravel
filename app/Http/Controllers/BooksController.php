@@ -228,7 +228,7 @@ class BooksController extends Controller
             'Price' => 'max:255',
             'ReleaseYear' => 'max:4',
         ];
-        $validated = request()->validate($rules, null, [
+        $validated = request()->validate($rules, [], [
             "Title" => "العنوان",
             "Author" => "المؤلف",
             "InventoryNumber" => "الشفرة",

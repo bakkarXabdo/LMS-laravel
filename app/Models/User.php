@@ -90,4 +90,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     {
         return $this->HasOne(Student::class);
     }
+
+
+
 }

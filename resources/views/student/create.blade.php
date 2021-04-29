@@ -21,7 +21,7 @@
         <form action="{{ route('students.store') }}" method="post" novalidate="novalidate">
             @csrf
             <div class="form-group">
-                <label for="{{ \App\Models\Student::KEY }}">رقم الطالب</label>
+                <label for="{{ \App\Models\Student::KEY }}">رقم البطاقة</label>
                 <input class="form-control" id="{{ \App\Models\Student::KEY }}" name="{{ \App\Models\Student::KEY }}" value="{{ old(\App\Models\Student::KEY) }}">
             </div>
             <div class="form-group">
@@ -53,7 +53,7 @@
             $('#Speciality').typeahead({
                 source: function (query, result) {
                     $.ajax({
-                        url: "{{ route('students.specialityTypeAhead') }}",
+                        url: "{{ route('typeahead.student-speciality') }}",
                         method: "GET",
                         data: {query: query},
                         dataType: "json",

@@ -9,7 +9,8 @@ use App\Models\BookLanguage;
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-
+use Illuminate\Support\Facades\DB;
+use Request;
 
 class PagesController extends Controller
 {
@@ -17,13 +18,16 @@ class PagesController extends Controller
     {
         if(Auth::user() && Auth::user()->IsAdmin)
         {
-            return (new DashboardController)->index();
+            return redirect(route('dashboard'));
         }
-        $cache = 'pages.index.view.'.hash('md5', \Request::getRequestUri());
+        $view = view('pages.index');
+        $cache = 'pages.index.results.'.hash('md5', Request::getRequestUri());
         if(Cache::has($cache))
         {
-            return Cache::get($cache);
+            info("retrieving results from cache for request: ".Request::getRequestUri());
+            return $view->with(unserialize(Cache::get($cache)));
         }
+        info("retrieving results from database for request: ".Request::getRequestUri());
         $categories = Category::all();
         $languages = BookLanguage::all();
         $data = array(
@@ -33,7 +37,11 @@ class PagesController extends Controller
             'splits' => collect()
         );
         $normalSearch = Book::query();
-
+        // // column for book availability
+        // $normalSearch->select(['books.*',
+        //         DB::raw('@copiesCount := (select count(*) from bookcopies where bookcopies.BookId = books.InventoryNumber) as copiesCount'),
+        //         DB::raw('@rentedCopiesCount := (select count(*) from bookcopies where bookcopies.BookId = books.InventoryNumber) as rentedCopiesCount'),
+        //         DB::raw('@copiesCount - @rentedCopiesCount > 0 as available')]);
         $searchTerm = request('term');
         if(\request('category'))
         {
@@ -108,14 +116,12 @@ class PagesController extends Controller
         }else{
             $data['results'] = $normalSearch->paginate(50);
         }
-        $response = view('pages.index')->with($data)->render();
-        $response = preg_replace('/\s+/S', " ", $response);
-        CacheList::add('pages.index.view.cached', $cache, $response);
-        return $response;
+        CacheList::add('pages.index.results.cached', $cache, serialize($data));
+        return $view->with($data);
     }
     public static function clearCachedResponses()
     {
-        CacheList::forgetList('pages.index.view.cached');
+        CacheList::forgetList('pages.index.results.cached');
     }
     public function about()
     {

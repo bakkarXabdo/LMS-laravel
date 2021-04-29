@@ -11,8 +11,8 @@
                     <th class="text-right">الكتاب</th>
                     <th class="text-right">مدة الإعارة</th>
                     <th class="text-right">تاريخ الإعارة</th>
+                    <th class="text-right">تاريخ الإنتهاء</th>
                     <th class="text-right">تاريخ الإرجاع</th>
-                    <th class="text-right">تم إرجاعه</th>
                 </tr>
             </thead>
             <tbody>

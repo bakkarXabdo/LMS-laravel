@@ -4,6 +4,7 @@ use App\Models\Student;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class CreateOnStudentDeleteRemoveUserTrigger extends Migration
@@ -17,8 +18,7 @@ class CreateOnStudentDeleteRemoveUserTrigger extends Migration
      */
     public function up()
     {
-        DB::unprepared("
-        CREATE TRIGGER ".self::NAME." AFTER DELETE on ". Student::TABLE ."
+        DB::unprepared("CREATE TRIGGER ".self::NAME." AFTER DELETE on ". Student::TABLE ."
 FOR EACH ROW
 BEGIN
 DELETE FROM ". User::TABLE ."

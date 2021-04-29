@@ -43,7 +43,7 @@
         <hr>
         <div class="row" style="margin-left:0">
             @if(!$copy->rental()->exists())
-                <a class="btn btn-primary" href="{{ route('rentals.create', ["copyId" => $copy->getKey()]) }}">إعارة</a>
+                <a class="btn btn-primary" href="{{ route('rentals.create', [BookCopy::urlname() => $copy->getKey()]) }}">إعارة</a>
             @else
                 <form style="display: inline-block" action="{{ route('rentals.return', $copy->rental->getKey()) }}" method="post">
                     @csrf

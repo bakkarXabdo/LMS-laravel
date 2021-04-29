@@ -34,7 +34,7 @@
         <input class="form-control" id="Customer_Birthdate" name="BirthDate" type="date" value="{{ \Illuminate\Support\Carbon::parse($student->Birthdate)->format('Y-m-d') }}">
     </div>
     <div class="form-group">
-        <label for="Student_Id">الرقم</label>
+        <label for="Student_Id">رقم البطاقة</label>
         <input class="form-control" id="Student_Id" name="{{ Student::KEY }}" type="number" value="{{ $student->getKey() }}">
     </div>
     <button type="submit" class="btn btn-primary">حفظ</button>
@@ -51,7 +51,7 @@
             $('#Speciality').typeahead({
                 source: function (query, result) {
                     $.ajax({
-                        url: "{{ route('students.specialityTypeAhead') }}",
+                        url: "{{ route('typeahead.student-speciality') }}",
                         method: "GET",
                         data: {query: query},
                         dataType: "json",
