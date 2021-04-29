@@ -62,6 +62,9 @@
                     <div class="col-lg-1">
                         <a class="nav-link" href="{{ route('pages.about') }}">حول الموقع</a>
                     </div>
+                    <div class="col-lg-1">
+                        <a class="nav-link" href="{{ route('pages.terms') }}">الشروط و الأحكام</a>
+                    </div>
                   </div>
             </footer>
         </div>
