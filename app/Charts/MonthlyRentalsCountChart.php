@@ -25,9 +25,7 @@ class MonthlyRentalsCountChart extends BaseChart
             return $item->count;
         },Db::select("call GET_RENTAL_HISTORY_CHART();"));
 
-        $now = Carbon::now();
-        $temp = $now;
-        $temp->addMonths(-11);
+        $monthIterator = now()->addMonths(-11);
         $months = array(
             "January" => "جانفي",
             "February" => "فيفري",
@@ -44,13 +42,13 @@ class MonthlyRentalsCountChart extends BaseChart
         );
         for($i = 0; $i < 12; $i++)
         {
-            $m = $temp->format('F');
+            $m = $monthIterator->format('F');
             if(array_key_exists($m, $months))
             {
                 $m = $months[$m];
             }
             $labels[] =  $m;
-            $temp->addMonth();
+            $monthIterator->addMonth();
         }
         $chart->labels($labels);
         $chart->dataset("عدد الإعارات في الأشهر الماضية", $rentalHistoryDataSet);

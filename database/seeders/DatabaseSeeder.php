@@ -148,6 +148,7 @@ class DatabaseSeeder extends Seeder
                 $copy = $copies[$i];
                 $student = $students[array_rand($students)];
                 $createdAt = Carbon::now()->subDays(random_int(10, 60));
+
                 $rentals[] = $copy->rental()->create([
                     'CreatedBy' => auth()->user()->Name,
                     Student::FOREIGN_KEY => $student->getkey(),
@@ -157,6 +158,10 @@ class DatabaseSeeder extends Seeder
                                                         ? now()->subDays(random_int(random_int(5, 10), 15))
                                                         : now()->addDays(random_int(1, random_int(2, random_int(2, 9)))),
                 ]);
+                $copy->increment("TotalRentals");
+                $copy->book->increment("TotalRentals");
+                $copy->book->increment("Popularity");
+                $student->increment("TotalRentals");
                 unset($copies[$i]);
             }
             $copies = BookCopy::with('book')->get();
@@ -179,6 +184,10 @@ class DatabaseSeeder extends Seeder
                     'RentalExpiresAt' => $expires,
                     RentalHistory::CREATED_AT => $returned,
                 ]);
+                $student->increment("TotalRentals");
+                $copy->increment("TotalRentals");
+                $copy->book->increment("TotalRentals");
+                $copy->book->increment("Popularity");
             }
             echo "commiting transaction\r\n";
         });

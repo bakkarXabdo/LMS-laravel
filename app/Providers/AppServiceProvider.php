@@ -5,12 +5,15 @@ namespace App\Providers;
 use App\Charts\BooksByCategoryChart;
 use App\Charts\BooksByLanguageChart;
 use App\Charts\MonthlyRentalsCountChart;
+use App\Jobs;
 use Carbon\Carbon;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use ConsoleTVs\Charts\Registrar as Charts;
+use Exception;
 use Illuminate\Support\Carbon as SupportCarbon;
+use Illuminate\Support\Facades\Cache;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,6 +38,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(Charts $charts)
     {
+
+        Jobs::run();
+
         $charts->register([
             MonthlyRentalsCountChart::class,
             BooksByCategoryChart::class,

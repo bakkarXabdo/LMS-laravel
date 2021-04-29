@@ -10,7 +10,7 @@ use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Request;
+use Illuminate\Support\Facades\Request;
 
 class PagesController extends Controller
 {
@@ -21,13 +21,13 @@ class PagesController extends Controller
             return redirect(route('dashboard'));
         }
         $view = view('pages.index');
-        $cache = 'pages.index.results.'.hash('md5', Request::getRequestUri());
-        if(Cache::has($cache))
-        {
-            info("retrieving results from cache for request: ".Request::getRequestUri());
-            return $view->with(unserialize(Cache::get($cache)));
-        }
-        info("retrieving results from database for request: ".Request::getRequestUri());
+        // $cache = 'pages.index.results.'.hash('md5', Request::getRequestUri());
+        // if(Cache::has($cache))
+        // {
+        //     info("retrieving results from cache for request: ".urldecode(Request::getRequestUri()));
+        //     return $view->with(unserialize(Cache::get($cache)));
+        // }
+        // info("retrieving results from database for request: ".urldecode(Request::getRequestUri()));
         $categories = Category::all();
         $languages = BookLanguage::all();
         $data = array(
@@ -78,7 +78,7 @@ class PagesController extends Controller
                     "d'une",
                     'dans',
                 ]);
-                foreach (collect(mb_split(' ', $searchTerm))->sort(fn($w1, $w2) => strlen($w1) < strlen($w2))
+                foreach (collect(mb_split(' ', $searchTerm))->sort(fn($w1, $w2) => strlen($w1) - strlen($w2))
                          as $word) {
                     $word = preg_replace('/[?.,\\\:()\-+]/', '', $word);
                     if (empty($word) || is_numeric($word) || strlen($word) <= (is_arabic($word)?4:2) || $ignoreWords->contains(strtolower($word))) {
@@ -116,12 +116,12 @@ class PagesController extends Controller
         }else{
             $data['results'] = $normalSearch->paginate(50);
         }
-        CacheList::add('pages.index.results.cached', $cache, serialize($data));
+        // CacheList::add('pages.index.results.cached', $cache, serialize($data));
         return $view->with($data);
     }
     public static function clearCachedResponses()
     {
-        CacheList::forgetList('pages.index.results.cached');
+        // CacheList::forgetList('pages.index.results.cached');
     }
     public function about()
     {

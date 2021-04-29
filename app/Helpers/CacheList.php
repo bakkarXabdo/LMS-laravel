@@ -96,6 +96,7 @@ class CacheList
      */
     public static function forgetList($listName)
     {
+        info("clearing cacheList $listName");
         $names = Cache::get($listName) ?? [];
         foreach($names as $name)
         {

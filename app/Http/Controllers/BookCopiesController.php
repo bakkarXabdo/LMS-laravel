@@ -82,6 +82,7 @@ class BookCopiesController extends Controller
     {
         $bookcopy = BookCopy::findOrFail($request->get('current_key'));
         $validated = $this->validateRequest();
+
         if ($bookcopy->update($validated)) {
             return redirect($bookcopy->path);
         }

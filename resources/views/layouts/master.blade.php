@@ -55,15 +55,20 @@
             </div>
             <hr />
             <footer class="text-center">
-                <div class="row">
-                    <div class="col-lg-3">
-                        <p class="d-inline">&copy; {{ date('Y') }} - {{config('app.name')}}</p>
-                    </div>
-                    <div class="col-lg-1">
+                <div class="row" style="display: inline-block;
+                vertical-align: middle;
+                float: none;"
+                >
+                    <div class="col-lg-4">
                         <a class="nav-link" href="{{ route('pages.about') }}">حول الموقع</a>
                     </div>
-                    <div class="col-lg-1">
+                    <div class="col-lg-4">
                         <a class="nav-link" href="{{ route('pages.terms') }}">الشروط و الأحكام</a>
+                    </div>
+
+
+                    <div class="col-lg-4">
+                        <p class="d-inline">&copy; {{ date('Y') }} - {{config('app.name')}}</p>
                     </div>
                   </div>
             </footer>

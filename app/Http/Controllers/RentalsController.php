@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\AppHelper;
 use App\Models\Book;
 use App\Models\BookCopy;
 use App\Models\Student;
 use App\Models\Rental;
 use App\Models\RentalHistory;
-use Cache;
 use DateInterval;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -105,7 +102,7 @@ class RentalsController extends Controller
         {
             return back()->withErrors(new MessageBag(["duration" => "يجب تحديد مدة الإعارة"]));
         }
-        Cache::put('last-rental-duration',request()->get('duration'));
+        cache()->put('last-rental-duration',request()->get('duration'));
         $rental = DB::transaction(function() use ($copy, $student) {
             $student->increment('TotalRentals');
             $copy->increment('TotalRentals');
@@ -170,7 +167,7 @@ class RentalsController extends Controller
             ]);
             if(!$rental->delete())
             {
-                throw new Exception("لا يمكن حدف الإعارة: ". $rental->getKey());
+                throw new \Exception("لا يمكن حدف الإعارة: ". $rental->getKey());
             }
             DB::commit();
         }catch(\Exception $e)
