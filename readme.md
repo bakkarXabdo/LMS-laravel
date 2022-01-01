@@ -11,7 +11,7 @@ cd lms
 composer install
 php -r "copy('.env.developement', '.env');"
 php artisan key:generate
-# after you configure the database
+# after you configure the database --> $"mysql.exe -uroot -e"create database lms;"
 php artisan migrate --seed
 npm install
 npm run dev
