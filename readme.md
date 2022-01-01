@@ -9,7 +9,7 @@
 git clone https://github.com/bakkarXabdo/LMS-laravel lms
 cd lms
 composer install
-php -r "copy('.env.example', '.env');"
+php -r "copy('.env.developement', '.env');"
 php artisan key:generate
 # after you configure the database
 php artisan migrate --seed
