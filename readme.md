@@ -12,7 +12,7 @@ composer install
 php -r "copy('.env.developement', '.env');"
 php artisan key:generate
 # configure database credentials before migrating
-# mysql.exe -uroot -e"create database lms;"
+mysql -uroot -ppassword -e"create database lms;"
 php artisan migrate --seed
 npm install
 npm run dev
