@@ -1,5 +1,5 @@
 ## Requirements
-- php >= 7.4
+- php ~ 7.4
 - composer
 - git (optional)
 - npm (optional)
