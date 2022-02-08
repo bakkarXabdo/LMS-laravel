@@ -9,7 +9,7 @@
 git clone https://github.com/bakkarXabdo/LMS-laravel lms
 cd lms
 composer install
-php -r "copy('.env.developement', '.env');"
+php -r "copy('.env.development', '.env');"
 php artisan key:generate
 # configure database credentials before migrating
 mysql -uroot -ppassword -e"create database lms;"
